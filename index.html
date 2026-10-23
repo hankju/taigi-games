@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>來去踅夜市・單詞練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;700&display=swap">
+<style>
+/* 版面：夜市夜空藍底、燈籠暖黃、紙卡白；單一畫面手機遊戲 */
+:root{
+  --night:#16233f; --night-2:#22345a; --night-3:#0e1830;
+  --lamp:#f4b740; --lamp-soft:#ffe3a3;
+  --paper:#fff8ea; --ink:#2b2118; --muted:#7b6a58;
+  --ok:#2e9b62; --bad:#d9573f;
+  --display:"LXGW WenKai TC","Kaiti TC","DFKai-SB",serif;
+  --body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+[hidden]{display:none!important}
+body{background:var(--night);color:var(--paper);font-family:var(--body);-webkit-tap-highlight-color:transparent;
+  background-image:radial-gradient(circle at 15% 8%,rgba(244,183,64,.18),transparent 30%),radial-gradient(circle at 85% 20%,rgba(244,183,64,.12),transparent 25%)}
+#app{height:100%;max-width:560px;margin:0 auto;display:flex;flex-direction:column;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:10px}
+.screen{flex:1;display:flex;flex-direction:column;gap:12px;min-height:0}
+button{font:inherit;cursor:pointer;touch-action:manipulation;color:inherit}
+button:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
+
+/* 首頁 */
+.hero{text-align:center;padding-top:6px}
+.lamps{display:flex;justify-content:center;gap:18px;margin-bottom:6px}
+.lamps i{width:22px;height:30px;border-radius:50% 50% 45% 45%;background:var(--lamp);box-shadow:0 0 18px var(--lamp);display:block}
+.lamps i:nth-child(2){background:#e8603c;box-shadow:0 0 18px #e8603c}
+.hero small{color:var(--lamp-soft);font-size:15px;letter-spacing:.1em}
+.hero h1{font-family:var(--display);font-size:clamp(38px,11vw,56px);margin:4px 0 0;color:var(--lamp);text-shadow:0 3px 0 var(--night-3)}
+.hero p{margin:4px 0 0;color:var(--lamp-soft);font-size:15px}
+.modes{display:grid;gap:10px;overflow:auto;padding-bottom:6px}
+.mode{display:grid;grid-template-columns:52px 1fr auto;gap:12px;align-items:center;text-align:left;background:var(--paper);color:var(--ink);border:0;border-radius:16px;padding:14px;box-shadow:0 4px 0 var(--night-3)}
+.mode:active{transform:translateY(2px);box-shadow:0 2px 0 var(--night-3)}
+.mode .num{width:52px;height:52px;border-radius:14px;background:var(--night);color:var(--lamp);display:grid;place-items:center;font-family:var(--display);font-size:24px;font-weight:700}
+.mode b{font-family:var(--display);font-size:22px;display:block}
+.mode small{color:var(--muted);font-size:14px;line-height:1.45;display:block}
+.mode .best{font-size:13px;color:#b0441f;font-weight:700;white-space:nowrap}
+.mode.sub{grid-template-columns:52px 1fr;background:var(--night-2);color:var(--paper);box-shadow:none;border:1px solid rgba(255,248,234,.2)}
+.mode.sub small{color:var(--lamp-soft)}
+.credit{font-size:12px;color:rgba(255,248,234,.65);text-align:center;line-height:1.5}
+
+/* 上方列 */
+.hud{display:flex;align-items:center;gap:10px}
+.back{background:transparent;border:1px solid var(--lamp);color:var(--lamp);border-radius:10px;padding:6px 10px;font-size:14px}
+.hud .stat{flex:1;display:flex;justify-content:flex-end;gap:14px;font-variant-numeric:tabular-nums;font-size:15px}
+.hud .stat b{color:var(--lamp);font-size:20px}
+.bar{height:8px;background:var(--night-3);border-radius:4px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--lamp);transform-origin:left}
+.bar.low i{background:var(--bad)}
+.qno{text-align:center;font-size:14px;color:var(--lamp-soft)}
+
+/* 題目卡 */
+.card{background:var(--paper);color:var(--ink);border-radius:18px;padding:16px;text-align:center;box-shadow:0 4px 0 var(--night-3);display:flex;flex-direction:column;gap:8px;align-items:center}
+.card .ask{font-size:14px;color:var(--muted)}
+.big{font-family:var(--display);font-size:clamp(34px,10vw,46px);line-height:1.2;font-weight:700}
+.lo{font-size:clamp(24px,7vw,30px);font-weight:700;letter-spacing:.02em}
+.sent{font-family:var(--display);font-size:clamp(22px,6.4vw,28px);line-height:1.5}
+.sent u{text-decoration:none;border-bottom:3px solid var(--night);padding:0 .3em}
+.pad{display:inline-flex;gap:4px}
+.pad span{width:44px;height:44px;border:2px solid var(--night-2);background:repeating-linear-gradient(45deg,#e9dcc2 0 6px,#f3e8d2 6px 12px);border-radius:6px}
+.say{display:inline-flex;align-items:center;gap:6px;background:var(--night);color:var(--lamp);border:0;border-radius:999px;padding:6px 14px;font-size:15px}
+.say[disabled]{opacity:.35}
+.hint{font-size:15px;color:#5b4b3b;background:#f3e6c9;border-radius:10px;padding:8px 10px;width:100%;text-align:left;line-height:1.5}
+
+/* 選項 */
+.opts{display:grid;gap:10px}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;background:var(--night-2);border:2px solid rgba(255,248,234,.25);border-radius:14px;padding:12px 14px;font-size:clamp(17px,4.8vw,20px);line-height:1.45}
+.opt .k{flex:none;width:26px;height:26px;border-radius:50%;background:var(--paper);color:var(--night);display:grid;place-items:center;font-size:14px;font-weight:700;margin-top:1px}
+.opt.lo-opt{font-size:clamp(20px,5.6vw,24px);font-weight:700;letter-spacing:.02em}
+.opt.han-opt{font-family:var(--display);font-size:clamp(22px,6vw,26px)}
+.opt.wrong{background:#5a2a2a;border-color:var(--bad);opacity:.7}
+.opt.right{background:var(--ok);border-color:#bff0d3}
+.opt[disabled]{cursor:default}
+
+/* 答後說明 */
+.fb{background:var(--paper);color:var(--ink);border-radius:14px;padding:12px 14px;display:grid;gap:6px}
+.fb .h{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.fb .h b{font-family:var(--display);font-size:26px}
+.fb .h span{font-weight:700;font-size:18px}
+.fb p{margin:0;font-size:15px;line-height:1.5;color:#4b3b2c}
+#fbwrap{display:grid;gap:10px;padding-bottom:12px}
+.next{width:100%;background:var(--lamp);color:var(--night);border:0;border-radius:12px;padding:12px;font-size:18px;font-weight:700;box-shadow:0 4px 0 #9b6f1c}
+.pop{position:fixed;left:50%;top:40%;transform:translate(-50%,-50%);font-family:var(--display);font-size:46px;font-weight:700;color:var(--lamp);text-shadow:0 3px 0 var(--night-3);pointer-events:none;animation:pop .8s ease-out forwards;z-index:9}
+@keyframes pop{from{opacity:1;transform:translate(-50%,-50%) scale(.7)}to{opacity:0;transform:translate(-50%,-110%) scale(1.1)}}
+
+/* 結算、成績、詞彙表 */
+.center{align-items:center;justify-content:center;text-align:center}
+.center h2{font-family:var(--display);font-size:38px;color:var(--lamp);margin:0}
+.score{font-family:var(--display);font-size:80px;line-height:1;font-variant-numeric:tabular-nums}
+.center p{margin:0;color:var(--lamp-soft)}
+.btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:8px}
+.btn{background:var(--lamp);color:var(--night);border:0;border-radius:12px;padding:12px 22px;font-size:18px;font-weight:700}
+.btn.ghost{background:transparent;color:var(--lamp);border:2px solid var(--lamp)}
+.review{width:100%;max-height:38vh;overflow:auto;display:grid;gap:6px;text-align:left}
+.review div{background:var(--night-2);border-radius:10px;padding:8px 10px;font-size:15px}
+.review div.x{border-left:4px solid var(--bad)}
+.list{overflow:auto;display:grid;gap:8px;padding-bottom:10px}
+.row{background:var(--paper);color:var(--ink);border-radius:12px;padding:10px 12px;display:grid;grid-template-columns:1fr auto;gap:4px 8px;align-items:center}
+.row b{font-family:var(--display);font-size:22px}
+.row .l{font-weight:700}
+.row p{grid-column:1/-1;margin:0;font-size:14px;color:#5b4b3b}
+.tag{font-size:12px;border-radius:999px;padding:1px 8px;background:var(--night);color:var(--lamp)}
+.tag.sup{background:#e8603c;color:#fff}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tabs button{flex:1;background:transparent;color:var(--lamp);border:1px solid var(--lamp);border-radius:999px;padding:6px 8px;font-size:14px}
+.tabs button[aria-pressed="true"]{background:var(--lamp);color:var(--night);font-weight:700}
+.bests{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.bests div{background:var(--paper);color:var(--ink);border-radius:12px;padding:8px;text-align:center}
+.bests small{display:block;font-size:12px;color:var(--muted)}
+.bests b{font-family:var(--display);font-size:28px;color:#b0441f}
+.hrow{background:var(--paper);color:var(--ink);border-radius:10px;padding:8px 12px;display:grid;grid-template-columns:2.4em 1fr auto;gap:8px;align-items:center;font-variant-numeric:tabular-nums}
+.hrow small{display:block;color:var(--muted);font-size:12px}
+.hrow .s{font-family:var(--display);font-size:24px}
+.hrow.top{background:var(--lamp-soft);outline:2px solid var(--lamp)}
+.hrow.top .s::after{content:" 🏆";font-size:16px}
+.empty{text-align:center;color:var(--lamp-soft);padding:24px 0}
+@media (prefers-reduced-motion:reduce){.pop{animation-duration:.01s}}
+</style>
+</head>
+<body>
+<div id="app">
+
+<section class="screen" id="home">
+  <div class="hero">
+    <div class="lamps"><i></i><i></i><i></i></div>
+    <small>第一課・單詞練習</small>
+    <h1>來去踅夜市</h1>
+    <p>10 題・限時 3 分鐘・一擺就著 10 分</p>
+  </div>
+  <div class="modes">
+    <button class="mode" data-go="m1"><span class="num">一</span><span><b>台羅拼音</b><small>看漢字，選出正確的台羅</small></span><span class="best" data-best="m1"></span></button>
+    <button class="mode" data-go="m2"><span class="num">二</span><span><b>台羅＋詞義</b><small>看台羅、聽發音，選出意思</small></span><span class="best" data-best="m2"></span></button>
+    <button class="mode" data-go="m3"><span class="num">三</span><span><b>台文填空</b><small>看句子，選出空格裡的詞</small></span><span class="best" data-best="m3"></span></button>
+    <button class="mode sub" data-go="hist"><span class="num">🏆</span><span><b>我的成績</b><small>每一擺的分數攏記佇遮</small></span></button>
+    <button class="mode sub" data-go="list"><span class="num">📖</span><span><b>詞彙表</b><small>課文佮補充的詞，會當聽發音</small></span></button>
+  </div>
+  <div class="credit">詞條、例句與錄音：教育部《臺灣台語常用詞辭典》，CC BY-ND 3.0 TW</div>
+</section>
+
+<section class="screen" id="play" hidden>
+  <div class="hud"><button class="back" data-go="home">‹ 離開</button><div class="stat"><span>分數 <b id="sc">0</b></span><span>⏱ <b id="tm">3:00</b></span></div></div>
+  <div class="bar" id="bar"><i></i></div>
+  <div class="qno" id="qno"></div>
+  <div class="card" id="card"></div>
+  <div class="opts" id="opts"></div>
+  <div id="fbwrap"></div>
+</section>
+
+<section class="screen center" id="over" hidden>
+  <h2 id="oTitle">完成！</h2>
+  <p>這擺得分（滿分 100）</p>
+  <div class="score" id="oScore">0</div>
+  <p id="oBest"></p>
+  <div class="review" id="oReview"></div>
+  <div class="btns"><button class="btn" id="again">閣耍一擺</button><button class="btn ghost" data-go="home">回首頁</button></div>
+</section>
+
+<section class="screen" id="hist" hidden>
+  <div class="hud"><button class="back" data-go="home">‹ 回首頁</button></div>
+  <div class="bests" id="hBest"></div>
+  <div class="tabs" id="hTabs"></div>
+  <div class="list" id="hList"></div>
+</section>
+
+<section class="screen" id="list" hidden>
+  <div class="hud"><button class="back" data-go="home">‹ 回首頁</button></div>
+  <div class="list" id="wList"></div>
+</section>
+
+</div>
+<script src="bank.js"></script>
+<script>
+const W = BANK.words, N = 10, LIMIT = 180, PTS = [10, 6, 3];
+const NAME = {m1: '台羅拼音', m2: '台羅＋詞義', m3: '台文填空'};
+const $ = s => document.querySelector(s);
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+const short = d => d.split('。')[0] + '。';
+
+// 音檔
+let audio = null;
+function play(src) { if (!src) return; try { if (audio) audio.pause(); audio = new Audio(src); audio.play().catch(() => {}); } catch (e) {} }
+
+// 遊戲一：產生台羅錯誤選項（送氣／不送氣互換，再補聲調變化）
+const ASP = [['tsh', 'ts'], ['ph', 'p'], ['th', 't'], ['kh', 'k']];
+function toggleAsp(syl) {
+  const lower = syl.normalize('NFD');
+  for (const [a, b] of ASP) {
+    if (lower.startsWith(a)) return b + lower.slice(a.length);
+    if (lower.startsWith(b) && !lower.startsWith(a)) return a + lower.slice(b.length);
+  }
+  return null;
+}
+const MARKS = ['́', '̀', '̂', '̄', '̍'];
+function toneVariants(syl) {
+  const d = syl.normalize('NFD'), base = d.replace(/[̀-̍]/g, '');
+  const checked = /[ptkh]$/.test(base);
+  const pos = (() => { for (const v of ['a', 'oo', 'o', 'e', 'u', 'i', 'm', 'n']) { const i = base.indexOf(v); if (i >= 0) return i + 1; } return 1; })();
+  const opts = checked ? ['', '̍'] : ['', '́', '̀', '̂', '̄'];
+  const out = opts.map(m => (base.slice(0, pos) + m + base.slice(pos)).normalize('NFC'));
+  // 入聲字只有兩種聲調，再補「韻尾」變化（-h／-t／-k）
+  if (checked) ['h', 't', 'k'].forEach(f => { if (!base.endsWith(f)) out.push(d.replace(/[ptkh]$/, f).normalize('NFC')); });
+  return out.filter(x => x !== syl.normalize('NFC'));
+}
+function loDistractors(w) {
+  const bad = new Set([w.lo, ...w.alt].map(x => x.normalize('NFC')));
+  const parts = w.lo.split('-');
+  const asp = new Set();
+  const n = parts.length;
+  for (let mask = 1; mask < (1 << n); mask++) {
+    let ok = true;
+    const p = parts.map((s, i) => { if (!(mask >> i & 1)) return s; const t = toggleAsp(s); if (t === null) ok = false; return t; });
+    if (ok) asp.add(p.join('-').normalize('NFC'));
+  }
+  const tones = new Set();
+  parts.forEach((s, i) => toneVariants(s).forEach(v => { const p = parts.slice(); p[i] = v; tones.add(p.join('-').normalize('NFC')); }));
+  const pool = [...shuffle([...asp]), ...shuffle([...tones])].filter(x => !bad.has(x));
+  return [...new Set(pool)].slice(0, 3);
+}
+
+// 出題
+function others(w, pool, n, key) {
+  const seen = new Set([key(w)]);
+  return shuffle(pool.filter(x => x !== w && (!w.grp || x.grp !== w.grp))).filter(x => { const k = key(x); if (seen.has(k)) return false; seen.add(k); return true; }).slice(0, n);
+}
+function clozeItems() {
+  const items = W.filter(w => w.ex && w.ex.han.includes(w.han)).map(w => ({w, han: w.ex.han, hua: w.ex.hua}));
+  (BANK.cloze_extra || []).forEach(c => { const w = W.find(x => x.han === c.word); if (w && c.han.includes(w.han)) items.push({w, han: c.han, hua: c.hua}); });
+  return items;
+}
+function makeQuestions(mode) {
+  if (mode === 'm1') {
+    return shuffle(W.filter(w => w.src === '課文')).slice(0, N).map(w => ({w, mode, opts: shuffle([w.lo, ...loDistractors(w)]), answer: w.lo}));
+  }
+  if (mode === 'm2') {
+    return shuffle(W).slice(0, N).map(w => ({w, mode, opts: shuffle([short(w.def), ...others(w, W, 3, x => short(x.def)).map(x => short(x.def))]), answer: short(w.def)}));
+  }
+  const items = shuffle(clozeItems());
+  const used = new Set(), qs = [];
+  for (const it of items) { if (qs.length >= N || used.has(it.w.han)) continue; used.add(it.w.han);
+    const len = it.w.han.length;
+    const pool = W.filter(x => !it.han.includes(x.han));
+    const same = others(it.w, pool.filter(x => Math.abs(x.han.length - len) <= 1), 3, x => x.han);
+    const more = same.length < 3 ? others(it.w, pool, 3, x => x.han).filter(x => !same.includes(x)) : [];
+    const ds = [...same, ...more].slice(0, 3).map(x => x.han);
+    qs.push({w: it.w, mode, sent: it.han, hua: it.hua, opts: shuffle([it.w.han, ...ds]), answer: it.w.han});
+  }
+  return qs;
+}
+
+// 紀錄
+const store = {
+  hist() { try { return JSON.parse(localStorage.getItem('ys_hist')) || []; } catch (e) { return []; } },
+  add(m, s) { const h = this.hist(); h.push({m, s, t: Date.now()}); try { localStorage.setItem('ys_hist', JSON.stringify(h.slice(-300))); } catch (e) {} },
+  best(m) { const xs = this.hist().filter(r => r.m === m); return xs.length ? Math.max(...xs.map(r => r.s)) : 0; },
+};
+
+// 畫面切換
+let stop = null, lastMode = 'm1';
+function go(id) {
+  if (stop) { stop(); stop = null; }
+  if (id === 'm1' || id === 'm2' || id === 'm3') { lastMode = id; show('play'); start(id); return; }
+  show(id);
+  if (id === 'home') document.querySelectorAll('[data-best]').forEach(el => { const b = store.best(el.dataset.best); el.textContent = b ? '最高 ' + b : ''; });
+  if (id === 'hist') renderHist();
+  if (id === 'list') renderList();
+}
+function show(id) { document.querySelectorAll('.screen').forEach(s => s.hidden = s.id !== id); window.scrollTo(0, 0); }
+document.addEventListener('click', e => { const b = e.target.closest('[data-go]'); if (b) go(b.dataset.go); });
+$('#again').onclick = () => go(lastMode);
+
+// 一輪遊戲
+function start(mode) {
+  const qs = makeQuestions(mode);
+  let qi = -1, score = 0, tries = 0, done = false, left = LIMIT, log = [];
+  const t0 = Date.now();
+  const timer = setInterval(() => {
+    left = LIMIT - (Date.now() - t0) / 1000;
+    if (left <= 0) { finish('時間到！'); return; }
+    const s = Math.ceil(left);
+    $('#tm').textContent = Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+    $('#bar i').style.transform = `scaleX(${left / LIMIT})`;
+    $('#bar').classList.toggle('low', left < 30);
+  }, 200);
+  stop = () => { done = true; clearInterval(timer); if (audio) audio.pause(); };
+  $('#sc').textContent = 0;
+
+  function next() {
+    qi++; tries = 0; $('#fbwrap').innerHTML = '';
+    if (qi >= qs.length) { finish('完成！'); return; }
+    const q = qs[qi];
+    $('#qno').textContent = `第 ${qi + 1} ／ ${qs.length} 題・${NAME[mode]}`;
+    const c = $('#card');
+    if (mode === 'm1') {
+      c.innerHTML = `<div class="ask">這个詞按怎讀？</div><div class="big">${esc(q.w.han)}</div><button class="say" id="say" disabled>🔊 答錯一擺才會使聽</button>`;
+    } else if (mode === 'm2') {
+      c.innerHTML = `<div class="pad" id="pad">${'<span></span>'.repeat(Math.min(q.w.han.length, 5))}</div><div class="lo">${esc(q.w.lo)}</div>${q.w.audio ? '<button class="say" id="say">🔊 聽發音</button>' : ''}<div class="ask">這个詞的意思是？</div><div id="hint"></div>`;
+    } else {
+      const s = esc(q.sent).replace(esc(q.w.han), '<u>＿＿</u>');
+      c.innerHTML = `<div class="ask">空格內底愛囥佗一个詞？</div><div class="sent">${s}</div><div id="hint"></div>`;
+    }
+    const say = $('#say'); if (say) say.onclick = () => play(q.w.audio);
+    const box = $('#opts'); box.innerHTML = '';
+    q.opts.forEach((o, i) => {
+      const b = document.createElement('button');
+      b.className = 'opt' + (mode === 'm1' ? ' lo-opt' : mode === 'm3' ? ' han-opt' : '');
+      b.innerHTML = `<span class="k">${'ABCD'[i]}</span><span>${esc(o)}</span>`;
+      b.onclick = () => answer(b, o, q);
+      box.appendChild(b);
+    });
+  }
+
+  function answer(b, o, q) {
+    if (done || b.disabled) return;
+    if (o === q.answer) {
+      const p = PTS[tries] || 0; score += p; $('#sc').textContent = score;
+      b.classList.add('right'); popup('+' + p); reveal(q, true); return;
+    }
+    tries++; b.classList.add('wrong'); b.disabled = true;
+    if (mode === 'm1') { const s = $('#say'); if (s && q.w.audio) { s.disabled = false; s.textContent = '🔊 聽發音'; } }
+    if (mode === 'm2') { $('#pad').outerHTML = `<div class="big">${esc(q.w.han)}</div>`; if (q.w.ex) $('#hint').innerHTML = `<div class="hint">例句：${esc(q.w.ex.han.replace(q.w.han, '＿＿'))}</div>`; }
+    if (mode === 'm3' && q.hua) $('#hint').innerHTML = `<div class="hint">華語：${esc(q.hua)}</div>`;
+    if (tries >= 3) { [...$('#opts').children].forEach(x => { if (x.textContent.slice(1) === q.answer) x.classList.add('right'); }); reveal(q, false); }
+  }
+
+  function reveal(q, ok) {
+    [...$('#opts').children].forEach(x => x.disabled = true);
+    log.push({q, ok, tries});
+    const w = q.w, ex = w.ex;
+    $('#fbwrap').innerHTML = `<div class="fb"><div class="h"><b>${esc(w.han)}</b><span>${esc(w.lo)}</span>${w.audio ? '<button class="say" id="fbsay">🔊</button>' : ''}</div><p>${esc(w.def)}</p>${ex ? `<p>例：${esc(ex.han)}${ex.hua ? '（' + esc(ex.hua) + '）' : ''}</p>` : ''}</div><button class="next" id="nx">${qi + 1 >= qs.length ? '看成績' : '下一題 ›'}</button>`;
+    const fs = $('#fbsay'); if (fs) fs.onclick = () => play(w.audio);
+    $('#nx').onclick = next;
+    $('#nx').scrollIntoView({block: 'nearest', behavior: 'smooth'});
+    if (ok) play(w.audio);
+  }
+
+  function finish(title) {
+    if (done) return; stop(); stop = null;
+    const best = store.best(mode); store.add(mode, score);
+    $('#oTitle').textContent = title; $('#oScore').textContent = score;
+    $('#oBest').textContent = score > best && score > 0 ? '🎉 新紀錄！' : `${NAME[mode]} 最高分：${Math.max(best, score)}`;
+    $('#oReview').innerHTML = log.map(r => `<div class="${r.ok ? '' : 'x'}">${r.ok ? '✔' : '✘'} ${esc(r.q.w.han)}　${esc(r.q.w.lo)}　${esc(short(r.q.w.def))}</div>`).join('');
+    show('over');
+  }
+  next();
+}
+function popup(t) { const p = document.createElement('div'); p.className = 'pop'; p.textContent = t; document.body.appendChild(p); setTimeout(() => p.remove(), 850); }
+
+// 我的成績
+let hf = 'all';
+function fmt(t) { const d = new Date(t), p = n => String(n).padStart(2, '0'); return `${d.getMonth() + 1}/${d.getDate()} ${p(d.getHours())}:${p(d.getMinutes())}`; }
+function renderHist() {
+  const h = store.hist();
+  $('#hBest').innerHTML = ['m1', 'm2', 'm3'].map(m => { const xs = h.filter(r => r.m === m); return `<div><small>${NAME[m]} 最高</small><b>${xs.length ? Math.max(...xs.map(r => r.s)) : '—'}</b><small>耍 ${xs.length} 擺</small></div>`; }).join('');
+  $('#hTabs').innerHTML = [['all', '全部'], ['m1', '一'], ['m2', '二'], ['m3', '三']].map(([k, n]) => `<button data-f="${k}" aria-pressed="${hf === k}">${n}</button>`).join('');
+  $('#hTabs').querySelectorAll('button').forEach(b => b.onclick = () => { hf = b.dataset.f; renderHist(); });
+  const best = {}, no = {};
+  h.forEach(r => { if (!best[r.m] || r.s > best[r.m].s) best[r.m] = r; no[r.m] = (no[r.m] || 0) + 1; r.n = no[r.m]; });
+  const rows = h.filter(r => hf === 'all' || r.m === hf).reverse();
+  $('#hList').innerHTML = rows.length ? rows.map(r => `<div class="hrow${best[r.m] === r ? ' top' : ''}"><span>#${r.n}</span><span>${NAME[r.m]}<small>${fmt(r.t)}</small></span><span class="s">${r.s}</span></div>`).join('') : '<div class="empty">猶無紀錄，先去耍一擺！</div>';
+}
+
+// 詞彙表
+function renderList() {
+  $('#wList').innerHTML = W.map((w, i) => `<div class="row"><span><b>${esc(w.han)}</b>　<span class="l">${esc(w.lo)}</span>　<span class="tag${w.src === '補充' ? ' sup' : ''}">${w.src}</span></span>${w.audio ? `<button class="say" data-a="${i}">🔊</button>` : '<span></span>'}<p>${esc(w.def)}${w.ex ? '<br>例：' + esc(w.ex.han) : ''}</p></div>`).join('');
+  $('#wList').querySelectorAll('[data-a]').forEach(b => b.onclick = () => play(W[+b.dataset.a].audio));
+}
+
+go('home');
+</script>
+</body>
+</html>
