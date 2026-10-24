@@ -36,7 +36,7 @@ window.BANK = {
    "src": "課文",
    "grp": null,
    "ex": null,
-   "audio": "",
+   "audio": "audio/t_tsiah-kha.mp3",
    "note": "辭典查無此詞，台羅照課本"
   },
   {
@@ -180,7 +180,7 @@ window.BANK = {
    "src": "課文",
    "grp": null,
    "ex": null,
-   "audio": "",
+   "audio": "audio/t_phann-khoo.mp3",
    "note": "辭典查無此詞，台羅照課本"
   },
   {
