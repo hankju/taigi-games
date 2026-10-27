@@ -7,10 +7,10 @@
 <meta name="description" content="高中閩南語文課的台語學習小遊戲：單詞、押韻、台羅拼音，手機掃 QR Code 就能玩。">
 <title>台語小遊戲</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans:wght@400;500&family=Noto+Sans+TC:wght@400;500;700&display=swap">
 <style>
 /* 大廳：廟口夜景。主角是「逐字標台羅」的標題；遊戲卡片用各遊戲的顏色，名稱同樣逐字標台羅
-   漢字一律用霞鶩文楷（像課本楷體），台羅一律用 Noto Sans（聲調符號才完整）
+   標題與遊戲名稱用霞鶩文楷（像課本楷體），卡片內文用 Noto Sans TC，台羅用 Noto Sans（聲調符號才完整）
    動態只留燈籠（搖晃＋閃爍）；手機單欄，電腦左側標題與 QR Code、右側兩欄卡片 */
 :root{
   --night:#17120d; --gold:#f2b84b; --paper:#fbf3e4; --muted:#bfb19c; --ink:#2a1d12;
@@ -80,36 +80,43 @@ h1 .ch i{color:var(--muted);text-shadow:none;font-size:max(12px,.24em)}
 @keyframes eq{from{height:25%}to{height:100%}}
 .scan{display:none}
 
-/* 遊戲卡片：遊戲本身的顏色當底，左上角圓框圖示＋角落淡淡的大圖示；名稱逐字標台羅 */
-.signs{display:grid;gap:16px;margin-top:30px}
-.sign{position:relative;overflow:hidden;isolation:isolate;display:flex;flex-direction:column;gap:12px;padding:18px 20px 16px;border-radius:20px;
+/* 遊戲卡片：各遊戲的顏色漸層、左上圓框圖示＋右上 QR、角落淡淡的大圖示；名稱逐字標台羅 */
+.grid{margin-top:30px}
+/* 卡片內文用一般黑體（跟最早的版本一樣），只有遊戲名稱用楷體 */
+.game{font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(min(100%,290px),1fr))}
+
+.game{position:relative;overflow:hidden;isolation:isolate;display:flex;flex-direction:column;gap:10px;padding:18px 18px 16px;border-radius:20px;
   background:var(--c);
-  background:linear-gradient(155deg,color-mix(in srgb,var(--c) 80%,#fff 20%) 0%,var(--c) 45%,color-mix(in srgb,var(--c) 72%,#000) 100%);
-  border:1px solid rgba(255,255,255,.12);border-color:color-mix(in srgb,var(--a) 30%,transparent);
-  box-shadow:0 10px 24px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.12);transition:border-color .2s}
-.sign:hover,.sign:focus-within{border-color:var(--a)}
-.sign .wm{position:absolute;right:-18px;bottom:-30px;z-index:-1;font-size:150px;line-height:1;opacity:.13;transform:rotate(-14deg);filter:saturate(.6);pointer-events:none}
-.sign .head{display:flex;align-items:center;gap:14px}
-.sign .head h2{flex:1;min-width:0}
-.sign h2 .ruby{flex-wrap:nowrap;gap:0 .08em}
-/* 卡片標題：台羅浮在字的正上方，不撐開字距，三張的字距才會一樣 */
-.sign h2 .ch{position:relative;padding-top:15px}
-.sign h2 .ch i{position:absolute;top:0;left:50%;transform:translateX(-50%);margin:0}
-.badge{flex:none;width:56px;height:56px;display:grid;place-items:center;font-size:30px;border-radius:50%;background:rgba(0,0,0,.25);box-shadow:inset 0 0 0 2px var(--a),0 4px 10px rgba(0,0,0,.25)}
-.sign h2{margin:0;font-weight:700;font-size:30px;color:var(--a);letter-spacing:.03em}
-.sign h2 .ch i{color:var(--paper);opacity:.72;font-size:12px}
-.sign h2 a{text-decoration:none;display:block}
-.sign h2 a::after{content:"";position:absolute;inset:0;z-index:1}
-.sign h2 a:focus-visible{outline:none}
-.sign:has(h2 a:focus-visible){outline:3px solid var(--a);outline-offset:3px}
-.sign p{margin:0;font-size:16px;line-height:1.65;opacity:.92;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sign .row{display:flex;align-items:center;gap:12px;margin-top:auto;padding-top:12px;border-top:1px dashed rgba(255,255,255,.2);font-size:14px}
-.sign .st{flex:1;min-width:0;white-space:nowrap;opacity:.88}
-.sign .st.none{opacity:.55}
-.sign .st b{font-family:var(--lo);font-weight:500;font-size:17px;color:var(--a)}
-.sign .go{flex:none;padding:7px 18px;border-radius:999px;background:var(--a);color:var(--c);font-weight:700;font-size:16px;box-shadow:0 3px 0 rgba(0,0,0,.3)}
-.qr{display:none;flex:none;position:relative;z-index:2;padding:6px 12px;border-radius:999px;border:1px solid rgba(251,243,228,.3);background:rgba(0,0,0,.18);font-size:13px;color:var(--paper)}
-.qr:hover{border-color:var(--a);color:var(--a)}
+  background:linear-gradient(155deg,color-mix(in srgb,var(--c) 78%,#fff 22%) 0%,var(--c) 45%,color-mix(in srgb,var(--c) 70%,#000) 100%);
+  border:1px solid rgba(255,255,255,.1);border-color:color-mix(in srgb,var(--a) 28%,transparent);
+  box-shadow:0 10px 24px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.12);
+  transition:transform .25s ease,box-shadow .25s ease;animation:rise .5s ease both;animation-delay:calc(var(--i) * 90ms)}
+.game .wm{position:absolute;right:-18px;bottom:-30px;font-size:150px;line-height:1;opacity:.13;transform:rotate(-14deg);pointer-events:none;z-index:-1;filter:saturate(.6)}
+.game .top{display:flex;align-items:center;justify-content:space-between}
+.badge{width:58px;height:58px;display:grid;place-items:center;font-size:32px;border-radius:50%;background:rgba(0,0,0,.25);box-shadow:inset 0 0 0 2px var(--a),0 4px 10px rgba(0,0,0,.25)}
+.qrbtn{position:relative;z-index:2;display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.22);background:rgba(0,0,0,.2);font-size:13px;color:var(--paper)}
+.qrbtn svg{width:16px;height:16px}
+.qrbtn:hover{background:rgba(0,0,0,.35);border-color:var(--a)}
+.kicker{font-size:13px;letter-spacing:.12em;color:var(--a);opacity:.9;margin-top:2px}
+.game h3{margin:2px 0 0;font-family:var(--han);font-size:28px;line-height:1.25;color:var(--a);letter-spacing:.04em}
+/* 名稱逐字標台羅：台羅浮在字的正上方，不撐開字距 */
+.game h3 .ruby{flex-wrap:nowrap;gap:0 .06em}
+.game h3 .ch{position:relative;padding-top:15px}
+.game h3 .ch i{position:absolute;top:0;left:50%;transform:translateX(-50%);margin:0;color:var(--paper);opacity:.72;font-size:12px;font-weight:400}
+.game h3 a{text-decoration:none}
+.game h3 a::after{content:"";position:absolute;inset:0;z-index:1;border-radius:inherit}
+.game h3 a:focus-visible{outline:none}
+.game:has(h3 a:focus-visible){outline:3px solid var(--a);outline-offset:3px}
+.game p{margin:0;font-size:15px;line-height:1.6;opacity:.92}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 0;padding:0;list-style:none}
+.chips li{font-size:12px;padding:3px 10px;border-radius:999px;background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.18);border-color:color-mix(in srgb,var(--a) 40%,transparent)}
+.foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:auto;padding-top:14px;border-top:1px dashed rgba(255,255,255,.2)}
+.stat{font-size:13px;line-height:1.4;opacity:.9}
+.stat b{color:var(--a);font-size:16px}
+.play{flex:none;display:inline-flex;align-items:center;gap:4px;padding:9px 18px;border-radius:999px;background:var(--a);color:var(--c);font-weight:700;font-size:15px;box-shadow:0 3px 0 rgba(0,0,0,.3)}
+.play i{font-style:normal}
+.game:hover,.game:focus-within{border-color:var(--a)}
 
 footer{margin-top:30px;text-align:center;font-size:13px;line-height:1.7;color:var(--muted)}
 
@@ -129,7 +136,6 @@ dialog::backdrop{background:rgba(10,7,4,.78)}
 
 @media (min-width:640px){
   .wrap{max-width:860px}
-  .signs{grid-template-columns:1fr 1fr}
 }
 /* 電腦：左邊標題＋大 QR Code（老師投影用），右邊兩欄卡片；QR 按鈕只在電腦出現 */
 @media (min-width:960px){
@@ -147,14 +153,13 @@ dialog::backdrop{background:rgba(10,7,4,.78)}
   .scan .code svg{display:block;width:100%;height:100%}
   .scan b{display:block;margin-top:12px;font-size:19px}
   .scan span{display:block;margin-top:2px;font-size:14px;color:#6b5640}
-  .signs{margin-top:44px}
-  .qr{display:inline-block}
+  .grid{margin-top:44px}
   main footer{text-align:left}
 }
 /* 系統設定「減少動態效果」：燈籠不搖，明暗閃爍保留 */
 @media (prefers-reduced-motion:reduce){
   .lan{animation:none}
-  .sign{transition:none}
+  .game{transition:none}
   .music[aria-pressed="true"] .eq i{animation:none;height:70%}
 }
 </style>
@@ -209,7 +214,7 @@ dialog::backdrop{background:rgba(10,7,4,.78)}
   </aside>
   <main>
     <h2 class="vh">遊戲</h2>
-    <div class="signs" id="list"></div>
+    <div class="grid" id="list"></div>
     <footer>錄音與部分詞條取自教育部《臺灣台語常用詞辭典》，<span style="white-space:nowrap">CC BY-ND 3.0 TW</span></footer>
   </main>
 </div>
@@ -264,14 +269,18 @@ function qrSvg(text, label) {
   return `<svg viewBox="-2 -2 ${n + 4} ${n + 4}" shape-rendering="crispEdges" role="img" aria-label="${esc(label)}"><rect x="-2" y="-2" width="${n + 4}" height="${n + 4}" fill="#fff"/><path d="${d}" fill="#17120d"/></svg>`;
 }
 
+const qrIcon = '<svg viewBox="0 0 16 16" aria-hidden="true" fill="currentColor"><path d="M1 1h6v6H1zm1.5 1.5v3h3v-3zM9 1h6v6H9zm1.5 1.5v3h3v-3zM1 9h6v6H1zm1.5 1.5v3h3v-3zM9 9h2v2H9zm2 2h2v2h-2zm2-2h2v2h-2zm-4 4h2v2H9zm4 0h2v2h-2z"/></svg>';
 $('#title').innerHTML = ruby('台語小遊戲', 'Tâi-gí sió iû-hì');
 $('#list').innerHTML = GAMES.map((g, i) => {
   const st = stats(g);
-  return `<article class="sign" style="--c:${esc(g.color)};--a:${esc(g.accent)}">
-    <span class="wm" aria-hidden="true">${esc(g.icon || '')}</span>
-    <div class="head"><span class="badge" aria-hidden="true">${esc(g.icon || '')}</span><h2><a href="games/${esc(g.id)}/" aria-label="${esc(g.name)}">${ruby(g.name, g.lo)}</a></h2></div>
+  return `<article class="game" style="--c:${esc(g.color)};--a:${esc(g.accent)}">
+    <span class="wm" aria-hidden="true">${esc(g.icon)}</span>
+    <div class="top"><span class="badge" aria-hidden="true">${esc(g.icon)}</span><button class="qrbtn" data-qr="${i}" aria-label="顯示「${esc(g.name)}」的 QR Code">${qrIcon}QR Code</button></div>
+    <small class="kicker">${esc(g.tag)}</small>
+    <h3><a href="games/${esc(g.id)}/" aria-label="${esc(g.name)}">${ruby(g.name, g.lo)}</a></h3>
     <p>${esc(g.desc)}</p>
-    <div class="row">${st ? `<span class="st">最高 <b>${st.best}</b> 分，耍過 ${st.n} 擺</span>` : '<span class="st none">猶未耍過</span>'}<button class="qr" data-qr="${i}" aria-label="顯示「${esc(g.name)}」的 QR Code">QR</button><span class="go" aria-hidden="true">開始</span></div>
+    ${g.tags && g.tags.length ? `<ul class="chips">${g.tags.map(t => `<li>${esc(t)}</li>`).join('')}</ul>` : ''}
+    <div class="foot"><span class="stat">${st ? `🏆 最高 <b>${st.best}</b> 分・耍過 ${st.n} 擺` : '猶未耍過，緊來試看覓！'}</span><span class="play" aria-hidden="true">開始 <i>›</i></span></div>
   </article>`;
 }).join('');
 
