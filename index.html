@@ -3,60 +3,392 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#1b1712">
+<meta name="theme-color" content="#17120d">
+<meta name="description" content="台語學習小遊戲合集：單詞練習、押韻挑戰，手機掃 QR Code 就能玩。">
 <title>台語小遊戲</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&display=swap">
 <style>
-/* 大廳：深色木頭底、米色字；每張卡片用該遊戲自己的配色，點了直接進遊戲 */
+/* 大廳：廟埕暗木色底＋窗花格紋、金色字、紅色印章；遊戲卡片沿用各遊戲自己的配色
+   手機（掃 QR Code 進來）＝單欄；平板＝兩欄卡片；電腦＝左側標題與大 QR Code、右側卡片 */
 :root{
-  --bg:#1b1712; --paper:#fff8ea; --muted:#cbbfae;
-  --display:"LXGW WenKai TC","Kaiti TC","DFKai-SB",serif;
+  --bg:#17120d; --bg-2:#231a12; --paper:#fbf3e4; --ink:#2a1d12; --muted:#bfb19c;
+  --gold:#f2b84b; --seal:#c23a2b;
+  --display:"LXGW WenKai TC","Kaiti TC","DFKai-SB","BiauKai",serif;
   --body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  color-scheme:dark;
 }
 *{box-sizing:border-box}
-html,body{margin:0;min-height:100%}
-body{background:var(--bg);color:var(--paper);font-family:var(--body);-webkit-tap-highlight-color:transparent;
-  background-image:radial-gradient(circle at 50% 0,rgba(244,183,64,.14),transparent 45%)}
-main{max-width:560px;margin:0 auto;
-  padding:calc(20px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
-header{text-align:center;margin-bottom:18px}
-h1{font-family:var(--display);font-size:clamp(34px,10vw,48px);margin:0;letter-spacing:.08em;color:#f4b740}
-header p{margin:4px 0 0;color:var(--muted);font-size:15px}
-.list{display:grid;gap:12px}
-.game{display:grid;grid-template-columns:56px 1fr auto;gap:14px;align-items:center;text-decoration:none;color:var(--paper);
-  background:var(--c);border-radius:16px;padding:16px;box-shadow:0 4px 0 rgba(0,0,0,.35),inset 0 0 0 1px rgba(255,255,255,.08)}
-.game:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.35)}
-.game:focus-visible{outline:3px solid var(--a);outline-offset:2px}
-.game .ic{font-size:40px;text-align:center}
-.game small{display:block;color:var(--a);font-size:13px;letter-spacing:.06em}
-.game b{display:block;font-family:var(--display);font-size:24px;color:var(--a);line-height:1.25}
-.game span p{margin:2px 0 0;font-size:14px;line-height:1.45;opacity:.85}
-.game .go{font-size:24px;color:var(--a)}
-footer{margin-top:20px;text-align:center;font-size:12px;color:var(--muted);line-height:1.6}
+html{-webkit-text-size-adjust:100%}
+body{--lan-h:84px;--sky-h:150px;position:relative;overflow-x:hidden;margin:0;min-height:100vh;background:var(--bg);color:var(--paper);font-family:var(--body);-webkit-tap-highlight-color:transparent;
+  background-image:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(242,184,75,.18),transparent 70%),radial-gradient(ellipse 60% 40% at 100% 100%,rgba(194,58,43,.12),transparent 70%)}
+/* 窗花格紋，往下漸漸淡掉 */
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Cpath d='M22 2L42 22L22 42L2 22Z' fill='none' stroke='%23f2b84b' stroke-opacity='.09'/%3E%3Ccircle cx='22' cy='22' r='2.5' fill='%23f2b84b' fill-opacity='.08'/%3E%3C/svg%3E");
+  -webkit-mask-image:linear-gradient(#000,transparent 75%);mask-image:linear-gradient(#000,transparent 75%)}
+a{color:inherit}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
+:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+
+/* 背景裝飾：廟埕夜景（月娘、燈籠串、祥雲、火星、廟宇與夜市剪影），全部是程式畫的 SVG，不擋點擊 */
+.deco{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.moon{position:absolute;top:10px;right:-26px;width:84px;height:84px;border-radius:50%;
+  background:radial-gradient(circle at 38% 35%,#fff6dc,#f7d98e 55%,#e9b95a);opacity:.85;
+  box-shadow:0 0 40px 10px rgba(247,217,142,.35),0 0 140px 40px rgba(242,184,75,.15)}
+.moon::after{content:"";position:absolute;inset:0;border-radius:50%;
+  background:radial-gradient(circle at 62% 60%,rgba(190,140,60,.35) 0 9%,transparent 10%),radial-gradient(circle at 35% 68%,rgba(190,140,60,.25) 0 6%,transparent 7%),radial-gradient(circle at 55% 30%,rgba(190,140,60,.2) 0 5%,transparent 6%)}
+.rope{position:absolute;left:0;top:0;width:100%;height:var(--lan-h);overflow:visible}
+.lan{position:absolute;width:var(--w);margin-left:calc(var(--w) / -2);transform-origin:50% 0;animation:sway var(--d) ease-in-out infinite alternate;animation-delay:var(--dl)}
+.lan svg{position:relative;display:block;width:100%;height:auto;animation:flick-b var(--fd) linear infinite;animation-delay:var(--fdl)}
+@keyframes sway{from{transform:rotate(-4deg)}to{transform:rotate(4deg)}}
+/* 燈籠閃爍：外圈光暈忽明忽暗，燈籠本身亮度跟著跳，每盞節奏都不同 */
+.lan .halo{position:absolute;left:50%;top:44%;width:270%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;
+  background:radial-gradient(circle,var(--glow) 0,transparent 62%);animation:flicker var(--fd) linear infinite;animation-delay:var(--fdl)}
+@keyframes flicker{0%,100%{opacity:.8}7%{opacity:.45}9%{opacity:.95}30%{opacity:.7}33%{opacity:1}55%{opacity:.75}57%{opacity:.4}60%{opacity:.9}82%{opacity:.7}}
+@keyframes flick-b{0%,100%{filter:brightness(1)}7%{filter:brightness(.82)}9%{filter:brightness(1.12)}33%{filter:brightness(1.18)}57%{filter:brightness(.8)}60%{filter:brightness(1.08)}}
+/* 月娘光暈慢慢呼吸 */
+.moon::before{content:"";position:absolute;inset:-40%;z-index:-1;border-radius:50%;background:radial-gradient(circle,rgba(247,217,142,.35),transparent 65%);animation:breathe 6s ease-in-out infinite}
+@keyframes breathe{0%,100%{opacity:.5;transform:scale(.92)}50%{opacity:1;transform:scale(1.05)}}
+/* 廟窗燈火微微跳動、夜市燈串輪流閃 */
+.win{animation:win-flick var(--wd) ease-in-out infinite;animation-delay:var(--wdl)}
+@keyframes win-flick{0%,100%{opacity:var(--o)}40%{opacity:calc(var(--o) * .55)}45%{opacity:calc(var(--o) * 1.3)}70%{opacity:calc(var(--o) * .85)}}
+.bulb{animation:twinkle 1.6s ease-in-out infinite}
+.bulb.b{animation-delay:-.8s}
+@keyframes twinkle{0%,100%{opacity:1}50%{opacity:.2}}
+.cloud{position:absolute;color:var(--gold);opacity:.13}
+.cloud.c1{left:-30px;top:44%;width:180px}
+.cloud.c2{right:-20px;top:28%;width:150px;transform:scaleX(-1)}
+.cloud.c3{display:none}
+.spark{position:absolute;bottom:calc(var(--sky-h) * .4);width:4px;height:4px;border-radius:50%;background:#ffd27a;box-shadow:0 0 8px 2px rgba(255,190,90,.7);opacity:0;animation:rise-spark var(--d) linear infinite;animation-delay:var(--dl)}
+@keyframes rise-spark{0%{opacity:0;transform:translate(0,0)}15%{opacity:.9}100%{opacity:0;transform:translate(var(--dx),-70vh)}}
+.sky{position:absolute;left:0;right:0;bottom:0;height:var(--sky-h)}
+.sky svg{display:block;width:100%;height:100%}
+.sky::before{content:"";position:absolute;left:10%;right:10%;bottom:0;height:140%;background:radial-gradient(ellipse 50% 60% at 50% 100%,rgba(242,140,60,.22),transparent 70%)}
+
+.wrap{position:relative;z-index:1;max-width:560px;margin:0 auto;
+  padding:calc(var(--lan-h) + 4px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(var(--sky-h) + 8px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+
+/* 標題區 */
+.side{text-align:center}
+.brand{display:inline-flex;align-items:center;gap:14px}
+.seal{flex:none;width:58px;height:58px;display:grid;place-items:center;background:var(--seal);color:#fff4e6;border-radius:8px;transform:rotate(-6deg);
+  font-family:var(--display);font-weight:700;font-size:22px;line-height:1.05;writing-mode:vertical-rl;letter-spacing:.08em;
+  box-shadow:inset 0 0 0 3px var(--seal),inset 0 0 0 4.5px rgba(255,244,230,.75),0 6px 16px rgba(0,0,0,.35)}
+h1{margin:0;font-family:var(--display);font-weight:700;font-size:clamp(34px,10vw,46px);line-height:1.1;letter-spacing:.06em;color:var(--gold);text-shadow:0 3px 0 rgba(0,0,0,.4)}
+.lo{margin:4px 0 0;font-size:13px;letter-spacing:.2em;color:var(--muted);text-align:left}
+.lead{margin:16px 0 0;font-size:16px;color:var(--paper);opacity:.9}
+.scan{display:none}
+
+/* 卡片區 */
+.sec{display:flex;align-items:baseline;gap:10px;margin:28px 2px 12px}
+.sec h2{margin:0;font-family:var(--display);font-size:20px;color:var(--gold);letter-spacing:.1em}
+.sec span{font-size:13px;color:var(--muted)}
+.sec::after{content:"";flex:1;height:1px;align-self:center;background:linear-gradient(90deg,rgba(242,184,75,.35),transparent)}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(min(100%,290px),1fr))}
+
+.game{position:relative;overflow:hidden;isolation:isolate;display:flex;flex-direction:column;gap:10px;padding:18px 18px 16px;border-radius:20px;
+  background:var(--c);
+  background:linear-gradient(155deg,color-mix(in srgb,var(--c) 78%,#fff 22%) 0%,var(--c) 45%,color-mix(in srgb,var(--c) 70%,#000) 100%);
+  border:1px solid rgba(255,255,255,.1);border-color:color-mix(in srgb,var(--a) 28%,transparent);
+  box-shadow:0 10px 24px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.12);
+  transition:transform .25s ease,box-shadow .25s ease;animation:rise .5s ease both;animation-delay:calc(var(--i) * 90ms)}
+.game .wm{position:absolute;right:-18px;bottom:-30px;font-size:150px;line-height:1;opacity:.13;transform:rotate(-14deg);pointer-events:none;z-index:-1;filter:saturate(.6)}
+.game .top{display:flex;align-items:center;justify-content:space-between}
+.badge{width:58px;height:58px;display:grid;place-items:center;font-size:32px;border-radius:50%;background:rgba(0,0,0,.25);box-shadow:inset 0 0 0 2px var(--a),0 4px 10px rgba(0,0,0,.25)}
+.qrbtn{position:relative;z-index:2;display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.22);background:rgba(0,0,0,.2);font-size:13px;color:var(--paper)}
+.qrbtn svg{width:16px;height:16px}
+.qrbtn:hover{background:rgba(0,0,0,.35);border-color:var(--a)}
+.kicker{font-size:13px;letter-spacing:.12em;color:var(--a);opacity:.9;margin-top:2px}
+.game h3{margin:-4px 0 0;font-family:var(--display);font-size:28px;line-height:1.25;color:var(--a);letter-spacing:.04em}
+.game h3 a{text-decoration:none}
+.game h3 a::after{content:"";position:absolute;inset:0;z-index:1;border-radius:inherit}
+.game h3 a:focus-visible{outline:none}
+.game:has(h3 a:focus-visible){outline:3px solid var(--a);outline-offset:3px}
+.game p{margin:0;font-size:15px;line-height:1.6;opacity:.92}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 0;padding:0;list-style:none}
+.chips li{font-size:12px;padding:3px 10px;border-radius:999px;background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.18);border-color:color-mix(in srgb,var(--a) 40%,transparent)}
+.foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:auto;padding-top:14px;border-top:1px dashed rgba(255,255,255,.2)}
+.stat{font-size:13px;line-height:1.4;opacity:.9}
+.stat b{color:var(--a);font-size:16px}
+.play{flex:none;display:inline-flex;align-items:center;gap:4px;padding:9px 18px;border-radius:999px;background:var(--a);color:var(--c);font-weight:700;font-size:15px;box-shadow:0 3px 0 rgba(0,0,0,.3)}
+.play i{font-style:normal;transition:transform .2s}
+.game:active{transform:scale(.985)}
+@media (hover:hover){
+  .game:hover{transform:translateY(-5px);box-shadow:0 18px 36px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.12)}
+  .game:hover .play i{transform:translateX(4px)}
+}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+footer{margin-top:28px;text-align:center;font-size:12px;line-height:1.7;color:var(--muted)}
+
+/* QR Code 放大視窗：投影給全班掃 */
+dialog{border:0;padding:0;border-radius:24px;background:var(--paper);color:var(--ink);width:min(92vw,460px);max-height:92vh;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+dialog::backdrop{background:rgba(10,7,4,.75);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.dlg{padding:22px 22px 18px;text-align:center}
+.dlg small{display:block;font-size:13px;color:#8a6d4a;letter-spacing:.12em}
+.dlg h2{margin:2px 0 14px;font-family:var(--display);font-size:28px;color:var(--ink)}
+.dlg .code{width:min(100%,62vh,380px);margin:0 auto;aspect-ratio:1;background:#fff;border-radius:14px;padding:6px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
+.dlg .code svg{display:block;width:100%;height:100%}
+.dlg .url{margin:12px 0 0;font-size:13px;color:#6b5640;word-break:break-all}
+.dlg .btns{display:flex;gap:10px;justify-content:center;margin-top:16px}
+.dlg .btns button{padding:10px 18px;border-radius:999px;border:0;font-weight:700;font-size:15px}
+.dlg .copy{background:var(--ink);color:var(--paper)}
+.dlg .close{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink)}
+
+/* 平板：卡片兩欄，標題置中 */
+@media (min-width:640px){
+  .wrap{max-width:860px}
+}
+/* 電腦：左邊標題＋大 QR Code（方便投影），右邊卡片 */
+@media (min-width:960px){
+  body{--lan-h:118px}
+  .wrap{max-width:1180px;display:grid;grid-template-columns:340px 1fr;gap:56px;align-items:start;padding-left:40px;padding-right:40px}
+  .moon{top:22px;right:6%;width:140px;height:140px}
+  /* 電腦畫面通常一頁就看完，廟宇剪影固定在視窗底部，不用捲到底才看得到 */
+  body{--sky-h:220px}
+  .sky{position:fixed}
+  .wrap{padding-bottom:110px}
+  .cloud.c1{left:2%;top:58%;width:260px}
+  .cloud.c2{right:3%;top:40%;width:220px}
+  .cloud.c3{display:block;left:40%;top:calc(var(--lan-h) + 10px);width:150px;opacity:.08}
+  .side{position:sticky;top:48px;text-align:left}
+  .seal{width:66px;height:66px;font-size:25px}
+  h1{font-size:46px}
+  .lead{font-size:17px}
+  .scan{display:block;margin-top:28px;padding:18px;border-radius:20px;background:var(--paper);color:var(--ink);box-shadow:0 14px 30px rgba(0,0,0,.4);text-align:center}
+  .scan .code{width:100%;aspect-ratio:1;border:0;padding:0;background:#fff;border-radius:12px;cursor:zoom-in}
+  .scan .code svg{display:block;width:100%;height:100%}
+  .scan b{display:block;margin-top:12px;font-family:var(--display);font-size:20px}
+  .scan span{display:block;margin-top:2px;font-size:13px;color:#6b5640}
+  .sec{margin-top:6px}
+  main footer{text-align:left}
+}
+/* 「更多遊戲準備中」卡片 */
+.soon{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:200px;padding:24px;text-align:center;border-radius:20px;
+  border:1.5px dashed rgba(242,184,75,.35);background:rgba(255,248,234,.03);color:var(--muted);animation:rise .5s ease both;animation-delay:calc(var(--i) * 90ms)}
+.soon .ic{font-size:34px}
+.soon b{font-family:var(--display);font-size:22px;color:var(--gold);letter-spacing:.06em}
+.soon span{font-size:14px;line-height:1.5}
+@media (prefers-reduced-motion:reduce){
+  .game,.soon{animation:none;transition:none}
+  .play i{transition:none}
+  .lan,.lan svg,.lan .halo,.moon::before,.win,.bulb{animation:none}
+  .spark{display:none}
+}
 </style>
 </head>
 <body>
-<main>
-  <header>
-    <h1>台語小遊戲</h1>
-    <p>揀一款來耍！</p>
-  </header>
-  <nav class="list" id="list"></nav>
-  <footer>錄音與部分詞條取自教育部《臺灣台語常用詞辭典》，CC BY-ND 3.0 TW</footer>
-</main>
+<div class="deco" id="deco" aria-hidden="true">
+  <div class="moon"></div>
+  <svg class="cloud c1" viewBox="0 0 200 80"><use href="#cloudS"/></svg>
+  <svg class="cloud c2" viewBox="0 0 200 80"><use href="#cloudS"/></svg>
+  <svg class="cloud c3" viewBox="0 0 200 80"><use href="#cloudS"/></svg>
+  <div id="sparks"></div>
+  <svg class="rope" id="rope" viewBox="0 0 1000 100" preserveAspectRatio="none"></svg>
+  <div id="lanterns"></div>
+  <div class="sky" id="sky"></div>
+</div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <radialGradient id="lanHi" cx=".35" cy=".3" r=".75"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".45" stop-color="#fff" stop-opacity=".08"/><stop offset="1" stop-color="#000" stop-opacity=".25"/></radialGradient>
+    <symbol id="cloudS" viewBox="0 0 200 80"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+      <path d="M18 64H176c18 0 20-24 2-26 2-20-24-26-36-12-6-20-38-22-44-2-10-12-34-8-32 12-18-4-28 16-16 26"/>
+      <path d="M98 24c12 2 14 20 0 22-10 1-12-11-3-12"/><path d="M142 26c10 4 8 18-3 17-8-1-7-10 0-9"/><path d="M66 36c-10 2-10 16 1 16 7 0 7-8 1-8"/>
+      <path d="M40 72h120"/></g></symbol>
+    <symbol id="lanR" viewBox="0 0 40 70">
+      <line x1="20" y1="0" x2="20" y2="9" stroke="#5a4128" stroke-width="1.5"/>
+      <rect x="12.5" y="8" width="15" height="5" rx="1.5" fill="#e6b450"/>
+      <ellipse cx="20" cy="31" rx="16" ry="19" fill="#d2402c"/><ellipse cx="20" cy="31" rx="16" ry="19" fill="url(#lanHi)"/>
+      <g fill="none" stroke="rgba(60,10,5,.35)"><ellipse cx="20" cy="31" rx="10" ry="19"/><ellipse cx="20" cy="31" rx="4" ry="19"/></g>
+      <text x="20" y="36.5" text-anchor="middle" font-size="14" font-family="serif" font-weight="700" fill="#ffd98a">福</text>
+      <rect x="12.5" y="48" width="15" height="5" rx="1.5" fill="#e6b450"/>
+      <path d="M17 53v11M20 53v15M23 53v11" stroke="#e6b450" stroke-width="1.4"/>
+    </symbol>
+    <symbol id="lanG" viewBox="0 0 40 70">
+      <line x1="20" y1="0" x2="20" y2="9" stroke="#5a4128" stroke-width="1.5"/>
+      <rect x="12.5" y="8" width="15" height="5" rx="1.5" fill="#b4372a"/>
+      <ellipse cx="20" cy="31" rx="16" ry="19" fill="#f2b84b"/><ellipse cx="20" cy="31" rx="16" ry="19" fill="url(#lanHi)"/>
+      <g fill="none" stroke="rgba(120,60,10,.35)"><ellipse cx="20" cy="31" rx="10" ry="19"/><ellipse cx="20" cy="31" rx="4" ry="19"/></g>
+      <rect x="12.5" y="48" width="15" height="5" rx="1.5" fill="#b4372a"/>
+      <path d="M17 53v11M20 53v15M23 53v11" stroke="#d2402c" stroke-width="1.4"/>
+    </symbol>
+  </defs>
+</svg>
+<div class="wrap">
+  <aside class="side">
+    <div class="brand">
+      <div class="seal" aria-hidden="true">台語</div>
+      <div><h1>台語小遊戲</h1><p class="lo">Tâi-gí Sió Iû-hì</p></div>
+    </div>
+    <p class="lead">揀一款來耍，邊耍邊學台語！</p>
+    <div class="scan">
+      <button class="code" id="siteCode" aria-label="放大 QR Code"></button>
+      <b>手機掃一下就會當耍</b>
+      <span>點 QR Code 放大，投影予全班掃</span>
+    </div>
+  </aside>
+  <main>
+    <div class="sec"><h2>遊戲</h2><span id="count"></span></div>
+    <div class="grid" id="list"></div>
+    <footer>錄音與部分詞條取自教育部《臺灣台語常用詞辭典》，CC BY-ND 3.0 TW</footer>
+  </main>
+</div>
+
+<dialog id="dlg" aria-labelledby="dlgTitle">
+  <div class="dlg">
+    <small>用手機掃 QR Code</small>
+    <h2 id="dlgTitle"></h2>
+    <div class="code" id="dlgCode"></div>
+    <p class="url" id="dlgUrl"></p>
+    <div class="btns"><button class="copy" id="dlgCopy">複製網址</button><button class="close" id="dlgClose">關閉</button></div>
+  </div>
+</dialog>
+
+<script src="vendor/qrcode.js"></script>
 <script src="games.js"></script>
 <script>
+const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
-document.getElementById('list').innerHTML = window.GAMES.map(g =>
-  `<a class="game" href="games/${esc(g.id)}/" style="--c:${esc(g.color)};--a:${esc(g.accent)}">` +
-  `<span class="ic">${esc(g.icon)}</span>` +
-  `<span><small>${esc(g.tag)}</small><b>${esc(g.name)}</b><p>${esc(g.desc)}</p></span>` +
-  `<span class="go">›</span></a>`
-).join('');
+const GAMES = window.GAMES;
+
 // 舊連結相容：之前的 #yeshi / #newyear 分頁網址直接轉進遊戲
 const h = location.hash.slice(1);
-if (window.GAMES.some(g => g.id === h)) location.replace('games/' + h + '/');
+if (GAMES.some(g => g.id === h)) location.replace('games/' + h + '/');
+
+const siteUrl = new URL('./', location.href).href;
+const gameUrl = g => new URL('games/' + g.id + '/', siteUrl).href;
+
+// 從各遊戲自己存的成績算出最高分與次數
+function stats(g) {
+  if (!g.hist) return null;
+  try {
+    const xs = JSON.parse(localStorage.getItem(g.hist)) || [];
+    return xs.length ? {n: xs.length, best: Math.max(...xs.map(r => +r.s || 0))} : null;
+  } catch (e) { return null; }
+}
+
+// QR Code 畫成 SVG，投影放大也清楚
+function qrSvg(text, label) {
+  if (typeof qrcode !== 'function') return '';
+  const q = qrcode(0, 'M'); q.addData(text); q.make();
+  const n = q.getModuleCount(); let d = '';
+  for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (q.isDark(r, c)) d += `M${c} ${r}h1v1h-1z`;
+  return `<svg viewBox="-2 -2 ${n + 4} ${n + 4}" shape-rendering="crispEdges" role="img" aria-label="${esc(label)}"><rect x="-2" y="-2" width="${n + 4}" height="${n + 4}" fill="#fff"/><path d="${d}" fill="#17120d"/></svg>`;
+}
+
+const qrIcon = '<svg viewBox="0 0 16 16" aria-hidden="true" fill="currentColor"><path d="M1 1h6v6H1zm1.5 1.5v3h3v-3zM9 1h6v6H9zm1.5 1.5v3h3v-3zM1 9h6v6H1zm1.5 1.5v3h3v-3zM9 9h2v2H9zm2 2h2v2h-2zm2-2h2v2h-2zm-4 4h2v2H9zm4 0h2v2h-2z"/></svg>';
+
+$('#count').textContent = GAMES.length + ' 款';
+$('#list').innerHTML = GAMES.map((g, i) => {
+  const st = stats(g);
+  return `<article class="game" style="--c:${esc(g.color)};--a:${esc(g.accent)};--i:${i}">
+    <span class="wm" aria-hidden="true">${esc(g.icon)}</span>
+    <div class="top"><span class="badge" aria-hidden="true">${esc(g.icon)}</span><button class="qrbtn" data-qr="${i}" aria-label="顯示「${esc(g.name)}」的 QR Code">${qrIcon}QR Code</button></div>
+    <small class="kicker">${esc(g.tag)}</small>
+    <h3><a href="games/${esc(g.id)}/">${esc(g.name)}</a></h3>
+    <p>${esc(g.desc)}</p>
+    ${g.tags && g.tags.length ? `<ul class="chips">${g.tags.map(t => `<li>${esc(t)}</li>`).join('')}</ul>` : ''}
+    <div class="foot"><span class="stat">${st ? `🏆 最高 <b>${st.best}</b> 分・耍過 ${st.n} 擺` : '猶未耍過，緊來試看覓！'}</span><span class="play" aria-hidden="true">開始 <i>›</i></span></div>
+  </article>`;
+}).join('') + `<div class="soon" style="--i:${GAMES.length}"><span class="ic">✨</span><b>新遊戲準備中</b><span>下一款閣咧做，請小等一下！</span></div>`;
+
+// ── 背景裝飾 ──
+const desk = matchMedia('(min-width:960px)');
+
+// 燈籠串：繩子是拋物線，燈籠掛在線上；寬度一變就重畫
+function drawLanterns() {
+  const W = innerWidth, big = desk.matches;
+  const n = Math.max(5, Math.min(13, Math.round(W / (big ? 120 : 75))));
+  const sag = 40;                           // 中央下垂（viewBox 高 100 的百分比）
+  $('#rope').innerHTML = `<path d="M0 2Q500 ${2 + sag * 2} 1000 2" fill="none" stroke="#6b4c2c" stroke-width="1.5" vector-effect="non-scaling-stroke"/>`;
+  let html = '';
+  for (let k = 0; k < n; k++) {
+    const x = (k + .5) / n, y = 2 + 4 * sag * x * (1 - x);
+    const red = k % 2 === 0, w = (big ? 38 : 26) * (red ? 1 : .82);
+    html += `<div class="lan" style="left:${(x * 100).toFixed(2)}%;top:calc(var(--lan-h) * ${(y / 100).toFixed(3)} - 2px);--w:${w}px;--d:${(2.6 + (k % 3) * .7).toFixed(1)}s;--dl:-${(k * .45).toFixed(2)}s;--fd:${(2.4 + Math.random() * 2.6).toFixed(2)}s;--fdl:-${(Math.random() * 4).toFixed(2)}s;--glow:${red ? 'rgba(235,85,50,.5)' : 'rgba(250,195,90,.45)'}"><i class="halo"></i><svg viewBox="0 0 40 70"><use href="#${red ? 'lanR' : 'lanG'}"/></svg></div>`;
+  }
+  $('#lanterns').innerHTML = html;
+}
+
+// 飄上去的火星
+function drawSparks() {
+  let html = '';
+  const n = desk.matches ? 16 : 9;
+  for (let k = 0; k < n; k++) {
+    const d = 9 + Math.random() * 9;
+    html += `<i class="spark" style="left:${(Math.random() * 100).toFixed(1)}%;--d:${d.toFixed(1)}s;--dl:-${(Math.random() * d).toFixed(1)}s;--dx:${(Math.random() * 80 - 40).toFixed(0)}px"></i>`;
+  }
+  $('#sparks').innerHTML = html;
+}
+
+// 廟宇（燕尾脊）＋兩旁夜市攤仔的剪影；畫面窄時只露出中央的廟
+function roof(cx, yb, W, H) {
+  const L = cx - W, R = cx + W, yt = yb - H, rl = cx - W * .55, rr = cx + W * .55;
+  const body = `M${L - W * .1} ${yb - H * .28}Q${L + W * .06} ${yb + 3} ${L + W * .3} ${yb + 2}L${R - W * .3} ${yb + 2}Q${R - W * .06} ${yb + 3} ${R + W * .1} ${yb - H * .28}Q${R - W * .1} ${yb - H * .35} ${rr} ${yt}L${rl} ${yt}Q${L + W * .1} ${yb - H * .35} ${L - W * .1} ${yb - H * .28}Z`;
+  const ridge = `M${rl} ${yt + 4}L${rr} ${yt + 4}Q${rr + W * .12} ${yt + 2} ${rr + W * .26} ${yt - H * .55}Q${rr + W * .12} ${yt - H * .1} ${rr - W * .02} ${yt - 4}L${rl + W * .02} ${yt - 4}Q${rl - W * .12} ${yt - H * .1} ${rl - W * .26} ${yt - H * .55}Q${rl - W * .12} ${yt + 2} ${rl} ${yt + 4}Z`;
+  const rim = `M${L - W * .1} ${yb - H * .28}Q${L + W * .1} ${yb - H * .35} ${rl} ${yt}M${rr} ${yt}Q${R - W * .1} ${yb - H * .35} ${R + W * .1} ${yb - H * .28}`;
+  return `<path d="${body}${ridge}" fill="var(--sil)"/><path d="${rim}" fill="none" stroke="rgba(242,184,75,.28)" stroke-width="1.5"/>`;
+}
+function drawSky() {
+  const G = 240, glow = (x, y, w, h, o) => `<rect class="win" x="${x}" y="${y}" width="${w}" height="${h}" rx="2" fill="#f2a64a" opacity="${o}" style="--o:${o};--wd:${(3 + Math.random() * 3).toFixed(1)}s;--wdl:-${(Math.random() * 5).toFixed(1)}s"/>`;
+  let s = `<svg viewBox="0 0 1440 ${G}" preserveAspectRatio="xMidYMax slice" style="--sil:#0b0805">`;
+  // 遠山
+  s += `<path d="M0 ${G}V170Q160 130 330 160T700 150T1060 155T1440 165V${G}Z" fill="#1c150e"/>`;
+  // 夜市攤仔與燈串
+  [[30, 0], [112, 1], [194, 2], [1166, 1], [1248, 0], [1330, 2]].forEach(([x, k]) => {
+    s += `<path d="M${x - 6} 206L${x + 4} 190H${x + 66}L${x + 76} 206Z" fill="var(--sil)"/><rect x="${x}" y="205" width="70" height="${G - 205}" fill="var(--sil)"/>${glow(x + 9, 212, 52, 13, .22 + k * .06)}`;
+  });
+  for (const [a, b] of [[20, 290], [1150, 1420]]) {
+    s += `<path d="M${a} 150Q${(a + b) / 2} 196 ${b} 150" fill="none" stroke="#3a2a18" stroke-width="1"/>`;
+    for (let t = .06; t < 1; t += .08) {
+      const x = a + (b - a) * t, y = 150 + 92 * t * (1 - t);
+      const odd = Math.round(t * 12) % 2;
+      s += `<circle class="bulb${odd ? ' b' : ''}" cx="${x.toFixed(1)}" cy="${(y + 3).toFixed(1)}" r="3" fill="${odd ? '#f2b84b' : '#e2553c'}"/>`;
+    }
+  }
+  // 樹影
+  s += `<g fill="var(--sil)"><circle cx="300" cy="196" r="30"/><circle cx="326" cy="210" r="26"/><circle cx="1140" cy="200" r="28"/><circle cx="1116" cy="212" r="24"/></g>`;
+  // 兩旁廂房
+  for (const cx of [420, 1020]) s += `<rect x="${cx - 85}" y="185" width="170" height="${G - 185}" fill="var(--sil)"/>${glow(cx - 18, 200, 36, G - 200, .2)}${roof(cx, 187, 120, 34)}`;
+  // 正殿（重簷）
+  s += `<rect x="530" y="228" width="380" height="12" fill="var(--sil)"/><rect x="570" y="168" width="300" height="60" fill="var(--sil)"/><rect x="625" y="112" width="190" height="58" fill="var(--sil)"/>`;
+  s += glow(690, 186, 60, 42, .38) + glow(612, 196, 36, 32, .2) + glow(792, 196, 36, 32, .2) + glow(660, 128, 22, 22, .25) + glow(758, 128, 22, 22, .25);
+  s += roof(720, 170, 215, 46) + roof(720, 114, 150, 46);
+  s += `<g fill="var(--sil)"><circle cx="720" cy="58" r="7"/><circle cx="720" cy="46" r="4.5"/><rect x="718.5" y="34" width="3" height="10"/></g>`;
+  $('#sky').innerHTML = s + '</svg>';
+}
+
+drawLanterns(); drawSparks(); drawSky();
+let rt;
+addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(drawLanterns, 150); });
+desk.addEventListener('change', () => { drawLanterns(); drawSparks(); });
+
+// 放大 QR Code
+const dlg = $('#dlg');
+let dlgUrl = '';
+function openQr(title, url) {
+  dlgUrl = url;
+  $('#dlgTitle').textContent = title;
+  $('#dlgCode').innerHTML = qrSvg(url, title + ' 的 QR Code');
+  $('#dlgUrl').textContent = url;
+  $('#dlgCopy').textContent = '複製網址';
+  if (dlg.showModal) dlg.showModal(); else location.href = url;
+}
+$('#list').addEventListener('click', e => {
+  const b = e.target.closest('[data-qr]');
+  if (b) { const g = GAMES[+b.dataset.qr]; openQr(g.name, gameUrl(g)); }
+});
+$('#siteCode').innerHTML = qrSvg(siteUrl, '台語小遊戲 QR Code');
+$('#siteCode').onclick = () => openQr('台語小遊戲', siteUrl);
+$('#dlgClose').onclick = () => dlg.close();
+dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
+$('#dlgCopy').onclick = async () => {
+  try { await navigator.clipboard.writeText(dlgUrl); $('#dlgCopy').textContent = '已複製 ✓'; }
+  catch (e) { $('#dlgCopy').textContent = '請手動複製'; }
+};
+
+// 從遊戲按「上一頁」回來時（bfcache），成績重新整理
+window.addEventListener('pageshow', e => { if (e.persisted) location.reload(); });
 </script>
 </body>
 </html>

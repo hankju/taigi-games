@@ -1,6 +1,10 @@
 # 台語小遊戲
 
-台語學習小遊戲合集，手機瀏覽器就能玩。首頁是遊戲大廳，點卡片進入各遊戲。
+台語學習小遊戲合集，手機掃 QR Code 就能玩，電腦也可以。首頁是遊戲大廳，點卡片進入各遊戲。
+
+- 每張遊戲卡片有「QR Code」按鈕，點了會放大，可以投影給全班掃。
+- 用電腦開大廳時，左邊會直接顯示整個網站的 QR Code。
+- 卡片會顯示這支手機（或這台電腦）玩過的最高分與次數。
 
 遊玩網址：https://hankju.github.io/taigi-games/
 
@@ -16,15 +20,17 @@
 ```
 index.html        遊戲大廳（照 games.js 自動列出卡片）
 games.js          遊戲清單
+vendor/qrcode.js  QR Code 產生器（qrcode-generator 1.4.4，MIT 授權，Kazuhiko Arase）
 games/<id>/       每個遊戲一個資料夾，裡面的 index.html 可以單獨打開
 ```
 
 ## 新增一個遊戲
 
 1. 建資料夾 `games/<id>/`（`<id>` 用英文小寫，例：`games/tshiu-tshai/`），遊戲放在裡面的 `index.html`；錄音、圖片、題庫也放同一個資料夾。
-2. 在 `games.js` 加一筆（`id`、`icon`、`name`、`tag`、`desc`、`color`、`accent`）。
+2. 在 `games.js` 加一筆（`id`、`icon`、`name`、`tag`、`desc`、`tags`、`color`、`accent`、`hist`）。
 3. 遊戲首頁放一個回大廳的連結：`<a href="../../">‹ 全部遊戲</a>`。
 4. 用 `localStorage` 存成績時，key 加上這個遊戲專屬的前綴（例：`tc_hist`），避免跟其他遊戲撞名。
+   成績紀錄存成 `[{m: 模式, s: 分數, t: 時間}]` 陣列，並把 key 填進 `games.js` 的 `hist`，大廳就會顯示最高分與次數。
 
 遊戲網址會是 `…/taigi-games/games/<id>/`，可以單獨分享給學生。
 
