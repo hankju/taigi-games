@@ -36,7 +36,7 @@ button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
 .ch{display:inline-flex;flex-direction:column;align-items:center;line-height:1}
 .ch i{font-style:normal;font-family:var(--lo);font-weight:400;font-size:max(11px,.26em);letter-spacing:0;margin-bottom:.32em;white-space:nowrap}
 
-/* 背景：窗花格紋、月娘、燈籠串、祥雲、廟宇與夜市剪影，全部是程式畫的 SVG，不擋點擊 */
+/* 背景：窗花格紋、星、月娘、燈籠串、祥雲、廟宇與掛台語小吃招牌的夜市剪影，全部是程式畫的 SVG，不擋點擊 */
 .deco{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
 .moon{position:absolute;top:10px;right:-26px;width:84px;height:84px;border-radius:50%;opacity:.8;
   background:radial-gradient(circle at 40% 38%,#fff4d6,#f3d38c 60%,#e2b45c);
@@ -50,6 +50,8 @@ button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
   background:radial-gradient(circle,var(--glow) 0,transparent 62%);animation:flicker var(--fd) linear infinite;animation-delay:var(--fdl)}
 @keyframes flicker{0%,100%{opacity:.8}7%{opacity:.45}9%{opacity:.95}30%{opacity:.7}33%{opacity:1}55%{opacity:.75}57%{opacity:.4}60%{opacity:.9}82%{opacity:.7}}
 @keyframes flick-b{0%,100%{filter:brightness(1)}7%{filter:brightness(.82)}9%{filter:brightness(1.12)}33%{filter:brightness(1.18)}57%{filter:brightness(.8)}60%{filter:brightness(1.08)}}
+.stars{position:absolute;left:0;right:0;top:0;height:70vh;-webkit-mask-image:linear-gradient(#000 40%,transparent);mask-image:linear-gradient(#000 40%,transparent)}
+.stars i{position:absolute;border-radius:50%;background:#fff3d6}
 .cloud{position:absolute;color:var(--gold);opacity:.13}
 .cloud.c1{left:-30px;top:44%;width:180px}
 .cloud.c2{right:-20px;top:28%;width:150px;transform:scaleX(-1)}
@@ -151,6 +153,7 @@ dialog::backdrop{background:rgba(10,7,4,.78)}
 </head>
 <body>
 <div class="deco" aria-hidden="true">
+  <div class="stars" id="stars"></div>
   <div class="moon"></div>
   <svg class="cloud c1" viewBox="0 0 200 80"><use href="#cloudS"/></svg>
   <svg class="cloud c2" viewBox="0 0 200 80"><use href="#cloudS"/></svg>
@@ -293,17 +296,25 @@ function roof(cx, yb, W, H) {
 }
 function drawSky() {
   const G = 240, glow = (x, y, w, h, o) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2" fill="#f2a64a" opacity="${o}"/>`;
-  let s = `<svg viewBox="0 0 1440 ${G}" preserveAspectRatio="xMidYMax slice" style="--sil:#0b0805">`;
+  let s = `<svg viewBox="0 0 1440 ${G}" preserveAspectRatio="xMidYMax slice" style="--sil:#0b0805">`
+  s += '<defs><filter id="signGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6"/></filter></defs>';
   // 遠山
   s += `<path d="M0 ${G}V170Q160 130 330 160T700 150T1060 155T1440 165V${G}Z" fill="#1c150e"/>`;
-  // 夜市攤仔與燈串
-  [[30, 0], [112, 1], [194, 2], [1166, 1], [1248, 0], [1330, 2]].forEach(([x, k]) => {
-    s += `<path d="M${x - 6} 206L${x + 4} 190H${x + 66}L${x + 76} 206Z" fill="var(--sil)"/><rect x="${x}" y="205" width="70" height="${G - 205}" fill="var(--sil)"/>${glow(x + 9, 212, 52, 13, .22 + k * .06)}`;
+  // 夜市攤仔：每攤頂上一塊發光招牌，寫台語小吃名＋台羅（台羅已對照教育部辭典）
+  const FOOD = [['蚵仔煎', 'ô-á-tsian'], ['肉圓', 'bah-uân'], ['米糕', 'bí-ko'], ['肉粽', 'bah-tsàng'], ['粉圓', 'hún-înn'], ['豆花', 'tāu-hue']];
+  [30, 112, 194, 1166, 1248, 1330].forEach((x, k) => {
+    const red = k % 2 === 0, bg = red ? '#b8302a' : '#f2b84b', fg = red ? '#ffe2a0' : '#7a1d12', [han, lo] = FOOD[k];
+    s += `<path d="M${x - 6} 206L${x + 4} 190H${x + 66}L${x + 76} 206Z" fill="var(--sil)"/><rect x="${x}" y="205" width="70" height="${G - 205}" fill="var(--sil)"/>${glow(x + 9, 212, 52, 13, .22 + (k % 3) * .06)}`;
+    s += `<rect x="${x - 6}" y="152" width="82" height="44" rx="8" fill="${bg}" opacity=".28" filter="url(#signGlow)"/>`;
+    s += `<rect x="${x + 1}" y="159" width="68" height="31" rx="3" fill="${bg}" stroke="rgba(0,0,0,.35)"/>`;
+    s += `<text x="${x + 35}" y="176.5" text-anchor="middle" font-family="LXGW WenKai TC,Kaiti TC,serif" font-weight="700" font-size="14" fill="${fg}">${han}</text>`;
+    s += `<text x="${x + 35}" y="186.5" text-anchor="middle" font-family="Noto Sans,Arial,sans-serif" font-size="7.5" fill="${fg}" opacity=".9">${lo}</text>`;
   });
+  // 攤仔頂懸的燈串
   for (const [a, b] of [[20, 290], [1150, 1420]]) {
-    s += `<path d="M${a} 150Q${(a + b) / 2} 196 ${b} 150" fill="none" stroke="#3a2a18" stroke-width="1"/>`;
+    s += `<path d="M${a} 118Q${(a + b) / 2} 160 ${b} 118" fill="none" stroke="#3a2a18" stroke-width="1"/>`;
     for (let t = .06; t < 1; t += .08) {
-      const x = a + (b - a) * t, y = 150 + 92 * t * (1 - t);
+      const x = a + (b - a) * t, y = 118 + 42 * t * (1 - t) * 2;
       const odd = Math.round(t * 12) % 2;
       s += `<circle cx="${x.toFixed(1)}" cy="${(y + 3).toFixed(1)}" r="3" fill="${odd ? '#f2b84b' : '#e2553c'}"/>`;
     }
@@ -320,10 +331,22 @@ function drawSky() {
   $('#sky').innerHTML = s + '</svg>';
 }
 
-drawLanterns(); drawSky();
+// 夜空的星：固定的亂數種子，每次打開位置都一樣；不會動
+function drawStars() {
+  let seed = 7, h = '';
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const n = desk.matches ? 70 : 34;
+  for (let k = 0; k < n; k++) {
+    const sz = rnd() < .15 ? 2.5 : 1 + rnd() * 1.2;
+    h += `<i style="left:${(rnd() * 100).toFixed(2)}%;top:${(rnd() * 100).toFixed(2)}%;width:${sz.toFixed(1)}px;height:${sz.toFixed(1)}px;opacity:${(.25 + rnd() * .5).toFixed(2)}${sz > 2 ? ';box-shadow:0 0 6px 1px rgba(255,243,214,.5)' : ''}"></i>`;
+  }
+  $('#stars').innerHTML = h;
+}
+
+drawStars(); drawLanterns(); drawSky();
 let rt;
 addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(drawLanterns, 150); });
-desk.addEventListener('change', drawLanterns);
+desk.addEventListener('change', () => { drawStars(); drawLanterns(); });
 
 // ── 背景音樂 ──
 // 瀏覽器不准網頁自己出聲，一定要先點一下；上次有開的話，這次點畫面任何地方就自動開始
