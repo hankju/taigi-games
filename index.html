@@ -98,12 +98,11 @@ h1 .ch i{color:var(--muted);text-shadow:none;font-size:max(12px,.24em)}
 .qrbtn{position:relative;z-index:2;display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.22);background:rgba(0,0,0,.2);font-size:13px;color:var(--paper)}
 .qrbtn svg{width:16px;height:16px}
 .qrbtn:hover{background:rgba(0,0,0,.35);border-color:var(--a)}
-.kicker{font-size:13px;letter-spacing:.12em;color:var(--a);opacity:.9;margin-top:2px}
-.game h3{margin:2px 0 0;font-family:var(--han);font-size:28px;line-height:1.25;color:var(--a);letter-spacing:.04em}
+.game h3{margin:4px 0 0;font-family:var(--han);font-size:34px;line-height:1.25;color:var(--a);letter-spacing:.04em}
 /* 名稱逐字標台羅：台羅浮在字的正上方，不撐開字距 */
 .game h3 .ruby{flex-wrap:nowrap;gap:0 .06em}
-.game h3 .ch{position:relative;padding-top:15px}
-.game h3 .ch i{position:absolute;top:0;left:50%;transform:translateX(-50%);margin:0;color:var(--paper);opacity:.72;font-size:12px;font-weight:400}
+.game h3 .ch{position:relative;padding-top:19px}
+.game h3 .ch i{position:absolute;top:0;left:50%;transform:translateX(-50%);margin:0;color:var(--paper);opacity:.8;font-size:14px;font-weight:400}
 .game h3 a{text-decoration:none}
 .game h3 a::after{content:"";position:absolute;inset:0;z-index:1;border-radius:inherit}
 .game h3 a:focus-visible{outline:none}
@@ -276,7 +275,6 @@ $('#list').innerHTML = GAMES.map((g, i) => {
   return `<article class="game" style="--c:${esc(g.color)};--a:${esc(g.accent)}">
     <span class="wm" aria-hidden="true">${esc(g.icon)}</span>
     <div class="top"><span class="badge" aria-hidden="true">${esc(g.icon)}</span><button class="qrbtn" data-qr="${i}" aria-label="顯示「${esc(g.name)}」的 QR Code">${qrIcon}QR Code</button></div>
-    <small class="kicker">${esc(g.tag)}</small>
     <h3><a href="games/${esc(g.id)}/" aria-label="${esc(g.name)}">${ruby(g.name, g.lo)}</a></h3>
     <p>${esc(g.desc)}</p>
     ${g.tags && g.tags.length ? `<ul class="chips">${g.tags.map(t => `<li>${esc(t)}</li>`).join('')}</ul>` : ''}
