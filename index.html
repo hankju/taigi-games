@@ -77,6 +77,16 @@ button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
 h1{margin:0;font-family:var(--display);font-weight:700;font-size:clamp(34px,10vw,46px);line-height:1.1;letter-spacing:.06em;color:var(--gold);text-shadow:0 3px 0 rgba(0,0,0,.4)}
 .lo{margin:4px 0 0;font-size:13px;letter-spacing:.2em;color:var(--muted);text-align:left}
 .lead{margin:16px 0 0;font-size:16px;color:var(--paper);opacity:.9}
+/* 背景音樂開關：預設關，開了以後有跳動的音量條 */
+.music{display:inline-flex;align-items:center;gap:8px;margin-top:14px;padding:8px 16px 8px 12px;border-radius:999px;border:1px solid rgba(242,184,75,.5);background:rgba(0,0,0,.25);color:var(--gold);font-size:14px;transition:background .2s,color .2s}
+.music:hover{background:rgba(242,184,75,.12)}
+.music[aria-pressed="true"]{background:var(--gold);color:var(--ink);border-color:var(--gold)}
+.eq{display:inline-flex;align-items:flex-end;gap:2px;width:16px;height:14px}
+.eq i{flex:1;height:30%;background:currentColor;border-radius:1px}
+.music[aria-pressed="true"] .eq i{animation:eq .9s ease-in-out infinite alternate}
+.music[aria-pressed="true"] .eq i:nth-child(2){animation-delay:-.3s;animation-duration:.7s}
+.music[aria-pressed="true"] .eq i:nth-child(3){animation-delay:-.6s;animation-duration:1.1s}
+@keyframes eq{from{height:25%}to{height:100%}}
 .scan{display:none}
 
 /* 卡片區 */
@@ -175,6 +185,7 @@ dialog::backdrop{background:rgba(10,7,4,.75);-webkit-backdrop-filter:blur(4px);b
   .play i{transition:none}
   .lan{animation:none}
   .spark{display:none}
+  .music[aria-pressed="true"] .eq i{animation:none;height:70%}
 }
 </style>
 </head>
@@ -222,6 +233,7 @@ dialog::backdrop{background:rgba(10,7,4,.75);-webkit-backdrop-filter:blur(4px);b
       <div><h1>台語小遊戲</h1><p class="lo">Tâi-gí Sió Iû-hì</p></div>
     </div>
     <p class="lead">揀一款來耍，邊耍邊學台語！</p>
+    <button class="music" id="music" aria-pressed="false"><span class="eq" aria-hidden="true"><i></i><i></i><i></i></span><span id="musicTxt">背景音樂：關</span></button>
     <div class="scan">
       <button class="code" id="siteCode" aria-label="放大 QR Code"></button>
       <b>手機掃一下就會當耍</b>
@@ -247,6 +259,7 @@ dialog::backdrop{background:rgba(10,7,4,.75);-webkit-backdrop-filter:blur(4px);b
 
 <script src="vendor/qrcode.js"></script>
 <script src="games.js"></script>
+<script src="music.js"></script>
 <script>
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
@@ -363,6 +376,27 @@ drawLanterns(); drawSparks(); drawSky();
 let rt;
 addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(drawLanterns, 150); });
 desk.addEventListener('change', () => { drawLanterns(); drawSparks(); });
+
+// ── 背景音樂 ──
+// 瀏覽器不准網頁自己出聲，一定要先點一下；上次有開的話，這次點畫面任何地方就自動開始
+const MKEY = 'hub_music', mBtn = $('#music');
+function setMusic(on) {
+  if (on) HubMusic.start(); else HubMusic.stop();
+  mBtn.setAttribute('aria-pressed', on);
+  $('#musicTxt').textContent = '背景音樂：' + (on ? '開' : '關');
+  try { localStorage.setItem(MKEY, on ? '1' : '0'); } catch (e) {}
+}
+mBtn.onclick = () => setMusic(!HubMusic.playing());
+let wantMusic = false;
+try { wantMusic = localStorage.getItem(MKEY) === '1'; } catch (e) {}
+if (wantMusic) {
+  $('#musicTxt').textContent = '背景音樂：點畫面就開始';
+  const first = e => {
+    removeEventListener('pointerdown', first, true); removeEventListener('keydown', first, true);
+    if (!mBtn.contains(e.target)) setMusic(true);
+  };
+  addEventListener('pointerdown', first, true); addEventListener('keydown', first, true);
+}
 
 // 放大 QR Code
 const dlg = $('#dlg');

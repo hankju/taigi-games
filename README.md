@@ -5,6 +5,7 @@
 - 每張遊戲卡片有「QR Code」按鈕，點了會放大，可以投影給全班掃。
 - 用電腦開大廳時，左邊會直接顯示整個網站的 QR Code。
 - 卡片會顯示這支手機（或這台電腦）玩過的最高分與次數。
+- 大廳有「背景音樂」開關（預設關閉、會記住選擇）。音樂是 `music.js` 用 Web Audio 即時合成的原創五聲音階旋律，沒有音檔、沒有授權問題。
 
 遊玩網址：https://hankju.github.io/taigi-games/
 
@@ -20,6 +21,7 @@
 ```
 index.html        遊戲大廳（照 games.js 自動列出卡片）
 games.js          遊戲清單
+music.js          大廳背景音樂（Web Audio 合成）
 vendor/qrcode.js  QR Code 產生器（qrcode-generator 1.4.4，MIT 授權，Kazuhiko Arase）
 games/<id>/       每個遊戲一個資料夾，裡面的 index.html 可以單獨打開
 ```
