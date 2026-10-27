@@ -166,9 +166,9 @@ em{font-style:normal;color:var(--red-2);background:var(--gold-soft);border-radiu
       <p>食物配好話，押韻押予著！</p>
     </div>
     <div class="modes">
-      <button class="mode" data-go="float"><span class="ic">🎈</span><span><b>好話飄飄</b><small>食物飄上來，60 秒內點中 10 個押韻的。點錯扣 3 秒。</small></span><span class="best" data-best="float"></span></button>
-      <button class="mode" data-go="memo"><span class="ic">🧧</span><span><b>翻紅包</b><small>翻開兩個紅包，上下半句押韻就配成一對。3 關，剩越多秒分越高。</small></span><span class="best" data-best="memo"></span></button>
-      <button class="mode" data-go="quiz"><span class="ic">🧨</span><span><b>搶答放炮</b><small>10 題，每題 8 秒，選出押韻的另一半，越快答分越高。</small></span><span class="best" data-best="quiz"></span></button>
+      <button class="mode" data-go="float"><span class="ic">🎈</span><span><b>好話飄飄</b><small>食物飄上來，75 秒內點中 10 個押韻的。點錯扣 3 秒。</small></span><span class="best" data-best="float"></span></button>
+      <button class="mode" data-go="memo"><span class="ic">🧧</span><span><b>翻紅包</b><small>翻開兩個紅包，上下半句押韻就配成一對。3 關，120 秒內翻完。</small></span><span class="best" data-best="memo"></span></button>
+      <button class="mode" data-go="quiz"><span class="ic">🧨</span><span><b>搶答放炮</b><small>10 題，每題 10 秒，選出押韻的另一半，越快答分越高。</small></span><span class="best" data-best="quiz"></span></button>
       <button class="mode" data-go="hist"><span class="ic">🏆</span><span><b>我的成績</b><small>每一局的分數都記在這裡，最高分會標出來。</small></span><span></span></button>
       <button class="mode" data-go="list"><span class="ic">📜</span><span><b>好話題庫</b><small>看全部的吉祥話和押韻字的台羅。</small></span><span></span></button>
     </div>
@@ -176,7 +176,7 @@ em{font-style:normal;color:var(--red-2);background:var(--gold-soft);border-radiu
   </section>
 
   <section class="screen" id="float" hidden>
-    <div class="hud"><button class="back">‹ 離開</button><div class="stat"><span>分數 <b class="sc">0</b></span><span>⏱ <b class="tm">60</b></span></div></div>
+    <div class="hud"><button class="back">‹ 離開</button><div class="stat"><span>分數 <b class="sc">0</b></span><span>⏱ <b class="tm">75</b></span></div></div>
     <div class="timebar"><i></i></div>
     <div class="prompt"><small id="fHint">點出押韻的食物</small><div class="txt" id="fPrompt"></div></div>
     <div class="field" id="field"></div>
@@ -191,7 +191,7 @@ em{font-style:normal;color:var(--red-2);background:var(--gold-soft);border-radiu
   </section>
 
   <section class="screen" id="memo" hidden>
-    <div class="hud"><button class="back">‹ 離開</button><div class="stat"><span>分數 <b class="sc">0</b></span><span>⏱ <b class="tm">100</b></span></div></div>
+    <div class="hud"><button class="back">‹ 離開</button><div class="stat"><span>分數 <b class="sc">0</b></span><span>⏱ <b class="tm">120</b></span></div></div>
     <div class="timebar"><i></i></div>
     <div class="round" id="mRound"></div>
     <div class="grid" id="mGrid"></div>
@@ -310,18 +310,21 @@ function setBar(scr,frac){const bar=scr.querySelector('.timebar');bar.querySelec
 // ===== 好話飄飄 =====
 function startFloat(){
   const scr=$('#float'),field=$('#field');field.innerHTML='';
-  const T=60,GOAL=10;let time=T,score=0,combo=0,hits=0,P=null,promptAt=0,tokens=[],spawnCd=0,raf,last=performance.now(),clock=0,alive=true;
+  const T=75,GOAL=10;let time=T,score=0,combo=0,hits=0,P=null,promptAt=0,tokens=[],spawnCd=0,raf,last=performance.now(),clock=0,alive=true;
   const sc=scr.querySelector('.sc'),tm=scr.querySelector('.tm');
-  function newPrompt(){let n;do{n=rnd(D)}while(P&&n.g===P.g);P=n;promptAt=clock;$('#fPrompt').innerHTML=hl(P.l);$('#fHint').textContent=`點出押韻的食物（${hits+1}／${GOAL}）`}
-  function spawn(){const W=field.clientWidth,H=field.clientHeight;
-    const good=tokens.some(t=>t.it.g===P.g);
-    let it;if(!good||Math.random()<.2){it=rnd(D.filter(d=>d.g===P.g))}else{it=rnd(D.filter(d=>d.g!==P.g))}
+  function newPrompt(){let n;do{n=rnd(D)}while(P&&n.g===P.g);P=n;promptAt=clock;$('#fPrompt').innerHTML=hl(P.l);$('#fHint').textContent=`點出押韻的食物（${hits+1}／${GOAL}）`;
+    // 換題時馬上在畫面中間出現一個正確答案，不用等它從最底下飄上來
+    if(field.clientHeight)spawn(true,field.clientHeight*(.45+Math.random()*.2))}
+  function spawn(force,startY){const W=field.clientWidth,H=field.clientHeight;
+    // 畫面下面四分之三至少保持 2 個正確答案；快飄走的不算
+    const good=tokens.filter(t=>t.it.g===P.g&&t.y>H*.25).length;
+    let it;if(force||good<2||Math.random()<.25){it=rnd(D.filter(d=>d.g===P.g))}else{it=rnd(D.filter(d=>d.g!==P.g))}
     const el=document.createElement('button');el.className='token';el.innerHTML=`<span class="ic">${it.ic}</span><span class="nm">${it.u}</span>`;
-    const t={el,it,x:Math.random()*Math.max(0,W-96),y:H+4,vy:(38+Math.random()*26)*(1+(T-time)/T*.8),ph:Math.random()*6.28};
+    const t={el,it,x:Math.random()*Math.max(0,W-96),y:startY??H+4,vy:(38+Math.random()*26)*(1+(T-time)/T*.8),ph:Math.random()*6.28};
     el.addEventListener('pointerdown',e=>{e.preventDefault();hit(t)});field.appendChild(el);tokens.push(t)}
   function remove(t){t.el.remove();tokens=tokens.filter(x=>x!==t)}
   function hit(t){if(!alive||t.dead)return;const[x,y]=center(t.el);
-    if(t.it.g===P.g){t.dead=true;combo++;const pts=5+Math.max(0,Math.round(5-(clock-promptAt)*.8));score+=pts;hits++;sc.textContent=score;
+    if(t.it.g===P.g){t.dead=true;combo++;const pts=7+Math.max(0,Math.min(3,Math.round(3-(clock-promptAt-4)*.5)));score+=pts;hits++;sc.textContent=score;
       sfx.ok();burst(x,y,pts);toast(`${hl(t.it.u)}，${hl(P.l)}　<small>${rhymeText(t.it,P)}</small>`+(combo>1?`　🔥${combo} 連擊`:''));remove(t);if(hits>=GOAL){alive=false;setTimeout(()=>gameOver('float',score,'10 個全點中！'),500);return}newPrompt()}
     else{combo=0;time=Math.max(0,time-3);sfx.bad();t.el.classList.remove('wrong');void t.el.offsetWidth;t.el.classList.add('wrong');toast('押無著！扣 3 秒')}}
   function loop(now){if(!alive)return;const dt=Math.min(.05,(now-last)/1000);last=now;clock+=dt;time-=dt;
@@ -335,7 +338,7 @@ function startFloat(){
 
 // ===== 搶答放炮 =====
 function startQuiz(){
-  const scr=$('#quiz'),N=10,LIM=8;let qi=0,score=0,combo=0,timer,t0,locked=false,alive=true;
+  const scr=$('#quiz'),N=10,LIM=10;let qi=0,score=0,combo=0,timer,t0,locked=false,alive=true;
   const sc=scr.querySelector('.sc'),cb=scr.querySelector('.cb');
   const order=shuffle(D).slice(0,N);
   function next(){if(!alive)return;if(qi>=N){gameOver('quiz',score,'放炮完成！');return}
@@ -354,7 +357,7 @@ function startQuiz(){
     btns.forEach(x=>{if(x._o.g===target.g)x.classList.add('right');else if(x!==b)x.classList.add('no')});
     const good=!timeout&&b&&b._o.g===target.g,pr=$('#quiz .prompt');pr.classList.add(good?'ok':'no');
     pr.insertAdjacentHTML('beforeend',`<span class="stamp ${good?'ok':'no'}" aria-hidden="true">${good?'著':'毋著'}</span>`);
-    if(!timeout&&b._o.g===target.g){combo++;const left=Math.max(0,LIM-(performance.now()-t0)/1000);const pts=5+Math.round(left/LIM*5);score+=pts;sc.textContent=score;cb.textContent=combo;sfx.ok();const[x,y]=center(b);burst(x,y,pts);toast(rhymeText(target,target))}
+    if(!timeout&&b._o.g===target.g){combo++;const left=Math.max(0,LIM-(performance.now()-t0)/1000);const pts=7+Math.round(left/LIM*3);score+=pts;sc.textContent=score;cb.textContent=combo;sfx.ok();const[x,y]=center(b);burst(x,y,pts);toast(rhymeText(target,target))}
     else{combo=0;cb.textContent=0;if(b)b.classList.add('bad');sfx.bad();toast(timeout?'時間到！':'押無著！')}
     setTimeout(next,timeout||!(b&&b._o.g===target.g)?1300:800)}
   sc.textContent=0;cb.textContent=0;next();
@@ -362,7 +365,7 @@ function startQuiz(){
 
 // ===== 翻紅包 =====
 function startMemo(){
-  const scr=$('#memo'),T=100,ROUNDS=3;let time=T,score=0,combo=0,round=0,raf,last=performance.now(),open=[],busy=false,matched=0,alive=true;
+  const scr=$('#memo'),T=120,ROUNDS=3;let time=T,score=0,combo=0,round=0,raf,last=performance.now(),open=[],busy=false,matched=0,alive=true;
   const sc=scr.querySelector('.sc'),tm=scr.querySelector('.tm'),grid=$('#mGrid');
   function deal(){round++;matched=0;open=[];$('#mRound').textContent=`第 ${round} ／ ${ROUNDS} 關　找出 4 對押韻好話`;
     const used=new Set(),picks=[];for(const d of shuffle(D)){if(picks.length>=4)break;if(!used.has(d.g)){used.add(d.g);picks.push(d)}}
@@ -373,10 +376,10 @@ function startMemo(){
   function flip(b){if(busy||!alive||b.classList.contains('open'))return;sfx.flip();b.classList.add('open');open.push(b);
     if(open.length<2)return;const[a,c]=open;open=[];
     const ok=a._c.s!==c._c.s&&a._c.d.g===c._c.d.g;
-    if(ok){combo++;const pts=5;score+=pts;sc.textContent=score;matched++;
+    if(ok){combo++;const pts=7;score+=pts;sc.textContent=score;matched++;
       setTimeout(()=>{a.classList.add('done');c.classList.add('done');sfx.ok();const[x,y]=center(c);burst(x,y,pts);
         const up=a._c.s==='u'?a._c.d:c._c.d,lo=a._c.s==='l'?a._c.d:c._c.d;toast(rhymeText(up,lo))},250);
-      if(matched===4){busy=true;setTimeout(()=>{busy=false;if(round>=ROUNDS){const bonus=Math.round(Math.max(0,time)/T*40);score+=bonus;gameOver('memo',score,`全部翻完！時間獎勵 +${bonus}`)}else{toast('過關！下一關');deal()}},900)}}
+      if(matched===4){busy=true;setTimeout(()=>{busy=false;if(round>=ROUNDS){const bonus=Math.round(Math.min(1,Math.max(0,time)/(T*.5))*16);score+=bonus;gameOver('memo',score,`全部翻完！時間獎勵 +${bonus}`)}else{toast('過關！下一關');deal()}},900)}}
     else{combo=0;busy=true;setTimeout(()=>{sfx.bad();a.classList.remove('open');c.classList.remove('open');busy=false},750)}}
   function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;time-=dt;
     if(time<=0){alive=false;gameOver('memo',score,'時間到！');return}
