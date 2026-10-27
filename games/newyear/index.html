@@ -7,7 +7,7 @@
 <title>過年好話押韻王</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans:wght@500&family=Noto+Sans+TC:wght@400;700&display=swap">
 <style>
 /* 版面：單一畫面手機遊戲，紅紙春聯底、金字、米色紙卡；刻意只用一套配色 */
 :root{
@@ -22,7 +22,11 @@
 html,body{height:100%}
 body{background:var(--red);color:var(--paper);font-family:var(--body);overscroll-behavior:none;-webkit-tap-highlight-color:transparent;
   background-image:radial-gradient(circle at 20% 10%,rgba(255,200,120,.12),transparent 40%),radial-gradient(circle at 90% 90%,rgba(0,0,0,.25),transparent 50%)}
-#app{height:100%;max-width:560px;margin:0 auto;display:flex;flex-direction:column;
+/* 紅紙上淡淡的金色窗花格紋，往下漸漸淡掉 */
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Cpath d='M22 2L42 22L22 42L2 22Z' fill='none' stroke='%23f2c14e' stroke-opacity='.12'/%3E%3Ccircle cx='22' cy='22' r='2.5' fill='%23f2c14e' fill-opacity='.1'/%3E%3C/svg%3E");
+  -webkit-mask-image:linear-gradient(#000,transparent 70%);mask-image:linear-gradient(#000,transparent 70%)}
+#app{position:relative;z-index:1;height:100%;max-width:560px;margin:0 auto;display:flex;flex-direction:column;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:8px;box-sizing:border-box}
 .screen{flex:1;display:flex;flex-direction:column;min-height:0;gap:12px}
 button{font:inherit;cursor:pointer;touch-action:manipulation}
@@ -44,7 +48,11 @@ em{font-style:normal;color:var(--red-2);background:var(--gold-soft);border-radiu
 .mode .best{font-size:12px;color:var(--red-2);font-weight:700;white-space:nowrap}
 .foot{text-align:center;font-size:12px;color:var(--gold-soft);opacity:.8}
 .toprow{display:flex;justify-content:space-between;align-items:center}
-.hublink{color:var(--gold);font-size:13px;text-decoration:none;padding:4px 0}
+.hublink{color:var(--gold);font-size:14px;font-weight:700;text-decoration:none;padding:6px 14px;border:1px solid rgba(242,193,78,.6);border-radius:999px;background:rgba(92,15,19,.45)}
+/* 標題逐字標台羅（跟大廳一樣） */
+.ruby{display:inline-flex;gap:0 .02em;justify-content:center}
+.ch{position:relative;display:inline-block;padding-top:20px}
+.ch i{position:absolute;top:0;left:50%;transform:translateX(-50%);font-style:normal;font-family:"Noto Sans",Arial,sans-serif;font-weight:500;font-size:13px;letter-spacing:0;color:var(--gold-soft);text-shadow:none;white-space:nowrap}
 .soundbtn{background:transparent;border:1px solid var(--gold);color:var(--gold);border-radius:20px;padding:4px 10px;font-size:13px}
 
 /* 遊戲共用上方列 */
@@ -52,10 +60,21 @@ em{font-style:normal;color:var(--red-2);background:var(--gold-soft);border-radiu
 .back{background:transparent;color:var(--gold);border:1px solid var(--gold);border-radius:10px;padding:6px 10px;font-size:14px}
 .hud .stat{flex:1;display:flex;justify-content:flex-end;gap:14px;font-variant-numeric:tabular-nums;font-size:15px}
 .hud .stat b{color:var(--gold);font-size:20px}
+.hud .stat > span{background:rgba(92,15,19,.45);border:1px solid rgba(242,193,78,.3);border-radius:999px;padding:2px 12px}
 .timebar{height:8px;background:var(--red-deep);border-radius:4px;overflow:hidden}
 .timebar i{display:block;height:100%;width:100%;background:var(--gold);transform-origin:left;transition:background .3s}
 .timebar.low i{background:#ff7a59}
-.prompt{background:var(--paper);color:var(--ink);border-radius:14px;padding:12px 14px;text-align:center;box-shadow:0 4px 0 var(--red-deep)}
+.prompt{position:relative;background:var(--paper);color:var(--ink);border-radius:14px;padding:12px 14px;text-align:center;box-shadow:0 4px 0 var(--red-deep)}
+/* 搶答：題目卡撐滿中間、字放大 */
+#quiz .prompt{flex:1 0 auto;min-height:150px;display:flex;flex-direction:column;justify-content:center;transition:box-shadow .2s}
+#quiz .prompt .txt{font-size:clamp(32px,10vw,46px)}
+#quiz .prompt small{position:absolute;top:14px;left:72px;right:72px;font-size:14px}
+#quiz .prompt.ok{box-shadow:0 0 0 3px var(--ok),0 4px 0 var(--red-deep)}
+#quiz .prompt.no{box-shadow:0 0 0 3px #e0503a,0 4px 0 var(--red-deep)}
+/* 批改印章：答對「著」、答錯「毋著」 */
+.stamp{position:absolute;left:12px;top:10px;width:58px;height:58px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:22px;line-height:1;border:3px solid currentColor;transform:rotate(-14deg);background:rgba(255,244,220,.9);animation:stamp .28s cubic-bezier(.2,1.6,.4,1) both}
+.stamp.ok{color:var(--ok)}.stamp.no{color:#c0392b;font-size:17px}
+@keyframes stamp{from{transform:rotate(-14deg) scale(1.8);opacity:0}to{transform:rotate(-14deg) scale(1);opacity:1}}
 .prompt small{display:block;font-size:13px;color:#7a4a3a}
 .prompt .txt{font-family:var(--display);font-size:clamp(24px,7vw,32px);line-height:1.3}
 .combo{position:absolute;left:50%;transform:translateX(-50%);font-family:var(--display);color:var(--gold);font-size:22px;pointer-events:none;text-shadow:0 2px 0 var(--red-deep)}
@@ -69,7 +88,7 @@ em{font-style:normal;color:var(--red-2);background:var(--gold-soft);border-radiu
 @keyframes shake{25%{margin-left:-6px}75%{margin-left:6px}}
 
 /* 搶答 */
-.opts{display:grid;gap:10px;flex:1;align-content:start}
+.opts{display:grid;gap:10px}
 .opt{background:var(--red-deep);color:var(--paper);border:2px solid var(--gold);border-radius:14px;padding:14px 12px;font-family:var(--display);font-size:clamp(20px,5.6vw,24px);text-align:left;display:flex;gap:10px;align-items:center}
 .opt .ic{font-size:26px}
 .opt.right{background:var(--ok)}
@@ -118,7 +137,9 @@ em{font-style:normal;color:var(--red-2);background:var(--gold-soft);border-radiu
 /* 結算 */
 .over{align-items:center;justify-content:center;text-align:center}
 .over h2{font-family:var(--display);font-size:40px;color:var(--gold);margin:0}
-.over .big{font-family:var(--display);font-size:72px;color:var(--paper);line-height:1;font-variant-numeric:tabular-nums}
+.ring{--p:0;width:180px;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--gold) calc(var(--p) * 1%),rgba(92,15,19,.55) 0);box-shadow:0 0 30px rgba(242,193,78,.25)}
+.over .big{width:150px;aspect-ratio:1;border-radius:50%;background:var(--red);display:grid;place-content:center;font-family:var(--display);font-size:68px;color:var(--gold);line-height:1;font-variant-numeric:tabular-nums}
+.over .big small{display:block;font-size:14px;color:var(--gold-soft);margin-top:4px}
 .over p{margin:0;color:var(--gold-soft)}
 .btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:10px}
 .btn{background:var(--gold);color:var(--red-deep);border:0;border-radius:12px;padding:12px 22px;font-size:18px;font-weight:700;box-shadow:0 4px 0 var(--red-deep)}
@@ -131,7 +152,7 @@ em{font-style:normal;color:var(--red-2);background:var(--gold-soft);border-radiu
 @keyframes spark{to{transform:translate(var(--dx),var(--dy)) scale(.2);opacity:0}}
 .pop{position:fixed;pointer-events:none;z-index:31;font-family:var(--display);font-weight:700;color:var(--gold);font-size:24px;text-shadow:0 2px 0 var(--red-deep);animation:pop .8s ease-out forwards}
 @keyframes pop{to{transform:translateY(-50px);opacity:0}}
-@media (prefers-reduced-motion:reduce){.card .in{transition:none}.spark,.pop{animation-duration:.01s}}
+@media (prefers-reduced-motion:reduce){.card .in{transition:none}.spark,.pop{animation-duration:.01s}.stamp{animation:none}}
 </style>
 </head>
 <body>
@@ -141,7 +162,7 @@ em{font-style:normal;color:var(--red-2);background:var(--gold-soft);border-radiu
     <div class="toprow"><a class="hublink" href="../../">‹ 全部遊戲</a><button class="soundbtn" id="sound" aria-label="切換音效">🔊 音效</button></div>
     <div class="hero">
       <div class="diamond"><span>春</span></div>
-      <h1>過年好話押韻王</h1>
+      <h1 id="title" aria-label="過年好話押韻王"></h1>
       <p>食物配好話，押韻押予著！</p>
     </div>
     <div class="modes">
@@ -190,8 +211,7 @@ em{font-style:normal;color:var(--red-2);background:var(--gold-soft);border-radiu
 
   <section class="screen over" id="over" hidden>
     <h2 id="oTitle">時間到！</h2>
-    <p>這回得分（滿分 100）</p>
-    <div class="big" id="oScore">0</div>
+    <div class="ring" id="oRing"><div class="big" id="oScore">0</div></div>
     <p id="oBest"></p>
     <div class="btns"><button class="btn" id="oAgain">再玩一次</button><button class="btn ghost" id="oHome">回首頁</button></div>
   </section>
@@ -261,6 +281,7 @@ const center=el=>{const r=el.getBoundingClientRect();return[r.left+r.width/2,r.t
 // 畫面切換
 let cur='home',stopFn=null,lastMode=null;
 function go(id){if(stopFn){stopFn();stopFn=null}
+  clearTimeout(toastT);$('#toast').classList.add('hide');
   document.querySelectorAll('.screen').forEach(s=>s.hidden=s.id!==id);cur=id;
   if(id==='home')showBest();
   if(id==='float'){lastMode=id;startFloat()}
@@ -276,7 +297,13 @@ const TITLE={float:'好話飄飄',quiz:'搶答放炮',memo:'翻紅包'};
 function gameOver(mode,score,title){if(stopFn){stopFn();stopFn=null}
   const best=store.get(mode),isNew=score>best;if(isNew)store.set(mode,score);addHist(mode,score);
   document.querySelectorAll('.screen').forEach(s=>s.hidden=s.id!=='over');
-  $('#oTitle').textContent=title;$('#oScore').textContent=score;
+  $('#oTitle').textContent=title;
+  // 分數從 0 跳到得分，圓環跟著填滿；放煙火
+  const still=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  const setScore=v=>{$('#oScore').innerHTML=`${v}<small>滿分 100</small>`;$('#oRing').style.setProperty('--p',Math.min(100,v))};
+  if(still)setScore(score);
+  else{const t0=performance.now();const tick=now=>{const k=Math.min(1,(now-t0)/800);setScore(Math.round(score*(1-Math.pow(1-k,3))));if(k<1)requestAnimationFrame(tick)};requestAnimationFrame(tick);
+    const n=score>=80?7:4;for(let i=0;i<n;i++)setTimeout(()=>{burst(innerWidth*(.15+Math.random()*.7),innerHeight*(.12+Math.random()*.35));tone(300+Math.random()*500,.08,'square',.05)},300+i*260)}
   $('#oBest').textContent=isNew&&score>0?'🎉 新紀錄！':`${TITLE[mode]} 最高分：${Math.max(best,score)}`;sfx.end()}
 function setBar(scr,frac){const bar=scr.querySelector('.timebar');bar.querySelector('i').style.transform=`scaleX(${Math.max(0,frac)})`;bar.classList.toggle('low',frac<.25)}
 
@@ -313,6 +340,7 @@ function startQuiz(){
   const order=shuffle(D).slice(0,N);
   function next(){if(!alive)return;if(qi>=N){gameOver('quiz',score,'放炮完成！');return}
     const P=order[qi];qi++;locked=false;const up=Math.random()<.5;
+    const pr=$('#quiz .prompt');pr.classList.remove('ok','no');const os=pr.querySelector('.stamp');if(os)os.remove();
     $('#qNo').textContent=`第 ${qi} ／ ${N} 題`;$('#qHint').textContent=up?'選出押韻的下半句':'選出押韻的上半句';
     $('#qPrompt').innerHTML=hl(up?P.u:P.l);
     const used=new Set([P.g]),opts=[P];for(const d of shuffle(D)){if(opts.length>=4)break;if(!used.has(d.g)){used.add(d.g);opts.push(d)}}
@@ -324,6 +352,8 @@ function startQuiz(){
   function answer(b,P,up,timeout){if(locked)return;locked=true;cancelAnimationFrame(timer);
     const btns=[...$('#qOpts').children],target=order[qi-1];
     btns.forEach(x=>{if(x._o.g===target.g)x.classList.add('right');else if(x!==b)x.classList.add('no')});
+    const good=!timeout&&b&&b._o.g===target.g,pr=$('#quiz .prompt');pr.classList.add(good?'ok':'no');
+    pr.insertAdjacentHTML('beforeend',`<span class="stamp ${good?'ok':'no'}" aria-hidden="true">${good?'著':'毋著'}</span>`);
     if(!timeout&&b._o.g===target.g){combo++;const left=Math.max(0,LIM-(performance.now()-t0)/1000);const pts=5+Math.round(left/LIM*5);score+=pts;sc.textContent=score;cb.textContent=combo;sfx.ok();const[x,y]=center(b);burst(x,y,pts);toast(rhymeText(target,target))}
     else{combo=0;cb.textContent=0;if(b)b.classList.add('bad');sfx.bad();toast(timeout?'時間到！':'押無著！')}
     setTimeout(next,timeout||!(b&&b._o.g===target.g)?1300:800)}
@@ -359,6 +389,9 @@ const GN={iann:'-iann 韻',ai:'-ai 韻',au:'-au 韻',i:'-i／-inn 韻',o:'-o 韻
 function renderList(){const groups={};D.forEach(d=>(groups[d.g]=groups[d.g]||[]).push(d));
   $('#lList').innerHTML=Object.keys(groups).map(g=>`<div class="g" style="color:var(--gold);padding:4px 2px 0">${GN[g]}${groups[g].length>1?'（這組可以互換）':''}</div>`+groups[g].map(d=>
     `<div class="row"><span class="ic">${d.ic}</span><div><div class="t">${hl(d.u)}，${hl(d.l)}</div><div class="tl">${d.u.slice(-1)} ${d.ut}　／　${d.l.slice(-1)} ${d.lt}</div></div></div>`).join('')).join('')}
+
+// 標題逐字標台羅
+$('#title').innerHTML='<span class="ruby">'+[...'過年好話押韻王'].map((c,k)=>`<span class="ch"><i lang="nan-Latn">${['kuè','nî','hó','uē','ah','ūn','ông'][k]}</i>${c}</span>`).join('')+'</span>';
 
 showBest();
 </script>
