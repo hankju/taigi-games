@@ -43,12 +43,8 @@ games/<id>/       每個遊戲一個資料夾，裡面的 index.html 可以單�
 
 ## 台羅拼音練習：加新詞
 
-題庫在 `games/tailo/bank.js`，每個詞一行：
+詳細步驟、題庫格式與待辦見 [`games/tailo/README.md`](games/tailo/README.md)。改完題庫後執行：
 
-```js
-{"han": "車路", "lo": "tshia-lōo", "audio": "audio/tshia-loo.mp3", "src": "第二課", "modes": ["ini", "fin", "tone"]}
 ```
-
-- `lo` 照課本的台羅；聲母、韻母、聲調由程式自動拆，不用另外填
-- `modes` 是這個詞可以出的題型（`ini` 聲母、`fin` 韻母、`tone` 聲調）；若錄音唸法跟 `lo` 在某部分不同，就拿掉那種題型
-- 錄音放在 `games/tailo/audio/`，可到教育部《臺灣台語常用詞辭典》查詞後下載，或用老師自己的錄音；目前的詞沿用 `games/yeshi/audio/` 的錄音
+python3 games/tailo/tools/check_bank.py --fix
+```

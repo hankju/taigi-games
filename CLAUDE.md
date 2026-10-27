@@ -8,5 +8,6 @@
 - 介面文字、註解用繁體中文；遊戲內可用台文漢字，台羅用教育部台羅拼音。
 - 使用教育部辭典的詞條或錄音時，要在遊戲內與 README 標註來源與 CC BY-ND 3.0 TW，錄音不能修改。
 - `games/newyear/index.html` 是 CRLF 換行，編輯時保持原樣。
+- 台羅拼音練習（`games/tailo/`）的現況、規格與補題庫步驟寫在 `games/tailo/README.md`，接手前先讀；改題庫後跑 `python3 games/tailo/tools/check_bank.py --fix`。
 - `games/tailo/` 的題庫目前沿用 `games/yeshi/audio/` 的錄音（路徑 `../yeshi/audio/…`），搬動 yeshi 的錄音時要一起改。
 - 這個開發環境連不到教育部辭典網站，無法下載錄音；台羅、釋義可從 GitHub 上的 g0v/moedict-data-twblg 取得，錄音要請老師上傳。
