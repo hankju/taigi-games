@@ -91,7 +91,10 @@ h1 .ch i{color:var(--muted);text-shadow:none;font-size:max(12px,.24em)}
 .sign .wm{position:absolute;right:-18px;bottom:-30px;z-index:-1;font-size:150px;line-height:1;opacity:.13;transform:rotate(-14deg);filter:saturate(.6);pointer-events:none}
 .sign .head{display:flex;align-items:center;gap:14px}
 .sign .head h2{flex:1;min-width:0}
-.sign h2 .ruby{flex-wrap:nowrap}
+.sign h2 .ruby{flex-wrap:nowrap;gap:0 .08em}
+/* 卡片標題：台羅浮在字的正上方，不撐開字距，三張的字距才會一樣 */
+.sign h2 .ch{position:relative;padding-top:15px}
+.sign h2 .ch i{position:absolute;top:0;left:50%;transform:translateX(-50%);margin:0}
 .badge{flex:none;width:56px;height:56px;display:grid;place-items:center;font-size:30px;border-radius:50%;background:rgba(0,0,0,.25);box-shadow:inset 0 0 0 2px var(--a),0 4px 10px rgba(0,0,0,.25)}
 .sign h2{margin:0;font-weight:700;font-size:30px;color:var(--a);letter-spacing:.03em}
 .sign h2 .ch i{color:var(--paper);opacity:.72;font-size:12px}
@@ -99,7 +102,7 @@ h1 .ch i{color:var(--muted);text-shadow:none;font-size:max(12px,.24em)}
 .sign h2 a::after{content:"";position:absolute;inset:0;z-index:1}
 .sign h2 a:focus-visible{outline:none}
 .sign:has(h2 a:focus-visible){outline:3px solid var(--a);outline-offset:3px}
-.sign p{margin:0;font-size:16px;line-height:1.65;opacity:.92}
+.sign p{margin:0;font-size:16px;line-height:1.65;opacity:.92;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sign .row{display:flex;align-items:center;gap:12px;margin-top:auto;padding-top:12px;border-top:1px dashed rgba(255,255,255,.2);font-size:14px}
 .sign .st{flex:1;min-width:0;white-space:nowrap;opacity:.88}
 .sign .st.none{opacity:.55}
