@@ -21,7 +21,11 @@
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{--lan-h:84px;--sky-h:150px;position:relative;overflow-x:hidden;margin:0;min-height:100vh;background:var(--night);color:var(--paper);font-family:var(--han);-webkit-tap-highlight-color:transparent;
-  background-image:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(242,184,75,.16),transparent 70%)}
+  background-image:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(242,184,75,.16),transparent 70%),radial-gradient(ellipse 60% 40% at 100% 100%,rgba(194,58,43,.12),transparent 70%)}
+/* 窗花格紋，往下漸漸淡掉 */
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Cpath d='M22 2L42 22L22 42L2 22Z' fill='none' stroke='%23f2b84b' stroke-opacity='.09'/%3E%3Ccircle cx='22' cy='22' r='2.5' fill='%23f2b84b' fill-opacity='.08'/%3E%3C/svg%3E");
+  -webkit-mask-image:linear-gradient(#000,transparent 75%);mask-image:linear-gradient(#000,transparent 75%)}
 a{color:inherit}
 button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
 :focus-visible{outline:3px solid var(--gold);outline-offset:3px}
@@ -32,7 +36,7 @@ button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
 .ch{display:inline-flex;flex-direction:column;align-items:center;line-height:1}
 .ch i{font-style:normal;font-family:var(--lo);font-weight:400;font-size:max(11px,.26em);letter-spacing:0;margin-bottom:.32em;white-space:nowrap}
 
-/* 背景：月娘、燈籠串、廟宇與夜市剪影，全部是程式畫的 SVG，不擋點擊 */
+/* 背景：窗花格紋、月娘、燈籠串、祥雲、廟宇與夜市剪影，全部是程式畫的 SVG，不擋點擊 */
 .deco{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
 .moon{position:absolute;top:10px;right:-26px;width:84px;height:84px;border-radius:50%;opacity:.8;
   background:radial-gradient(circle at 40% 38%,#fff4d6,#f3d38c 60%,#e2b45c);
@@ -46,6 +50,10 @@ button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
   background:radial-gradient(circle,var(--glow) 0,transparent 62%);animation:flicker var(--fd) linear infinite;animation-delay:var(--fdl)}
 @keyframes flicker{0%,100%{opacity:.8}7%{opacity:.45}9%{opacity:.95}30%{opacity:.7}33%{opacity:1}55%{opacity:.75}57%{opacity:.4}60%{opacity:.9}82%{opacity:.7}}
 @keyframes flick-b{0%,100%{filter:brightness(1)}7%{filter:brightness(.82)}9%{filter:brightness(1.12)}33%{filter:brightness(1.18)}57%{filter:brightness(.8)}60%{filter:brightness(1.08)}}
+.cloud{position:absolute;color:var(--gold);opacity:.13}
+.cloud.c1{left:-30px;top:44%;width:180px}
+.cloud.c2{right:-20px;top:28%;width:150px;transform:scaleX(-1)}
+.cloud.c3{display:none}
 .sky{position:absolute;left:0;right:0;bottom:0;height:var(--sky-h)}
 .sky svg{display:block;width:100%;height:100%}
 .sky::before{content:"";position:absolute;left:10%;right:10%;bottom:0;height:140%;background:radial-gradient(ellipse 50% 60% at 50% 100%,rgba(242,140,60,.18),transparent 70%)}
@@ -118,6 +126,9 @@ dialog::backdrop{background:rgba(10,7,4,.78)}
   body{--lan-h:118px;--sky-h:220px}
   .wrap{max-width:1180px;display:grid;grid-template-columns:330px 1fr;gap:64px;align-items:start;padding-left:40px;padding-right:40px;padding-bottom:110px}
   .moon{top:22px;right:6%;width:130px;height:130px}
+  .cloud.c1{left:2%;top:58%;width:260px}
+  .cloud.c2{right:3%;top:40%;width:220px}
+  .cloud.c3{display:block;left:40%;top:calc(var(--lan-h) + 10px);width:150px;opacity:.08}
   .sky{position:fixed}
   .side{position:sticky;top:48px;text-align:left}
   h1{font-size:58px;justify-content:flex-start}
@@ -141,6 +152,9 @@ dialog::backdrop{background:rgba(10,7,4,.78)}
 <body>
 <div class="deco" aria-hidden="true">
   <div class="moon"></div>
+  <svg class="cloud c1" viewBox="0 0 200 80"><use href="#cloudS"/></svg>
+  <svg class="cloud c2" viewBox="0 0 200 80"><use href="#cloudS"/></svg>
+  <svg class="cloud c3" viewBox="0 0 200 80"><use href="#cloudS"/></svg>
   <svg class="rope" id="rope" viewBox="0 0 1000 100" preserveAspectRatio="none"></svg>
   <div id="lanterns"></div>
   <div class="sky" id="sky"></div>
@@ -165,6 +179,10 @@ dialog::backdrop{background:rgba(10,7,4,.78)}
       <rect x="12.5" y="48" width="15" height="5" rx="1.5" fill="#b4372a"/>
       <path d="M17 53v11M20 53v15M23 53v11" stroke="#d2402c" stroke-width="1.4"/>
     </symbol>
+    <symbol id="cloudS" viewBox="0 0 200 80"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+      <path d="M18 64H176c18 0 20-24 2-26 2-20-24-26-36-12-6-20-38-22-44-2-10-12-34-8-32 12-18-4-28 16-16 26"/>
+      <path d="M98 24c12 2 14 20 0 22-10 1-12-11-3-12"/><path d="M142 26c10 4 8 18-3 17-8-1-7-10 0-9"/><path d="M66 36c-10 2-10 16 1 16 7 0 7-8 1-8"/>
+      <path d="M40 72h120"/></g></symbol>
   </defs>
 </svg>
 <div class="wrap">
