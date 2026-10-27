@@ -43,7 +43,9 @@ em{font-style:normal;color:var(--red-2);background:var(--gold-soft);border-radiu
 .mode small{color:#7a4a3a;font-size:13px;line-height:1.4;display:block}
 .mode .best{font-size:12px;color:var(--red-2);font-weight:700;white-space:nowrap}
 .foot{text-align:center;font-size:12px;color:var(--gold-soft);opacity:.8}
-.soundbtn{align-self:flex-end;background:transparent;border:1px solid var(--gold);color:var(--gold);border-radius:20px;padding:4px 10px;font-size:13px}
+.toprow{display:flex;justify-content:space-between;align-items:center}
+.hublink{color:var(--gold);font-size:13px;text-decoration:none;padding:4px 0}
+.soundbtn{background:transparent;border:1px solid var(--gold);color:var(--gold);border-radius:20px;padding:4px 10px;font-size:13px}
 
 /* 遊戲共用上方列 */
 .hud{display:flex;align-items:center;gap:10px}
@@ -136,7 +138,7 @@ em{font-style:normal;color:var(--red-2);background:var(--gold-soft);border-radiu
 
 <div id="app">
   <section class="screen" id="home">
-    <button class="soundbtn" id="sound" aria-label="切換音效">🔊 音效</button>
+    <div class="toprow"><a class="hublink" href="../../">‹ 全部遊戲</a><button class="soundbtn" id="sound" aria-label="切換音效">🔊 音效</button></div>
     <div class="hero">
       <div class="diamond"><span>春</span></div>
       <h1>過年好話押韻王</h1>
