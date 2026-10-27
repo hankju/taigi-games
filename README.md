@@ -2,7 +2,7 @@
 
 台語學習小遊戲合集，手機瀏覽器就能玩。首頁是遊戲大廳，點卡片進入各遊戲。
 
-遊玩網址：https://hankju.github.io/taigi-yeshi-words/
+遊玩網址：https://hankju.github.io/taigi-games/
 
 ## 目前的遊戲
 
@@ -26,7 +26,7 @@ games/<id>/       每個遊戲一個資料夾，裡面的 index.html 可以單�
 3. 遊戲首頁放一個回大廳的連結：`<a href="../../">‹ 全部遊戲</a>`。
 4. 用 `localStorage` 存成績時，key 加上這個遊戲專屬的前綴（例：`tc_hist`），避免跟其他遊戲撞名。
 
-遊戲網址會是 `…/taigi-yeshi-words/games/<id>/`，可以單獨分享給學生。
+遊戲網址會是 `…/taigi-games/games/<id>/`，可以單獨分享給學生。
 
 ## 資料來源與授權
 
