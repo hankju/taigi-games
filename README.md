@@ -50,3 +50,11 @@ games/<id>/       每個遊戲一個資料夾，裡面的 index.html 可以單�
 ```
 python3 games/tailo/tools/check_bank.py --fix
 ```
+
+## Claude Code 技能
+
+`.claude/skills/` 裡的技能，在這個專案開 Claude Code（本機或雲端）時會自動載入：
+
+| 技能 | 用途 | 來源與授權 |
+| --- | --- | --- |
+| `frontend-design` | 美化、重新設計網頁時的設計原則（配色、字體、版面、避免套版感） | [anthropics/skills](https://github.com/anthropics/skills/tree/main/skills/frontend-design)（commit `dbd4588`），Apache 2.0，原檔未修改 |
