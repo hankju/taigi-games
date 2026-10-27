@@ -30,7 +30,7 @@ games/<id>/       每個遊戲一個資料夾，裡面的 index.html 可以單�
 ## 新增一個遊戲
 
 1. 建資料夾 `games/<id>/`（`<id>` 用英文小寫，例：`games/tshiu-tshai/`），遊戲放在裡面的 `index.html`；錄音、圖片、題庫也放同一個資料夾。
-2. 在 `games.js` 加一筆（`id`、`name`、`lo`、`desc`、`color`、`accent`、`hist`）。`lo` 是遊戲名稱的台羅，音節數要跟字數一樣，大廳會逐字標在字頂；`desc` 寫一句話說明玩什麼。
+2. 在 `games.js` 加一筆（`id`、`name`、`lo`、`icon`、`desc`、`color`、`accent`、`hist`）。`lo` 是遊戲名稱的台羅，音節數要跟字數一樣，大廳會逐字標在字頂；`desc` 寫一句話說明玩什麼。
 3. 遊戲首頁放一個回大廳的連結：`<a href="../../">‹ 全部遊戲</a>`。
 4. 用 `localStorage` 存成績時，key 加上這個遊戲專屬的前綴（例：`tc_hist`），避免跟其他遊戲撞名。
    成績紀錄存成 `[{m: 模式, s: 分數, t: 時間}]` 陣列，並把 key 填進 `games.js` 的 `hist`，大廳就會顯示最高分與次數。
