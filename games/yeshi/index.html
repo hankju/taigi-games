@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>來去踅夜市・單詞練習</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans:wght@500&family=Noto+Sans+TC:wght@400;700&display=swap">
 <style>
 /* 版面：夜市夜空藍底、燈籠暖黃、紙卡白；單一畫面手機遊戲 */
 :root{
@@ -22,7 +22,10 @@ html,body{height:100%;margin:0}
 [hidden]{display:none!important}
 body{background:var(--night);color:var(--paper);font-family:var(--body);-webkit-tap-highlight-color:transparent;
   background-image:radial-gradient(circle at 15% 8%,rgba(244,183,64,.18),transparent 30%),radial-gradient(circle at 85% 20%,rgba(244,183,64,.12),transparent 25%)}
-#app{height:100%;max-width:560px;margin:0 auto;display:flex;flex-direction:column;
+/* 夜空的星（不會動）＋燈籠微微閃 */
+.stars{position:fixed;inset:0 0 40% 0;pointer-events:none;z-index:0;-webkit-mask-image:linear-gradient(#000,transparent);mask-image:linear-gradient(#000,transparent)}
+.stars i{position:absolute;border-radius:50%;background:#fff3d6}
+#app{position:relative;z-index:1;height:100%;max-width:560px;margin:0 auto;display:flex;flex-direction:column;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:10px}
 .screen{flex:1;display:flex;flex-direction:column;gap:12px;min-height:0}
 button{font:inherit;cursor:pointer;touch-action:manipulation;color:inherit}
@@ -33,6 +36,14 @@ button:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
 .lamps{display:flex;justify-content:center;gap:18px;margin-bottom:6px}
 .lamps i{width:22px;height:30px;border-radius:50% 50% 45% 45%;background:var(--lamp);box-shadow:0 0 18px var(--lamp);display:block}
 .lamps i:nth-child(2){background:#e8603c;box-shadow:0 0 18px #e8603c}
+.lamps i{animation:lamp 3.2s linear infinite}
+.lamps i:nth-child(2){animation-duration:2.6s;animation-delay:-1s}
+.lamps i:nth-child(3){animation-duration:3.8s;animation-delay:-2s}
+@keyframes lamp{0%,100%{filter:brightness(1)}8%{filter:brightness(.75)}10%{filter:brightness(1.15)}45%{filter:brightness(.9)}48%{filter:brightness(1.2)}75%{filter:brightness(.85)}}
+/* 標題逐字標台羅（跟大廳一樣） */
+.ruby{display:inline-flex;gap:0 .04em;justify-content:center}
+.ch{position:relative;display:inline-block;padding-top:20px}
+.ch i{position:absolute;top:0;left:50%;transform:translateX(-50%);font-style:normal;font-family:"Noto Sans",Arial,sans-serif;font-weight:500;font-size:14px;color:var(--lamp-soft);text-shadow:none;white-space:nowrap}
 .hero small{color:var(--lamp-soft);font-size:15px;letter-spacing:.1em}
 .hero h1{font-family:var(--display);font-size:clamp(38px,11vw,56px);margin:4px 0 0;color:var(--lamp);text-shadow:0 3px 0 var(--night-3)}
 .hero p{margin:4px 0 0;color:var(--lamp-soft);font-size:15px}
@@ -45,7 +56,7 @@ button:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
 .mode .best{font-size:13px;color:#b0441f;font-weight:700;white-space:nowrap}
 .mode.sub{grid-template-columns:52px 1fr;background:var(--night-2);color:var(--paper);box-shadow:none;border:1px solid rgba(255,248,234,.2)}
 .mode.sub small{color:var(--lamp-soft)}
-.hublink{align-self:flex-start;color:var(--lamp);font-size:13px;text-decoration:none;padding:4px 0}
+.hublink{align-self:flex-start;color:var(--lamp);font-size:14px;font-weight:700;text-decoration:none;padding:6px 14px;border:1px solid rgba(244,183,64,.6);border-radius:999px;background:rgba(14,24,48,.5)}
 .credit{font-size:12px;color:rgba(255,248,234,.65);text-align:center;line-height:1.5}
 
 /* 上方列 */
@@ -53,17 +64,27 @@ button:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
 .back{background:transparent;border:1px solid var(--lamp);color:var(--lamp);border-radius:10px;padding:6px 10px;font-size:14px}
 .hud .stat{flex:1;display:flex;justify-content:flex-end;gap:14px;font-variant-numeric:tabular-nums;font-size:15px}
 .hud .stat b{color:var(--lamp);font-size:20px}
+.hud .stat > span{position:relative;background:rgba(255,248,234,.08);border:1px solid rgba(255,248,234,.15);border-radius:999px;padding:2px 12px}
 .bar{height:8px;background:var(--night-3);border-radius:4px;overflow:hidden}
 .bar i{display:block;height:100%;background:var(--lamp);transform-origin:left}
 .bar.low i{background:var(--bad)}
 .qno{text-align:center;font-size:14px;color:var(--lamp-soft)}
 
 /* 題目卡 */
-.card{background:var(--paper);color:var(--ink);border-radius:18px;padding:16px;text-align:center;box-shadow:0 4px 0 var(--night-3);display:flex;flex-direction:column;gap:8px;align-items:center}
+.card{position:relative;flex:1 0 auto;min-height:190px;justify-content:center;background:var(--paper);color:var(--ink);border-radius:18px;padding:40px 16px 18px;text-align:center;box-shadow:0 4px 0 var(--night-3);display:flex;flex-direction:column;gap:10px;align-items:center;transition:box-shadow .2s}
+.card .ask{position:absolute;top:14px;left:72px;right:72px}
+.card.ok{box-shadow:0 0 0 3px var(--ok),0 4px 0 var(--night-3)}
+.card.no{box-shadow:0 0 0 3px var(--bad),0 4px 0 var(--night-3)}
+/* 批改印章：答對「著」、三擺攏毋著「毋著」 */
+.stamp{position:absolute;left:12px;top:10px;width:60px;height:60px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:23px;line-height:1;border:3px solid currentColor;transform:rotate(-14deg);background:rgba(255,248,234,.9);animation:stamp .28s cubic-bezier(.2,1.6,.4,1) both}
+.stamp.ok{color:var(--ok)}.stamp.no{color:var(--bad);font-size:18px}
+@keyframes stamp{from{transform:rotate(-14deg) scale(1.8);opacity:0}to{transform:rotate(-14deg) scale(1);opacity:1}}
+.gain{position:absolute;right:4px;top:-8px;font-weight:700;color:var(--lamp);font-size:18px;pointer-events:none;animation:gain .9s ease-out both}
+@keyframes gain{from{transform:translateY(0);opacity:1}to{transform:translateY(-26px);opacity:0}}
 .card .ask{font-size:14px;color:var(--muted)}
-.big{font-family:var(--display);font-size:clamp(34px,10vw,46px);line-height:1.2;font-weight:700}
-.lo{font-size:clamp(24px,7vw,30px);font-weight:700;letter-spacing:.02em}
-.sent{font-family:var(--display);font-size:clamp(22px,6.4vw,28px);line-height:1.5}
+.big{font-family:var(--display);font-size:clamp(46px,14vw,64px);line-height:1.2;font-weight:700}
+.lo{font-size:clamp(28px,8.4vw,36px);font-weight:700;letter-spacing:.02em}
+.sent{font-family:var(--display);font-size:clamp(24px,7vw,30px);line-height:1.5}
 .sent u{text-decoration:none;border-bottom:3px solid var(--night);padding:0 .3em}
 .pad{display:inline-flex;gap:4px}
 .pad span{width:44px;height:44px;border:2px solid var(--night-2);background:repeating-linear-gradient(45deg,#e9dcc2 0 6px,#f3e8d2 6px 12px);border-radius:6px}
@@ -73,12 +94,13 @@ button:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
 
 /* 選項 */
 .opts{display:grid;gap:10px}
-.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;background:var(--night-2);border:2px solid rgba(255,248,234,.25);border-radius:14px;padding:12px 14px;font-size:clamp(17px,4.8vw,20px);line-height:1.45}
-.opt .k{flex:none;width:26px;height:26px;border-radius:50%;background:var(--paper);color:var(--night);display:grid;place-items:center;font-size:14px;font-weight:700;margin-top:1px}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;background:var(--night-2);border:2px solid rgba(255,248,234,.32);box-shadow:0 3px 0 var(--night-3);border-radius:14px;padding:12px 14px;font-size:clamp(17px,4.8vw,20px);line-height:1.45}
+.opt .k{flex:none;width:26px;height:26px;border-radius:50%;background:var(--lamp);color:var(--night);display:grid;place-items:center;font-size:14px;font-weight:700;margin-top:1px}
 .opt.lo-opt{font-size:clamp(20px,5.6vw,24px);font-weight:700;letter-spacing:.02em}
 .opt.han-opt{font-family:var(--display);font-size:clamp(22px,6vw,26px)}
 .opt.wrong{background:#5a2a2a;border-color:var(--bad);opacity:.7}
 .opt.right{background:var(--ok);border-color:#bff0d3}
+.opt.right .k{background:#fff}
 .opt[disabled]{cursor:default}
 
 /* 答後說明 */
@@ -89,13 +111,17 @@ button:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
 .fb p{margin:0;font-size:15px;line-height:1.5;color:#4b3b2c}
 #fbwrap{display:grid;gap:10px;padding-bottom:12px}
 .next{width:100%;background:var(--lamp);color:var(--night);border:0;border-radius:12px;padding:12px;font-size:18px;font-weight:700;box-shadow:0 4px 0 #9b6f1c}
-.pop{position:fixed;left:50%;top:40%;transform:translate(-50%,-50%);font-family:var(--display);font-size:46px;font-weight:700;color:var(--lamp);text-shadow:0 3px 0 var(--night-3);pointer-events:none;animation:pop .8s ease-out forwards;z-index:9}
-@keyframes pop{from{opacity:1;transform:translate(-50%,-50%) scale(.7)}to{opacity:0;transform:translate(-50%,-110%) scale(1.1)}}
 
 /* 結算、成績、詞彙表 */
 .center{align-items:center;justify-content:center;text-align:center}
 .center h2{font-family:var(--display);font-size:38px;color:var(--lamp);margin:0}
-.score{font-family:var(--display);font-size:80px;line-height:1;font-variant-numeric:tabular-nums}
+.ring{--p:0;width:180px;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--lamp) calc(var(--p) * 1%),rgba(255,248,234,.12) 0);box-shadow:0 0 30px rgba(244,183,64,.25)}
+.score{width:150px;aspect-ratio:1;border-radius:50%;background:var(--night);display:grid;place-content:center;font-family:var(--display);font-size:68px;line-height:1;color:var(--lamp);font-variant-numeric:tabular-nums}
+.score small{display:block;font-size:14px;color:var(--lamp-soft);margin-top:4px}
+/* 結算時飛上天的天燈 */
+.skylan{position:fixed;bottom:-70px;width:var(--w);height:calc(var(--w) * 1.25);pointer-events:none;z-index:0;border-radius:40% 40% 14% 14%;
+  background:radial-gradient(ellipse at 50% 85%,#fff1b8,#f6a83a 45%,#c9531f);box-shadow:0 0 24px 6px rgba(246,168,58,.45);animation:fly var(--d) ease-in forwards;animation-delay:var(--dl)}
+@keyframes fly{0%{transform:translate(0,0);opacity:0}10%{opacity:1}100%{transform:translate(var(--dx),-115vh);opacity:.9}}
 .center p{margin:0;color:var(--lamp-soft)}
 .btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:8px}
 .btn{background:var(--lamp);color:var(--night);border:0;border-radius:12px;padding:12px 22px;font-size:18px;font-weight:700}
@@ -123,10 +149,11 @@ button:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
 .hrow.top{background:var(--lamp-soft);outline:2px solid var(--lamp)}
 .hrow.top .s::after{content:" 🏆";font-size:16px}
 .empty{text-align:center;color:var(--lamp-soft);padding:24px 0}
-@media (prefers-reduced-motion:reduce){.pop{animation-duration:.01s}}
+@media (prefers-reduced-motion:reduce){.stamp,.gain{animation:none}.skylan{display:none}}
 </style>
 </head>
 <body>
+<div class="stars" id="stars" aria-hidden="true"></div>
 <div id="app">
 
 <section class="screen" id="home">
@@ -134,7 +161,7 @@ button:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
   <div class="hero">
     <div class="lamps"><i></i><i></i><i></i></div>
     <small>第一課・單詞練習</small>
-    <h1>來去踅夜市</h1>
+    <h1 id="title" aria-label="來去踅夜市"></h1>
     <p>10 題・限時 3 分鐘・一擺就著 10 分</p>
   </div>
   <div class="modes">
@@ -158,8 +185,7 @@ button:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
 
 <section class="screen center" id="over" hidden>
   <h2 id="oTitle">完成！</h2>
-  <p>這擺得分（滿分 100）</p>
-  <div class="score" id="oScore">0</div>
+  <div class="ring" id="oRing"><div class="score" id="oScore">0</div></div>
   <p id="oBest"></p>
   <div class="review" id="oReview"></div>
   <div class="btns"><button class="btn" id="again">閣耍一擺</button><button class="btn ghost" data-go="home">回首頁</button></div>
@@ -296,7 +322,7 @@ function start(mode) {
   $('#sc').textContent = 0;
 
   function next() {
-    qi++; tries = 0; $('#fbwrap').innerHTML = '';
+    qi++; tries = 0; $('#fbwrap').innerHTML = ''; $('#card').classList.remove('ok', 'no');
     if (qi >= qs.length) { finish('完成！'); return; }
     const q = qs[qi];
     $('#qno').textContent = `第 ${qi + 1} ／ ${qs.length} 題・${NAME[mode]}`;
@@ -324,16 +350,18 @@ function start(mode) {
     if (done || b.disabled) return;
     if (o === q.answer) {
       const p = PTS[tries] || 0; score += p; $('#sc').textContent = score;
-      b.classList.add('right'); popup('+' + p); reveal(q, true); return;
+      b.classList.add('right'); gain(p); reveal(q, true); return;
     }
     tries++; b.classList.add('wrong'); b.disabled = true;
     if (mode === 'm1') { const s = $('#say'); if (s && q.w.audio) { s.disabled = false; s.textContent = '🔊 聽發音'; } }
-    if (mode === 'm2') { $('#pad').outerHTML = `<div class="big">${esc(q.w.han)}</div>`; if (q.w.ex) $('#hint').innerHTML = `<div class="hint">例句：${esc(q.w.ex.han.replace(q.w.han, '＿＿'))}</div>`; }
+    if (mode === 'm2' && $('#pad')) { $('#pad').outerHTML = `<div class="big">${esc(q.w.han)}</div>`; if (q.w.ex) $('#hint').innerHTML = `<div class="hint">例句：${esc(q.w.ex.han.replace(q.w.han, '＿＿'))}</div>`; }
     if (mode === 'm3' && q.hua) $('#hint').innerHTML = `<div class="hint">華語：${esc(q.hua)}</div>`;
     if (tries >= 3) { [...$('#opts').children].forEach(x => { if (x.textContent.slice(1) === q.answer) x.classList.add('right'); }); reveal(q, false); }
   }
 
   function reveal(q, ok) {
+    $('#card').classList.add(ok ? 'ok' : 'no');
+    $('#card').insertAdjacentHTML('beforeend', `<span class="stamp ${ok ? 'ok' : 'no'}" aria-hidden="true">${ok ? '著' : '毋著'}</span>`);
     [...$('#opts').children].forEach(x => x.disabled = true);
     log.push({q, ok, tries});
     const w = q.w, ex = w.ex;
@@ -347,14 +375,27 @@ function start(mode) {
   function finish(title) {
     if (done) return; stop(); stop = null;
     const best = store.best(mode); store.add(mode, score);
-    $('#oTitle').textContent = title; $('#oScore').textContent = score;
+    $('#oTitle').textContent = title;
+    // 分數從 0 跳到得分，圓環跟著填滿；放天燈
+    const still = matchMedia('(prefers-reduced-motion:reduce)').matches;
+    const setScore = v => { $('#oScore').innerHTML = `${v}<small>滿分 100</small>`; $('#oRing').style.setProperty('--p', v); };
+    if (still) setScore(score);
+    else { const t0 = performance.now(); const tick = now => { const k = Math.min(1, (now - t0) / 800); setScore(Math.round(score * (1 - Math.pow(1 - k, 3)))); if (k < 1) requestAnimationFrame(tick); }; requestAnimationFrame(tick); skyLanterns(score >= 80 ? 10 : 5); }
     $('#oBest').textContent = score > best && score > 0 ? '🎉 新紀錄！' : `${NAME[mode]} 最高分：${Math.max(best, score)}`;
     $('#oReview').innerHTML = log.map(r => `<div class="${r.ok ? '' : 'x'}">${r.ok ? '✔' : '✘'} ${esc(r.q.w.han)}　${esc(r.q.w.lo)}　${esc(short(r.q.w.def))}</div>`).join('');
     show('over');
   }
   next();
 }
-function popup(t) { const p = document.createElement('div'); p.className = 'pop'; p.textContent = t; document.body.appendChild(p); setTimeout(() => p.remove(), 850); }
+function gain(p) { const g = document.createElement('span'); g.className = 'gain'; g.textContent = '+' + p; $('#sc').parentNode.appendChild(g); setTimeout(() => g.remove(), 950); }
+function skyLanterns(n) {
+  for (let k = 0; k < n; k++) {
+    const el = document.createElement('i'), d = 4 + Math.random() * 3;
+    el.className = 'skylan';
+    el.style.cssText = `left:${(5 + Math.random() * 85).toFixed(1)}%;--w:${(22 + Math.random() * 20).toFixed(0)}px;--d:${d.toFixed(1)}s;--dl:${(Math.random() * 1.6).toFixed(2)}s;--dx:${(Math.random() * 80 - 40).toFixed(0)}px`;
+    document.body.appendChild(el); setTimeout(() => el.remove(), (d + 2) * 1000);
+  }
+}
 
 // 我的成績
 let hf = 'all';
@@ -375,6 +416,19 @@ function renderList() {
   $('#wList').innerHTML = W.map((w, i) => `<div class="row"><span><b>${esc(w.han)}</b>　<span class="l">${esc(w.lo)}</span>　<span class="tag${w.src === '補充' ? ' sup' : ''}">${w.src}</span></span>${w.audio ? `<button class="say" data-a="${i}">🔊</button>` : '<span></span>'}<p>${esc(w.def)}${w.ex ? '<br>例：' + esc(w.ex.han) : ''}</p></div>`).join('');
   $('#wList').querySelectorAll('[data-a]').forEach(b => b.onclick = () => play(W[+b.dataset.a].audio));
 }
+
+// 標題逐字標台羅
+$('#title').innerHTML = '<span class="ruby">' + [...'來去踅夜市'].map((c, k) => `<span class="ch"><i lang="nan-Latn">${['lâi', 'khì', 'se̍h', 'iā', 'tshī'][k]}</i>${c}</span>`).join('') + '</span>';
+// 夜空的星：固定亂數種子
+(function () {
+  let seed = 11, h = '';
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  for (let k = 0; k < 40; k++) {
+    const sz = rnd() < .15 ? 2.4 : 1 + rnd();
+    h += `<i style="left:${(rnd() * 100).toFixed(2)}%;top:${(rnd() * 100).toFixed(2)}%;width:${sz.toFixed(1)}px;height:${sz.toFixed(1)}px;opacity:${(.2 + rnd() * .5).toFixed(2)}"></i>`;
+  }
+  $('#stars').innerHTML = h;
+})();
 
 go('home');
 </script>
