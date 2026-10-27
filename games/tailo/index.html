@@ -60,6 +60,12 @@ mark{background:rgba(247,169,131,.55);color:inherit;padding:0 2px;border-radius:
 .mode .st{display:block;font-size:12.5px;color:var(--purple);margin-top:4px;font-weight:500}
 .mode .st b{display:inline;font-family:var(--body);font-size:15px}
 .credit{text-align:center;font-size:11.5px;line-height:1.5;color:var(--muted)}
+/* 出題範圍：第一課／全部 */
+.scope{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:auto;font-size:13px;color:var(--teal-d)}
+.scope .seg{display:inline-flex;background:rgba(255,255,255,.7);border-radius:999px;padding:3px}
+.scope button{border:0;background:transparent;border-radius:999px;padding:6px 14px;font-size:14px;font-weight:500;color:var(--teal-d)}
+.scope button[aria-pressed="true"]{background:var(--teal);color:#fff;box-shadow:0 2px 0 var(--teal-d)}
+.scope + .modes{margin-top:0}
 
 /* 遊戲中 */
 .hud{display:flex;align-items:center;gap:10px}
@@ -131,6 +137,7 @@ mark{background:rgba(247,169,131,.55);color:inherit;padding:0 2px;border-radius:
   #home{justify-content:center}
   #home .hublink{position:absolute;top:24px}
   .modes{margin-top:32px}
+  .scope{margin-top:28px}
 }
 @media (prefers-reduced-motion:reduce){
   .petal{animation:none;display:none}
@@ -166,6 +173,7 @@ mark{background:rgba(247,169,131,.55);color:inherit;padding:0 2px;border-radius:
     <h1>台羅拼音練習</h1>
     <p>聽錄音，揣出聲母、韻母佮聲調</p>
   </div>
+  <div class="scope" role="group" aria-label="出題範圍">範圍<span class="seg"><button data-scope="l1">第一課</button><button data-scope="all">全部</button></span><span id="scopeN"></span></div>
   <div class="modes">
     <button class="mode" data-m="ini"><span class="num">一</span><span><b>聲母</b><span class="ex">只考聲母　例：<span class="lo"><mark>tsh</mark>ia-<mark>l</mark>ōo</span></span><span class="st" data-st="ini"></span></span></button>
     <button class="mode" data-m="fin"><span class="num">二</span><span><b>韻母</b><span class="ex">按字母拼出韻母　例：<span class="lo">tsh<mark>ia</mark>-l<mark>oo</mark></span></span><span class="st" data-st="fin"></span></span></button>
@@ -229,7 +237,19 @@ function today(m) {
   const xs = hist().filter(r => r.m === m && r.t >= d0.getTime()).map(r => r.s);
   return xs.length ? {n: xs.length, best: Math.max(...xs), avg: Math.round(xs.reduce((a, b) => a + b, 0) / xs.length)} : null;
 }
+// ── 出題範圍：l1＝只出第一課（src 以「第一課」開頭）、all＝全部；記在這台手機 ──
+const SCOPE_KEY = 'tl_scope';
+let scope = (() => { try { return localStorage.getItem(SCOPE_KEY) === 'l1' ? 'l1' : 'all'; } catch (e) { return 'all'; } })();
+const inScope = w => scope === 'all' || (w.src || '').startsWith('第一課');
+function renderScope() {
+  for (const b of document.querySelectorAll('[data-scope]')) b.setAttribute('aria-pressed', b.dataset.scope === scope);
+  $('#scopeN').textContent = `${TL_BANK.filter(inScope).length} 詞`;
+}
+for (const b of document.querySelectorAll('[data-scope]')) b.addEventListener('click', () => {
+  scope = b.dataset.scope; try { localStorage.setItem(SCOPE_KEY, scope); } catch (e) {} renderScope();
+});
 function renderHome() {
+  renderScope();
   for (const m in MODES) {
     const t = today(m);
     document.querySelector(`[data-st="${m}"]`).innerHTML = t ? `今日最高 <b>${t.best}</b>・平均 ${t.avg}・練 ${t.n} 擺` : '今仔日猶未練';
@@ -247,7 +267,7 @@ function show(id) { for (const s of document.querySelectorAll('.screen')) s.hidd
 let mode, qs, qi, score, cur, wrong;
 function start(m) {
   mode = m; qi = 0; score = 0; wrong = [];
-  const pool = TL_BANK.filter(w => w.modes.includes(m));
+  const pool = TL_BANK.filter(w => w.modes.includes(m) && inScope(w));
   qs = pool.map(w => [Math.random(), w]).sort((a, b) => a[0] - b[0]).slice(0, N).map(x => x[1]);
   show('play'); next();
 }

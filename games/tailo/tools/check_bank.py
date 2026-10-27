@@ -16,6 +16,11 @@ import unicodedata
 from collections import Counter
 from pathlib import Path
 
+# Windows 中文主控台預設 cp950，印不出「个」等字會當掉，統一用 UTF-8 輸出
+for _s in (sys.stdout, sys.stderr):
+    if hasattr(_s, 'reconfigure'):
+        _s.reconfigure(encoding='utf-8')
+
 HERE = Path(__file__).resolve().parent.parent          # games/tailo
 BANK = HERE / 'bank.js'
 ROUND = 20
