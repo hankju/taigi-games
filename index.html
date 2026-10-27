@@ -48,7 +48,7 @@ button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
 @keyframes flick-b{0%,100%{filter:brightness(1)}7%{filter:brightness(.82)}9%{filter:brightness(1.12)}33%{filter:brightness(1.18)}57%{filter:brightness(.8)}60%{filter:brightness(1.08)}}
 /* 月娘光暈慢慢呼吸 */
 .moon::before{content:"";position:absolute;inset:-40%;z-index:-1;border-radius:50%;background:radial-gradient(circle,rgba(247,217,142,.35),transparent 65%);animation:breathe 6s ease-in-out infinite}
-@keyframes breathe{0%,100%{opacity:.5;transform:scale(.92)}50%{opacity:1;transform:scale(1.05)}}
+@keyframes breathe{0%,100%{opacity:.45}50%{opacity:1}}
 /* 廟窗燈火微微跳動、夜市燈串輪流閃 */
 .win{animation:win-flick var(--wd) ease-in-out infinite;animation-delay:var(--wdl)}
 @keyframes win-flick{0%,100%{opacity:var(--o)}40%{opacity:calc(var(--o) * .55)}45%{opacity:calc(var(--o) * 1.3)}70%{opacity:calc(var(--o) * .85)}}
@@ -169,10 +169,11 @@ dialog::backdrop{background:rgba(10,7,4,.75);-webkit-backdrop-filter:blur(4px);b
 .soon .ic{font-size:34px}
 .soon b{font-family:var(--display);font-size:22px;color:var(--gold);letter-spacing:.06em}
 .soon span{font-size:14px;line-height:1.5}
+/* 系統設定「減少動態效果」（Windows 關閉動畫效果、iOS 減少動態）：停掉會移動的動畫，燈火明暗閃爍保留 */
 @media (prefers-reduced-motion:reduce){
   .game,.soon{animation:none;transition:none}
   .play i{transition:none}
-  .lan,.lan svg,.lan .halo,.moon::before,.win,.bulb{animation:none}
+  .lan{animation:none}
   .spark{display:none}
 }
 </style>
