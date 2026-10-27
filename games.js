@@ -2,12 +2,14 @@
 // id：資料夾名稱（英文小寫）
 // name／lo：遊戲名稱與台羅，lo 的音節數要跟 name 的字數一樣（大廳逐字標音）
 // desc：一句話說明玩什麼（20 字左右）
-// color／accent：招牌底色與金框、字色，建議跟遊戲本身配色一致
+// mark：卡片角落的浮水印字（一個字）
+// color／accent：卡片底色與字色，建議跟遊戲本身配色一致
 // hist：遊戲存成績的 localStorage key（格式 [{m, s, t}]），大廳會顯示最高分與次數
 window.GAMES = [
   {
     id: 'yeshi',
     name: '來去踅夜市',
+    mark: '市',
     lo: 'lâi-khì se̍h iā-tshī',
     desc: '第一課單詞：看漢字選台羅、聽錄音揣意思、台文填空。',
     color: '#16233f',
@@ -17,6 +19,7 @@ window.GAMES = [
   {
     id: 'newyear',
     name: '過年好話押韻王',
+    mark: '春',
     lo: 'kuè-nî hó-uē ah-ūn-ông',
     desc: '食物配吉祥話，揣出押韻的另一半。',
     color: '#8e1b20',
@@ -26,6 +29,7 @@ window.GAMES = [
   {
     id: 'tailo',
     name: '台羅拼音練習',
+    mark: '音',
     lo: 'Tâi-lô phing-im liān-si̍p',
     desc: '聽錄音，分別練聲母、韻母佮聲調。',
     color: '#2f7f9a',
