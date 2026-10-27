@@ -23,5 +23,16 @@ window.GAMES = [
     color: '#8e1b20',
     accent: '#f2c14e',
     hist: 'hy2_hist'
+  },
+  {
+    id: 'tailo',
+    icon: '🌸',
+    name: '台羅拼音練習',
+    tag: '聲母・韻母・聲調',
+    desc: '聽錄音揣聲母、按字母拼韻母、看漢字選聲調，一回合 20 題。',
+    tags: ['台羅拼音', '聲調', '辭典錄音'],
+    color: '#2f7f9a',
+    accent: '#ffe7a3',
+    hist: 'tl_hist'
   }
 ];

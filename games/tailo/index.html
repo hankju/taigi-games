@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#8fcfe3">
+<title>台羅拼音練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<style>
+/* 版面：仿課本封面——天空藍漸層到白、紫花樹、飄落的花瓣、白色紙卡；每個畫面都塞得進一個手機螢幕 */
+:root{
+  --sky:#8fcfe3; --sky-2:#c4e6f0; --paper:#fffdf8; --ink:#24414b; --muted:#5f7b84;
+  --teal:#2f7f9a; --teal-d:#1f5f74; --purple:#7d58b0; --lilac:#c6aee6; --leaf:#93bf3a;
+  --mark:#f7a983; --ok:#2f9a5d; --bad:#d4513c;
+  --display:"LXGW WenKai TC","Kaiti TC","DFKai-SB",serif;
+  --body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --lo:"Noto Sans","Segoe UI","Helvetica Neue",Arial,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+[hidden]{display:none!important}
+body{background:linear-gradient(180deg,var(--sky) 0%,var(--sky-2) 55%,#f4fafb 88%);color:var(--ink);font-family:var(--body);-webkit-tap-highlight-color:transparent;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
+button:focus-visible,a:focus-visible{outline:3px solid var(--purple);outline-offset:2px}
+.lo{font-family:var(--lo);letter-spacing:.02em}
+mark{background:linear-gradient(transparent 35%,var(--mark) 35%,var(--mark) 92%,transparent 92%);color:inherit;padding:0 1px}
+
+/* 背景：右上角花樹＋飄落花瓣＋地面白霧 */
+.bg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.tree{position:absolute;top:-30px;right:-60px;width:min(62vw,300px)}
+.ground{position:absolute;left:0;right:0;bottom:0;height:22%;background:radial-gradient(ellipse 70% 100% at 50% 100%,#fff 30%,transparent 75%)}
+.petal{position:absolute;top:-20px;width:12px;height:12px;color:var(--purple);opacity:.75;animation:fall var(--d) linear infinite;animation-delay:var(--dl)}
+.petal svg{display:block;width:100%;height:100%}
+@keyframes fall{0%{transform:translate(0,0) rotate(0)}100%{transform:translate(var(--dx),105vh) rotate(540deg)}}
+
+#app{position:relative;z-index:1;height:100%;max-width:560px;margin:0 auto;display:flex;flex-direction:column;
+  padding:calc(10px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.screen{flex:1;display:flex;flex-direction:column;min-height:0;gap:12px}
+
+/* 封面 */
+.hublink{align-self:flex-start;color:var(--teal-d);font-size:13px;text-decoration:none;padding:4px 0;font-weight:500}
+.hero{text-align:center;margin-top:2vh}
+.hero small{display:inline-block;font-size:13px;letter-spacing:.14em;color:var(--teal-d);background:rgba(255,255,255,.6);border-radius:999px;padding:3px 12px}
+.hero h1{margin:10px 0 0;font-family:var(--display);font-weight:700;font-size:clamp(42px,13vw,62px);line-height:1.1;color:#fff;letter-spacing:.06em;
+  text-shadow:0 3px 0 var(--teal),2px 0 0 var(--teal),-2px 0 0 var(--teal),0 -2px 0 var(--teal),2px 3px 0 var(--teal),-2px 3px 0 var(--teal),0 8px 18px rgba(31,95,116,.35)}
+.hero p{margin:10px 0 0;font-size:15px;color:var(--teal-d)}
+.modes{display:grid;gap:10px;margin-top:auto;overflow:auto;padding:4px 2px 2px}
+.mode{display:grid;grid-template-columns:54px 1fr;gap:14px;align-items:center;text-align:left;background:var(--paper);border:0;border-radius:18px;padding:12px 14px;
+  box-shadow:0 4px 0 rgba(47,127,154,.35),0 10px 20px rgba(31,95,116,.12)}
+.mode:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(47,127,154,.35)}
+.mode .num{width:54px;height:54px;border-radius:14px;display:grid;place-items:center;background:var(--purple);color:#fff;font-family:var(--display);font-size:26px;font-weight:700;box-shadow:inset 0 -4px 0 rgba(0,0,0,.15)}
+.mode:nth-child(2) .num{background:var(--teal)}
+.mode:nth-child(3) .num{background:#6f9f2a}
+.mode b{display:block;font-family:var(--display);font-size:23px;line-height:1.2}
+.mode .ex{display:block;font-size:13px;color:var(--muted);margin-top:2px}
+.mode .ex .lo{font-size:14px;color:var(--ink)}
+.mode .st{display:block;font-size:12.5px;color:var(--purple);margin-top:4px;font-weight:500}
+.mode .st b{display:inline;font-family:var(--body);font-size:15px}
+.credit{text-align:center;font-size:11.5px;line-height:1.5;color:var(--muted)}
+
+/* 遊戲中 */
+.hud{display:flex;align-items:center;gap:10px}
+.back{background:rgba(255,255,255,.75);border:0;border-radius:10px;padding:6px 12px;font-size:14px;color:var(--teal-d);font-weight:500}
+.hud .qn{flex:1;text-align:center;font-size:14px;color:var(--teal-d);font-weight:500}
+.hud .sc{font-size:14px;color:var(--teal-d)}
+.hud .sc b{font-size:20px;color:var(--purple)}
+.bar{height:8px;border-radius:4px;background:rgba(255,255,255,.6);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--lilac),var(--purple));border-radius:4px;transition:width .3s}
+.card{position:relative;background:var(--paper);border-radius:20px;padding:16px 16px 14px;text-align:center;box-shadow:0 4px 0 rgba(47,127,154,.3),0 12px 24px rgba(31,95,116,.12)}
+.card .kind{font-size:13px;color:var(--muted)}
+.card .han{font-family:var(--display);font-size:clamp(40px,12vw,56px);line-height:1.2;margin:4px 0 2px;letter-spacing:.08em}
+.card .han mark{background:linear-gradient(transparent 60%,var(--mark) 60%,var(--mark) 92%,transparent 92%)}
+.say{position:absolute;top:12px;right:12px;width:44px;height:44px;border-radius:50%;border:0;background:#e9f5f9;color:var(--teal-d);font-size:20px}
+.say:active{transform:scale(.94)}
+.tpl{font-size:clamp(24px,7.5vw,32px);line-height:1.5;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:2px 0}
+.tpl .dash{color:var(--muted);margin:0 2px}
+.blank{display:inline-grid;place-items:center;min-width:1.5em;height:1.35em;padding:0 4px;margin:0 1px;border:0;border-bottom:3px solid var(--lilac);background:#f4eefb;border-radius:6px 6px 2px 2px;font:inherit;color:var(--purple);font-weight:700;line-height:1}
+.blank.on{border-bottom-color:var(--purple);background:#e8dcf8;box-shadow:0 0 0 2px var(--lilac)}
+.blank.ok{color:var(--ok);background:#e3f4ea;border-bottom-color:var(--ok)}
+.blank.no{color:var(--bad);background:#fbe6e1;border-bottom-color:var(--bad);text-decoration:line-through}
+.hint{font-size:13px;color:var(--muted);margin-top:6px;min-height:1.4em}
+
+.pad{margin-top:auto;display:grid;gap:8px}
+.keys{display:grid;gap:8px}
+.key{height:48px;border:0;border-radius:12px;background:var(--paper);font-family:var(--lo);font-size:20px;font-weight:600;color:var(--ink);box-shadow:0 3px 0 rgba(47,127,154,.3)}
+.key:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(47,127,154,.3)}
+.key.v{color:#b5482a}.key.c{color:var(--teal-d)}.key.s{color:var(--purple)}
+.key.none{font-family:var(--body);font-size:16px}
+.ctl{display:grid;grid-template-columns:1fr 1fr 1.4fr;gap:8px}
+.ctl.two{grid-template-columns:1fr 1.6fr}
+.ctl button{height:48px;border:0;border-radius:12px;font-size:16px;font-weight:700}
+.ctl .del{background:rgba(255,255,255,.75);color:var(--muted)}
+.ctl .nx{background:#e8dcf8;color:var(--purple)}
+.ctl .go{background:var(--purple);color:#fff;box-shadow:0 3px 0 #5b3d86}
+.ctl .go:disabled{opacity:.45;box-shadow:none}
+.tones{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.tone{height:64px;border:2.5px solid var(--ink);border-radius:6px;background:var(--paper);font-family:var(--display);font-size:30px;font-weight:700;color:var(--ink);box-shadow:3px 3px 0 rgba(36,65,75,.25)}
+.tone:active{transform:translate(2px,2px);box-shadow:1px 1px 0 rgba(36,65,75,.25)}
+.tone small{display:block;font-family:var(--body);font-size:11px;font-weight:400;color:var(--muted);margin-top:-4px}
+
+.fb{margin-top:auto;background:var(--paper);border-radius:18px;padding:14px 16px;text-align:center;box-shadow:0 4px 0 rgba(47,127,154,.3)}
+.fb .r{font-size:22px;font-weight:700}
+.fb .r.ok{color:var(--ok)}.fb .r.no{color:var(--bad)}
+.fb .full{font-size:24px;margin:6px 0 2px}
+.fb .yours{font-size:13px;color:var(--muted)}
+.next{margin-top:10px;width:100%;height:50px;border:0;border-radius:14px;background:var(--purple);color:#fff;font-size:18px;font-weight:700;box-shadow:0 3px 0 #5b3d86}
+
+/* 結算 */
+.over{justify-content:center;text-align:center}
+.over h2{margin:0;font-family:var(--display);font-size:34px;color:#fff;text-shadow:0 3px 0 var(--teal),2px 0 0 var(--teal),-2px 0 0 var(--teal),0 -2px 0 var(--teal)}
+.over .big{font-family:var(--display);font-size:84px;line-height:1;color:var(--purple);font-weight:700}
+.over .big small{font-size:22px;color:var(--muted)}
+.over .today{font-size:14px;color:var(--teal-d)}
+.review{background:var(--paper);border-radius:16px;padding:10px 14px;text-align:left;max-height:30vh;overflow:auto;box-shadow:0 3px 0 rgba(47,127,154,.25)}
+.review h3{margin:0 0 4px;font-size:14px;color:var(--muted);font-weight:500}
+.review div{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-top:1px dashed #d9e7ec;font-size:15px}
+.review div:first-of-type{border-top:0}
+.review .no{color:var(--bad);font-size:13px}
+.btns{display:flex;gap:10px}
+.btns button{flex:1;height:50px;border:0;border-radius:14px;font-size:17px;font-weight:700}
+.btns .again{background:var(--purple);color:#fff;box-shadow:0 3px 0 #5b3d86}
+.btns .home{background:rgba(255,255,255,.85);color:var(--teal-d)}
+
+@media (min-width:700px){
+  .tree{width:340px;right:-40px}
+  #app{padding-top:24px}
+  /* 大螢幕：標題和模式卡片整組置中，不要中間空一大塊 */
+  #home{justify-content:center}
+  #home .hublink{position:absolute;top:24px}
+  .modes{margin-top:32px}
+}
+@media (prefers-reduced-motion:reduce){
+  .petal{animation:none;display:none}
+  .bar i{transition:none}
+}
+</style>
+</head>
+<body>
+<div class="bg" aria-hidden="true">
+  <svg class="tree" viewBox="0 0 300 260">
+    <g fill="none" stroke="#7a5a3c" stroke-linecap="round">
+      <path d="M300 40C250 60 200 90 150 140" stroke-width="10"/>
+      <path d="M205 95C190 70 175 55 150 45" stroke-width="5"/>
+      <path d="M170 122C140 120 110 130 85 150" stroke-width="5"/>
+      <path d="M250 62C255 100 250 130 235 160" stroke-width="4"/>
+    </g>
+    <g fill="#93bf3a" opacity=".85"><circle cx="120" cy="130" r="22"/><circle cx="230" cy="40" r="26"/><circle cx="255" cy="150" r="18"/><circle cx="165" cy="60" r="16"/><circle cx="90" cy="160" r="14"/></g>
+    <g fill="#9b78c9"><circle cx="140" cy="110" r="26"/><circle cx="190" cy="80" r="30"/><circle cx="250" cy="95" r="28"/><circle cx="105" cy="145" r="20"/><circle cx="160" cy="40" r="20"/><circle cx="230" cy="140" r="22"/><circle cx="285" cy="70" r="24"/></g>
+    <g fill="#c6aee6"><circle cx="150" cy="100" r="16"/><circle cx="200" cy="68" r="18"/><circle cx="258" cy="84" r="16"/><circle cx="112" cy="138" r="11"/><circle cx="236" cy="130" r="12"/><circle cx="168" cy="34" r="10"/></g>
+    <g fill="#fff" opacity=".55"><circle cx="196" cy="62" r="4"/><circle cx="146" cy="96" r="3"/><circle cx="254" cy="78" r="3.5"/><circle cx="232" cy="126" r="2.5"/></g>
+  </svg>
+  <div id="petals"></div>
+  <div class="ground"></div>
+</div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="flower" viewBox="0 0 20 20"><g fill="currentColor"><ellipse cx="10" cy="5" rx="3.2" ry="5"/><ellipse cx="10" cy="5" rx="3.2" ry="5" transform="rotate(72 10 10)"/><ellipse cx="10" cy="5" rx="3.2" ry="5" transform="rotate(144 10 10)"/><ellipse cx="10" cy="5" rx="3.2" ry="5" transform="rotate(216 10 10)"/><ellipse cx="10" cy="5" rx="3.2" ry="5" transform="rotate(288 10 10)"/></g><circle cx="10" cy="10" r="2.2" fill="#f4e7a1"/></symbol></svg>
+
+<div id="app">
+
+<section class="screen" id="home">
+  <a class="hublink" href="../../">‹ 全部遊戲</a>
+  <div class="hero">
+    <small>閩南語文・拼音練功</small>
+    <h1>台羅拼音練習</h1>
+    <p>聽錄音，揣出聲母、韻母佮聲調</p>
+  </div>
+  <div class="modes">
+    <button class="mode" data-m="ini"><span class="num">一</span><span><b>聲母</b><span class="ex">只考聲母　例：<span class="lo"><mark>tsh</mark>ia-<mark>l</mark>ōo</span></span><span class="st" data-st="ini"></span></span></button>
+    <button class="mode" data-m="fin"><span class="num">二</span><span><b>韻母</b><span class="ex">按字母拼出韻母　例：<span class="lo">tsh<mark>ia</mark>-l<mark>oo</mark></span></span><span class="st" data-st="fin"></span></span></button>
+    <button class="mode" data-m="tone"><span class="num">三</span><span><b>聲調</b><span class="ex">看漢字，選最後一字的聲調　例：車<mark>路</mark></span><span class="st" data-st="tone"></span></span></button>
+  </div>
+  <div class="credit">一回合 20 題・每題 5 分<br>錄音：教育部《臺灣台語常用詞辭典》CC BY-ND 3.0 TW、任課老師</div>
+</section>
+
+<section class="screen" id="play" hidden>
+  <div class="hud"><button class="back" id="quit">‹ 離開</button><span class="qn" id="qn"></span><span class="sc">分數 <b id="sc">0</b></span></div>
+  <div class="bar"><i id="bar"></i></div>
+  <div class="card">
+    <div class="kind" id="kind"></div>
+    <button class="say" id="say" aria-label="閣聽一擺">🔊</button>
+    <div class="han" id="han"></div>
+    <div class="tpl lo" id="tpl"></div>
+    <div class="hint" id="hint"></div>
+  </div>
+  <div class="pad" id="pad"></div>
+  <div class="fb" id="fb" hidden></div>
+</section>
+
+<section class="screen over" id="over" hidden>
+  <h2 id="oTitle"></h2>
+  <div class="big" id="oScore"></div>
+  <div class="today" id="oToday"></div>
+  <div class="review" id="oReview"></div>
+  <div class="btns"><button class="again" id="again">閣練一擺</button><button class="home" id="home2">回封面</button></div>
+</section>
+
+</div>
+<script src="bank.js"></script>
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+const N = 20, PT = 5;
+const MODES = {ini: '聲母', fin: '韻母', tone: '聲調'};
+
+// ── 台羅拆解：聲母、韻母（無調）、聲調 ──
+const INI = ['tsh', 'ts', 'ph', 'th', 'kh', 'ng', 'p', 'b', 'm', 't', 'n', 'l', 'k', 'g', 'h', 's', 'j'];
+const TONE_MARK = {'́': 2, '̀': 3, '̂': 5, '̄': 7, '̍': 8, '̋': 9};
+function parseSyl(raw) {
+  raw = raw.toLowerCase().normalize('NFC');
+  const nfd = raw.normalize('NFD');
+  let tone = 0;
+  for (const c of nfd) if (TONE_MARK[c]) tone = TONE_MARK[c];
+  const base = nfd.replace(/\p{M}/gu, '');
+  if (!tone) tone = /[ptkh]$/.test(base) ? 4 : 1;
+  // 成音節的 m、ng（毋 m̄、黃 n̂g、媠 hng 的 ng）本身就是韻母，無聲母
+  const ini = /^(m|ng)h?$/.test(base) ? '' : INI.find(i => base.startsWith(i) && base.length > i.length) || '';
+  return {raw, ini, fin: base.slice(ini.length), finT: raw.slice(ini.length), tone};
+}
+const sylls = lo => lo.split(/[-\s]+/).filter(Boolean).map(parseSyl);
+
+// ── 成績：tl_hist = [{m, s, t}]，封面顯示今日最高與平均 ──
+const KEY = 'tl_hist';
+const hist = () => { try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch (e) { return []; } };
+function addHist(m, s) { const h = hist(); h.push({m, s, t: Date.now()}); try { localStorage.setItem(KEY, JSON.stringify(h.slice(-500))); } catch (e) {} }
+function today(m) {
+  const d0 = new Date(); d0.setHours(0, 0, 0, 0);
+  const xs = hist().filter(r => r.m === m && r.t >= d0.getTime()).map(r => r.s);
+  return xs.length ? {n: xs.length, best: Math.max(...xs), avg: Math.round(xs.reduce((a, b) => a + b, 0) / xs.length)} : null;
+}
+function renderHome() {
+  for (const m in MODES) {
+    const t = today(m);
+    document.querySelector(`[data-st="${m}"]`).innerHTML = t ? `今日最高 <b>${t.best}</b>・平均 ${t.avg}・練 ${t.n} 擺` : '今仔日猶未練';
+  }
+}
+
+// ── 錄音 ──
+let audio = null;
+function play(src) { if (!src) return; try { if (audio) audio.pause(); audio = new Audio(src); audio.play().catch(() => {}); } catch (e) {} }
+
+// ── 畫面切換 ──
+function show(id) { for (const s of document.querySelectorAll('.screen')) s.hidden = s.id !== id; }
+
+// ── 一回合 ──
+let mode, qs, qi, score, cur, wrong;
+function start(m) {
+  mode = m; qi = 0; score = 0; wrong = [];
+  const pool = TL_BANK.filter(w => w.modes.includes(m));
+  qs = pool.map(w => [Math.random(), w]).sort((a, b) => a[0] - b[0]).slice(0, N).map(x => x[1]);
+  show('play'); next();
+}
+function next() {
+  if (qi >= qs.length) return finish();
+  const w = qs[qi], sy = sylls(w.lo);
+  cur = {w, sy, ans: mode === 'tone' ? [] : sy.map(() => ''), act: 0, done: false};
+  $('#qn').textContent = `第 ${qi + 1} / ${qs.length} 題`;
+  $('#sc').textContent = score;
+  $('#bar').style.width = (qi / qs.length * 100) + '%';
+  $('#kind').textContent = {ini: '這个詞的聲母是？', fin: '拼出這个詞的韻母', tone: '標色的字是第幾調？'}[mode];
+  const chars = [...w.han];
+  $('#han').innerHTML = mode === 'tone' ? esc(chars.slice(0, -1).join('')) + `<mark>${esc(chars[chars.length - 1])}</mark>` : esc(w.han);
+  $('#hint').textContent = {ini: '揀聲母，會自動跳下一格；無聲母揀「無」', fin: '字母會使重複按，拼好按「下一格」', tone: '聽錄音，揀 1～8 調（無第 6 調）'}[mode];
+  $('#fb').hidden = true; $('#pad').hidden = false;
+  drawTpl(); drawPad();
+  play(w.audio);
+}
+function drawTpl() {
+  const {sy, ans, act, done} = cur;
+  if (mode === 'tone') { $('#tpl').innerHTML = done ? fullLo('tone') : ''; return; }
+  $('#tpl').innerHTML = sy.map((s, i) => {
+    let cls = 'blank' + (!done && i === act ? ' on' : '');
+    if (done) cls += ans[i] === answerOf(i) ? ' ok' : ' no';
+    const b = `<button class="${cls}" data-b="${i}" ${done ? 'disabled' : ''}>${esc(ans[i]) || '＿'}</button>`;
+    return mode === 'ini' ? b + esc(s.finT) : esc(s.ini) + b;
+  }).join('<span class="dash">-</span>');
+}
+const answerOf = i => mode === 'ini' ? (cur.sy[i].ini || '無') : cur.sy[i].fin;
+function fullLo(m) {
+  return cur.sy.map((s, i) => {
+    if (m === 'ini') return (s.ini ? `<mark>${esc(s.ini)}</mark>` : '') + esc(s.finT);
+    if (m === 'fin') return esc(s.ini) + `<mark>${esc(s.finT)}</mark>`;
+    return i === cur.sy.length - 1 ? `<mark>${esc(s.raw)}</mark>` : esc(s.raw);
+  }).join('-');
+}
+
+const INI_KEYS = ['p', 'ph', 'b', 'm', 't', 'th', 'n', 'l', 'k', 'kh', 'g', 'ng', 'h', 'ts', 'tsh', 's', 'j', '無'];
+const FIN_ROWS = [['a', 'i', 'u', 'e', 'o'], ['m', 'n', 'g'], ['p', 't', 'k', 'h']];
+const TONES = [[1, '一'], [2, '二'], [3, '三'], [4, '四'], [5, '五'], [7, '七'], [8, '八']];
+function drawPad() {
+  let h = '';
+  if (mode === 'ini') {
+    h = `<div class="keys" style="grid-template-columns:repeat(6,1fr)">${INI_KEYS.map(k => `<button class="key c${k === '無' ? ' none' : ''}" data-k="${k}">${k}</button>`).join('')}</div>
+      <div class="ctl two"><button class="del" data-c="del">⌫ 清掉</button><button class="go" data-c="go">確定</button></div>`;
+  } else if (mode === 'fin') {
+    h = `<div class="keys" style="grid-template-columns:repeat(5,1fr)">${FIN_ROWS[0].map(k => `<button class="key v" data-k="${k}">${k}</button>`).join('')}</div>
+      <div class="keys" style="grid-template-columns:repeat(3,1fr) .4fr repeat(4,1fr)">${FIN_ROWS[1].map(k => `<button class="key s" data-k="${k}">${k}</button>`).join('')}<span></span>${FIN_ROWS[2].map(k => `<button class="key c" data-k="${k}">${k}</button>`).join('')}</div>
+      <div class="ctl"><button class="del" data-c="del">⌫</button><button class="nx" data-c="nx">下一格 ›</button><button class="go" data-c="go">確定</button></div>`;
+  } else {
+    h = `<div class="tones">${TONES.map(([n, z]) => `<button class="tone" data-t="${n}">${z}<small>第 ${n} 調</small></button>`).join('')}</div>`;
+  }
+  $('#pad').innerHTML = h;
+  syncGo();
+}
+function syncGo() { const g = $('#pad [data-c="go"]'); if (g) g.disabled = cur.ans.some(a => !a); }
+
+$('#tpl').addEventListener('click', e => {
+  const b = e.target.closest('[data-b]');
+  if (!b || cur.done) return;
+  cur.act = +b.dataset.b; drawTpl();
+});
+$('#pad').addEventListener('click', e => {
+  const t = e.target.closest('button');
+  if (!t || cur.done) return;
+  if (t.dataset.t) return judge(+t.dataset.t);
+  const k = t.dataset.k, c = t.dataset.c, n = cur.sy.length;
+  if (k) {
+    if (mode === 'ini') {
+      cur.ans[cur.act] = k;
+      const nxt = cur.ans.findIndex((a, i) => i > cur.act && !a);
+      cur.act = nxt >= 0 ? nxt : Math.min(cur.act + 1, n - 1);
+    } else if (cur.ans[cur.act].length < 6) cur.ans[cur.act] += k;
+  } else if (c === 'del') {
+    if (mode === 'ini') {
+      if (!cur.ans[cur.act] && cur.act > 0) cur.act--;
+      cur.ans[cur.act] = '';
+    } else if (cur.ans[cur.act]) cur.ans[cur.act] = cur.ans[cur.act].slice(0, -1);
+    else if (cur.act > 0) cur.act--;
+  } else if (c === 'nx') {
+    cur.act = (cur.act + 1) % n;
+  } else if (c === 'go') return judge();
+  drawTpl(); syncGo();
+});
+
+function judge(tone) {
+  const last = cur.sy[cur.sy.length - 1];
+  let ok, yours;
+  if (mode === 'tone') { ok = tone === last.tone; yours = `你揀第 ${tone} 調`; cur.ans = [String(tone)]; }
+  else { ok = cur.sy.every((s, i) => cur.ans[i] === answerOf(i)); yours = '你的答案：' + cur.ans.join(' - '); }
+  cur.done = true;
+  if (ok) score += PT; else wrong.push({han: cur.w.han, lo: cur.w.lo, yours: mode === 'tone' ? `第 ${tone} 調` : cur.ans.join('-')});
+  $('#sc').textContent = score;
+  drawTpl();
+  $('#pad').hidden = true;
+  const fb = $('#fb');
+  fb.innerHTML = `<div class="r ${ok ? 'ok' : 'no'}">${ok ? '⭕ 答對矣！' : '❌ 毋著'}${mode === 'tone' ? `　答案：第 ${last.tone} 調` : ''}</div>
+    <div class="full lo">${fullLo(mode)}</div>
+    ${ok ? '' : `<div class="yours">${esc(yours)}</div>`}
+    <button class="next" id="nextBtn">${qi + 1 >= qs.length ? '看成績' : '下一題 ›'}</button>`;
+  fb.hidden = false;
+  $('#nextBtn').onclick = () => { qi++; next(); };
+  $('#nextBtn').focus();
+  if (!ok) play(cur.w.audio);
+}
+
+function finish() {
+  if (audio) audio.pause();
+  $('#bar').style.width = '100%';
+  addHist(mode, score);
+  const t = today(mode);
+  $('#oTitle').textContent = MODES[mode] + '練習完成！';
+  $('#oScore').innerHTML = `${score}<small> / ${qs.length * PT}</small>`;
+  $('#oToday').textContent = `今日最高 ${t.best} 分・平均 ${t.avg} 分（練 ${t.n} 擺）`;
+  $('#oReview').innerHTML = wrong.length
+    ? '<h3>這幾題閣練一下</h3>' + wrong.map(r => `<div><span>${esc(r.han)}　<span class="lo">${esc(r.lo)}</span></span><span class="no">你：${esc(r.yours)}</span></div>`).join('')
+    : '<h3>全對！真勥！</h3>';
+  show('over');
+}
+
+document.querySelectorAll('[data-m]').forEach(b => b.onclick = () => start(b.dataset.m));
+$('#say').onclick = () => play(cur.w.audio);
+$('#quit').onclick = () => { if (audio) audio.pause(); renderHome(); show('home'); };
+$('#again').onclick = () => start(mode);
+$('#home2').onclick = () => { renderHome(); show('home'); };
+
+// 鍵盤也會使用（電腦版）：字母輸入、Backspace、Enter、空白鍵換格、1～8 選調
+addEventListener('keydown', e => {
+  if ($('#play').hidden || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (cur.done) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $('#nextBtn').click(); } return; }
+  if (mode === 'tone') { const n = +e.key; if ([1, 2, 3, 4, 5, 7, 8].includes(n)) judge(n); return; }
+  const btn = sel => { const b = $('#pad ' + sel); if (b && !b.disabled) { e.preventDefault(); b.click(); } };
+  if (e.key === 'Backspace') btn('[data-c="del"]');
+  else if (e.key === 'Enter') btn('[data-c="go"]');
+  else if (e.key === ' ' && mode === 'fin') btn('[data-c="nx"]');
+  else if (mode === 'fin' && /^[aiueomngptkh]$/i.test(e.key)) btn(`[data-k="${e.key.toLowerCase()}"]`);
+});
+
+// 飄落的花瓣
+(function () {
+  let h = '';
+  for (let k = 0; k < 10; k++) {
+    const d = 10 + Math.random() * 10, s = 8 + Math.random() * 8;
+    h += `<span class="petal" style="left:${(Math.random() * 100).toFixed(1)}%;width:${s.toFixed(0)}px;height:${s.toFixed(0)}px;--d:${d.toFixed(1)}s;--dl:-${(Math.random() * d).toFixed(1)}s;--dx:${(Math.random() * 120 - 60).toFixed(0)}px;color:${k % 3 ? '#9b78c9' : '#c6aee6'}"><svg viewBox="0 0 20 20"><use href="#flower"/></svg></span>`;
+  }
+  $('#petals').innerHTML = h;
+})();
+
+renderHome();
+</script>
+</body>
+</html>

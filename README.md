@@ -15,6 +15,7 @@
 | --- | --- | --- |
 | 🏮 來去踅夜市 | `games/yeshi/` | 台語課第一課單詞練習：台羅拼音、台羅＋詞義、台文填空 |
 | 🧧 過年好話押韻王 | `games/newyear/` | 過年吉祥話押韻：好話飄飄、翻紅包、搶答放炮 |
+| 🌸 台羅拼音練習 | `games/tailo/` | 聲母、韻母、聲調三種練習，一回合 20 題，封面顯示今日最高分與平均 |
 
 ## 結構
 
@@ -39,3 +40,11 @@ games/<id>/       每個遊戲一個資料夾，裡面的 index.html 可以單�
 ## 資料來源與授權
 
 〈來去踅夜市〉補充詞的台羅、釋義、例句，以及 `games/yeshi/audio/` 內的錄音，取自教育部《臺灣台語常用詞辭典》（https://sutian.moe.edu.tw/），依 CC BY-ND 3.0 TW 授權使用，錄音未經修改。
+
+## 台羅拼音練習：加新詞
+
+詳細步驟、題庫格式與待辦見 [`games/tailo/README.md`](games/tailo/README.md)。改完題庫後執行：
+
+```
+python3 games/tailo/tools/check_bank.py --fix
+```
