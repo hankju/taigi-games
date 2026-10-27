@@ -39,8 +39,22 @@ button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
   background:radial-gradient(circle at 62% 60%,rgba(190,140,60,.35) 0 9%,transparent 10%),radial-gradient(circle at 35% 68%,rgba(190,140,60,.25) 0 6%,transparent 7%),radial-gradient(circle at 55% 30%,rgba(190,140,60,.2) 0 5%,transparent 6%)}
 .rope{position:absolute;left:0;top:0;width:100%;height:var(--lan-h);overflow:visible}
 .lan{position:absolute;width:var(--w);margin-left:calc(var(--w) / -2);transform-origin:50% 0;animation:sway var(--d) ease-in-out infinite alternate;animation-delay:var(--dl)}
-.lan svg{display:block;width:100%;height:auto;filter:drop-shadow(0 0 10px var(--glow))}
+.lan svg{position:relative;display:block;width:100%;height:auto;animation:flick-b var(--fd) linear infinite;animation-delay:var(--fdl)}
 @keyframes sway{from{transform:rotate(-4deg)}to{transform:rotate(4deg)}}
+/* 燈籠閃爍：外圈光暈忽明忽暗，燈籠本身亮度跟著跳，每盞節奏都不同 */
+.lan .halo{position:absolute;left:50%;top:44%;width:270%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;
+  background:radial-gradient(circle,var(--glow) 0,transparent 62%);animation:flicker var(--fd) linear infinite;animation-delay:var(--fdl)}
+@keyframes flicker{0%,100%{opacity:.8}7%{opacity:.45}9%{opacity:.95}30%{opacity:.7}33%{opacity:1}55%{opacity:.75}57%{opacity:.4}60%{opacity:.9}82%{opacity:.7}}
+@keyframes flick-b{0%,100%{filter:brightness(1)}7%{filter:brightness(.82)}9%{filter:brightness(1.12)}33%{filter:brightness(1.18)}57%{filter:brightness(.8)}60%{filter:brightness(1.08)}}
+/* 月娘光暈慢慢呼吸 */
+.moon::before{content:"";position:absolute;inset:-40%;z-index:-1;border-radius:50%;background:radial-gradient(circle,rgba(247,217,142,.35),transparent 65%);animation:breathe 6s ease-in-out infinite}
+@keyframes breathe{0%,100%{opacity:.5;transform:scale(.92)}50%{opacity:1;transform:scale(1.05)}}
+/* 廟窗燈火微微跳動、夜市燈串輪流閃 */
+.win{animation:win-flick var(--wd) ease-in-out infinite;animation-delay:var(--wdl)}
+@keyframes win-flick{0%,100%{opacity:var(--o)}40%{opacity:calc(var(--o) * .55)}45%{opacity:calc(var(--o) * 1.3)}70%{opacity:calc(var(--o) * .85)}}
+.bulb{animation:twinkle 1.6s ease-in-out infinite}
+.bulb.b{animation-delay:-.8s}
+@keyframes twinkle{0%,100%{opacity:1}50%{opacity:.2}}
 .cloud{position:absolute;color:var(--gold);opacity:.13}
 .cloud.c1{left:-30px;top:44%;width:180px}
 .cloud.c2{right:-20px;top:28%;width:150px;transform:scaleX(-1)}
@@ -158,7 +172,7 @@ dialog::backdrop{background:rgba(10,7,4,.75);-webkit-backdrop-filter:blur(4px);b
 @media (prefers-reduced-motion:reduce){
   .game,.soon{animation:none;transition:none}
   .play i{transition:none}
-  .lan{animation:none}
+  .lan,.lan svg,.lan .halo,.moon::before,.win,.bulb{animation:none}
   .spark{display:none}
 }
 </style>
@@ -291,7 +305,7 @@ function drawLanterns() {
   for (let k = 0; k < n; k++) {
     const x = (k + .5) / n, y = 2 + 4 * sag * x * (1 - x);
     const red = k % 2 === 0, w = (big ? 38 : 26) * (red ? 1 : .82);
-    html += `<div class="lan" style="left:${(x * 100).toFixed(2)}%;top:calc(var(--lan-h) * ${(y / 100).toFixed(3)} - 2px);--w:${w}px;--d:${(2.6 + (k % 3) * .7).toFixed(1)}s;--dl:-${(k * .45).toFixed(2)}s;--glow:${red ? 'rgba(230,80,50,.55)' : 'rgba(242,184,75,.5)'}"><svg viewBox="0 0 40 70"><use href="#${red ? 'lanR' : 'lanG'}"/></svg></div>`;
+    html += `<div class="lan" style="left:${(x * 100).toFixed(2)}%;top:calc(var(--lan-h) * ${(y / 100).toFixed(3)} - 2px);--w:${w}px;--d:${(2.6 + (k % 3) * .7).toFixed(1)}s;--dl:-${(k * .45).toFixed(2)}s;--fd:${(2.4 + Math.random() * 2.6).toFixed(2)}s;--fdl:-${(Math.random() * 4).toFixed(2)}s;--glow:${red ? 'rgba(235,85,50,.5)' : 'rgba(250,195,90,.45)'}"><i class="halo"></i><svg viewBox="0 0 40 70"><use href="#${red ? 'lanR' : 'lanG'}"/></svg></div>`;
   }
   $('#lanterns').innerHTML = html;
 }
@@ -316,7 +330,7 @@ function roof(cx, yb, W, H) {
   return `<path d="${body}${ridge}" fill="var(--sil)"/><path d="${rim}" fill="none" stroke="rgba(242,184,75,.28)" stroke-width="1.5"/>`;
 }
 function drawSky() {
-  const G = 240, glow = (x, y, w, h, o) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2" fill="#f2a64a" opacity="${o}"/>`;
+  const G = 240, glow = (x, y, w, h, o) => `<rect class="win" x="${x}" y="${y}" width="${w}" height="${h}" rx="2" fill="#f2a64a" opacity="${o}" style="--o:${o};--wd:${(3 + Math.random() * 3).toFixed(1)}s;--wdl:-${(Math.random() * 5).toFixed(1)}s"/>`;
   let s = `<svg viewBox="0 0 1440 ${G}" preserveAspectRatio="xMidYMax slice" style="--sil:#0b0805">`;
   // 遠山
   s += `<path d="M0 ${G}V170Q160 130 330 160T700 150T1060 155T1440 165V${G}Z" fill="#1c150e"/>`;
@@ -328,7 +342,8 @@ function drawSky() {
     s += `<path d="M${a} 150Q${(a + b) / 2} 196 ${b} 150" fill="none" stroke="#3a2a18" stroke-width="1"/>`;
     for (let t = .06; t < 1; t += .08) {
       const x = a + (b - a) * t, y = 150 + 92 * t * (1 - t);
-      s += `<circle cx="${x.toFixed(1)}" cy="${(y + 3).toFixed(1)}" r="3" fill="${Math.round(t * 12) % 2 ? '#f2b84b' : '#e2553c'}" opacity=".85"/>`;
+      const odd = Math.round(t * 12) % 2;
+      s += `<circle class="bulb${odd ? ' b' : ''}" cx="${x.toFixed(1)}" cy="${(y + 3).toFixed(1)}" r="3" fill="${odd ? '#f2b84b' : '#e2553c'}"/>`;
     }
   }
   // 樹影
