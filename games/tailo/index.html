@@ -25,7 +25,8 @@ body{background:linear-gradient(180deg,var(--sky) 0%,var(--sky-2) 55%,#f4fafb 88
 button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
 button:focus-visible,a:focus-visible{outline:3px solid var(--purple);outline-offset:2px}
 .lo{font-family:var(--lo);letter-spacing:.02em}
-mark{background:linear-gradient(transparent 35%,var(--mark) 35%,var(--mark) 92%,transparent 92%);color:inherit;padding:0 1px}
+/* 標色：整個字用半透明色塊蓋住（像螢光筆塗滿），不要只畫下半部 */
+mark{background:rgba(247,169,131,.55);color:inherit;padding:0 2px;border-radius:4px;-webkit-box-decoration-break:clone;box-decoration-break:clone}
 
 /* 背景：右上角花樹＋飄落花瓣＋地面白霧 */
 .bg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
@@ -71,7 +72,7 @@ mark{background:linear-gradient(transparent 35%,var(--mark) 35%,var(--mark) 92%,
 .card{position:relative;background:var(--paper);border-radius:20px;padding:16px 16px 14px;text-align:center;box-shadow:0 4px 0 rgba(47,127,154,.3),0 12px 24px rgba(31,95,116,.12)}
 .card .kind{font-size:13px;color:var(--muted)}
 .card .han{font-family:var(--display);font-size:clamp(40px,12vw,56px);line-height:1.2;margin:4px 0 2px;letter-spacing:.08em}
-.card .han mark{background:linear-gradient(transparent 60%,var(--mark) 60%,var(--mark) 92%,transparent 92%)}
+.card .han mark{padding:0 .06em;margin:0 .02em;border-radius:10px}
 .say{position:absolute;top:12px;right:12px;width:44px;height:44px;border-radius:50%;border:0;background:#e9f5f9;color:var(--teal-d);font-size:20px}
 .say:active{transform:scale(.94)}
 .tpl{font-size:clamp(24px,7.5vw,32px);line-height:1.5;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:2px 0}
