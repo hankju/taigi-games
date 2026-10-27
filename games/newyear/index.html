@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>[hidden]{display:none!important}body{margin:0}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);box-sizing:border-box}</style>
+<title>過年好話押韻王</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;700&display=swap">
+<style>
+/* 版面：單一畫面手機遊戲，紅紙春聯底、金字、米色紙卡；刻意只用一套配色 */
+:root{
+  --red:#8e1b20; --red-2:#b0282c; --red-deep:#5c0f13;
+  --gold:#f2c14e; --gold-soft:#ffe3a1;
+  --paper:#fff4dc; --ink:#3a1410;
+  --ok:#1f8a55; --bad:#4a0b0e;
+  --display:"LXGW WenKai TC","Kaiti TC","DFKai-SB","BiauKai",serif;
+  --body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  color-scheme:light;
+}
+html,body{height:100%}
+body{background:var(--red);color:var(--paper);font-family:var(--body);overscroll-behavior:none;-webkit-tap-highlight-color:transparent;
+  background-image:radial-gradient(circle at 20% 10%,rgba(255,200,120,.12),transparent 40%),radial-gradient(circle at 90% 90%,rgba(0,0,0,.25),transparent 50%)}
+#app{height:100%;max-width:560px;margin:0 auto;display:flex;flex-direction:column;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:8px;box-sizing:border-box}
+.screen{flex:1;display:flex;flex-direction:column;min-height:0;gap:12px}
+button{font:inherit;cursor:pointer;touch-action:manipulation}
+button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+em{font-style:normal;color:var(--red-2);background:var(--gold-soft);border-radius:4px;padding:0 2px}
+
+/* 首頁 */
+.hero{text-align:center;padding-top:12px}
+.hero h1{font-family:var(--display);font-size:clamp(34px,10vw,52px);color:var(--gold);margin:0;letter-spacing:.06em;text-shadow:0 3px 0 var(--red-deep)}
+.hero p{margin:6px 0 0;color:var(--gold-soft);font-size:15px}
+.diamond{display:inline-grid;place-items:center;width:58px;height:58px;background:var(--gold);color:var(--red);transform:rotate(45deg);margin:10px auto 14px;border-radius:6px;box-shadow:0 4px 0 var(--red-deep)}
+.diamond span{transform:rotate(-45deg);font-family:var(--display);font-size:32px;font-weight:700}
+.modes{display:grid;gap:12px;overflow:auto;padding-bottom:8px}
+.mode{display:grid;grid-template-columns:56px 1fr auto;gap:12px;align-items:center;text-align:left;background:var(--paper);color:var(--ink);border:0;border-radius:14px;padding:14px;box-shadow:0 4px 0 var(--red-deep)}
+.mode:active{transform:translateY(2px);box-shadow:0 2px 0 var(--red-deep)}
+.mode .ic{font-size:36px;text-align:center}
+.mode b{font-family:var(--display);font-size:22px;display:block}
+.mode small{color:#7a4a3a;font-size:13px;line-height:1.4;display:block}
+.mode .best{font-size:12px;color:var(--red-2);font-weight:700;white-space:nowrap}
+.foot{text-align:center;font-size:12px;color:var(--gold-soft);opacity:.8}
+.toprow{display:flex;justify-content:space-between;align-items:center}
+.hublink{color:var(--gold);font-size:13px;text-decoration:none;padding:4px 0}
+.soundbtn{background:transparent;border:1px solid var(--gold);color:var(--gold);border-radius:20px;padding:4px 10px;font-size:13px}
+
+/* 遊戲共用上方列 */
+.hud{display:flex;align-items:center;gap:10px}
+.back{background:transparent;color:var(--gold);border:1px solid var(--gold);border-radius:10px;padding:6px 10px;font-size:14px}
+.hud .stat{flex:1;display:flex;justify-content:flex-end;gap:14px;font-variant-numeric:tabular-nums;font-size:15px}
+.hud .stat b{color:var(--gold);font-size:20px}
+.timebar{height:8px;background:var(--red-deep);border-radius:4px;overflow:hidden}
+.timebar i{display:block;height:100%;width:100%;background:var(--gold);transform-origin:left;transition:background .3s}
+.timebar.low i{background:#ff7a59}
+.prompt{background:var(--paper);color:var(--ink);border-radius:14px;padding:12px 14px;text-align:center;box-shadow:0 4px 0 var(--red-deep)}
+.prompt small{display:block;font-size:13px;color:#7a4a3a}
+.prompt .txt{font-family:var(--display);font-size:clamp(24px,7vw,32px);line-height:1.3}
+.combo{position:absolute;left:50%;transform:translateX(-50%);font-family:var(--display);color:var(--gold);font-size:22px;pointer-events:none;text-shadow:0 2px 0 var(--red-deep)}
+
+/* 好話飄飄 */
+.field{position:relative;flex:1;overflow:hidden;border-radius:16px;background:linear-gradient(var(--red-2),var(--red));border:2px dashed rgba(242,193,78,.35);touch-action:none}
+.token{position:absolute;left:0;top:0;width:96px;height:96px;border-radius:50%;border:3px solid var(--gold);background:var(--paper);color:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0;box-shadow:0 4px 0 var(--red-deep);will-change:transform}
+.token .ic{font-size:34px;line-height:1}
+.token .nm{font-family:var(--display);font-size:17px;font-weight:700;margin-top:2px;white-space:nowrap}
+.token.wrong{background:#ffb3a3;animation:shake .35s}
+@keyframes shake{25%{margin-left:-6px}75%{margin-left:6px}}
+
+/* 搶答 */
+.opts{display:grid;gap:10px;flex:1;align-content:start}
+.opt{background:var(--red-deep);color:var(--paper);border:2px solid var(--gold);border-radius:14px;padding:14px 12px;font-family:var(--display);font-size:clamp(20px,5.6vw,24px);text-align:left;display:flex;gap:10px;align-items:center}
+.opt .ic{font-size:26px}
+.opt.right{background:var(--ok)}
+.opt.no{background:#6b1a1d;opacity:.6}
+.opt.bad{background:#c0392b}
+.qno{text-align:center;color:var(--gold-soft);font-size:14px}
+
+/* 翻紅包 */
+.grid{flex:1;display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;gap:10px;min-height:0}
+.card{perspective:600px;border:0;background:transparent;padding:0;min-height:0}
+.card .in{position:relative;width:100%;height:100%;transition:transform .35s;transform-style:preserve-3d}
+.card.open .in{transform:rotateY(180deg)}
+.card .f,.card .b{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:12px;display:flex;align-items:center;justify-content:center}
+.card .f{background:var(--red-2);border:2px solid var(--gold);box-shadow:0 4px 0 var(--red-deep)}
+.card .f span{width:46px;height:46px;border-radius:50%;background:var(--gold);color:var(--red);font-family:var(--display);font-size:28px;font-weight:700;display:grid;place-items:center}
+.card .b{background:var(--paper);color:var(--ink);transform:rotateY(180deg);flex-direction:column;padding:6px 8px;font-family:var(--display);font-size:clamp(16px,4.6vw,20px);line-height:1.3;text-align:center;border:2px solid var(--gold)}
+.card .b .ic{font-size:24px}
+.card.done .b{background:#d9f2e3;border-color:var(--ok)}
+.round{text-align:center;color:var(--gold-soft);font-size:14px}
+
+/* 題庫 */
+.list{overflow:auto;display:grid;gap:8px;padding-bottom:12px}
+.row{background:var(--paper);color:var(--ink);border-radius:12px;padding:10px 12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center}
+.row .ic{font-size:26px;text-align:center}
+.row .t{font-family:var(--display);font-size:19px}
+.row .tl{font-size:13px;color:#7a4a3a}
+.row .g{font-size:12px;color:var(--red-2);font-weight:700}
+
+/* 我的成績 */
+.hbest{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.hbest div{background:var(--paper);color:var(--ink);border-radius:12px;padding:8px;text-align:center}
+.hbest small{display:block;font-size:12px;color:#7a4a3a}
+.hbest b{font-family:var(--display);font-size:28px;color:var(--red-2);font-variant-numeric:tabular-nums}
+.hrow{background:var(--paper);color:var(--ink);border-radius:10px;padding:8px 12px;display:grid;grid-template-columns:2.2em 1fr auto;gap:8px;align-items:center;font-variant-numeric:tabular-nums}
+.hrow .no{color:#7a4a3a;font-size:13px}
+.hrow .m{font-size:15px}
+.hrow .m small{display:block;color:#7a4a3a;font-size:12px}
+.hrow .s{font-family:var(--display);font-size:24px}
+.hrow.top{background:var(--gold-soft);outline:2px solid var(--gold)}
+.hrow.top .s::after{content:" 🏆";font-size:16px}
+.htabs{display:flex;gap:6px;flex-wrap:wrap}
+.htabs button{flex:1;background:transparent;color:var(--gold);border:1px solid var(--gold);border-radius:20px;padding:6px 8px;font-size:14px}
+.htabs button[aria-pressed="true"]{background:var(--gold);color:var(--red-deep);font-weight:700}
+.empty{color:var(--gold-soft);text-align:center;padding:24px 0}
+
+/* 結算 */
+.over{align-items:center;justify-content:center;text-align:center}
+.over h2{font-family:var(--display);font-size:40px;color:var(--gold);margin:0}
+.over .big{font-family:var(--display);font-size:72px;color:var(--paper);line-height:1;font-variant-numeric:tabular-nums}
+.over p{margin:0;color:var(--gold-soft)}
+.btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:10px}
+.btn{background:var(--gold);color:var(--red-deep);border:0;border-radius:12px;padding:12px 22px;font-size:18px;font-weight:700;box-shadow:0 4px 0 var(--red-deep)}
+.btn.ghost{background:transparent;color:var(--gold);border:2px solid var(--gold);box-shadow:none}
+
+/* 提示與特效 */
+.toast{position:fixed;left:50%;top:calc(70px + env(safe-area-inset-top,0px));transform:translateX(-50%);background:var(--paper);color:var(--ink);border:2px solid var(--gold);padding:8px 14px;border-radius:12px;font-size:15px;z-index:20;pointer-events:none;white-space:nowrap;max-width:92vw;overflow:hidden;text-overflow:ellipsis;transition:opacity .25s}
+.toast.hide{opacity:0}
+.spark{position:fixed;width:9px;height:9px;border-radius:50%;pointer-events:none;z-index:30;animation:spark .7s ease-out forwards}
+@keyframes spark{to{transform:translate(var(--dx),var(--dy)) scale(.2);opacity:0}}
+.pop{position:fixed;pointer-events:none;z-index:31;font-family:var(--display);font-weight:700;color:var(--gold);font-size:24px;text-shadow:0 2px 0 var(--red-deep);animation:pop .8s ease-out forwards}
+@keyframes pop{to{transform:translateY(-50px);opacity:0}}
+@media (prefers-reduced-motion:reduce){.card .in{transition:none}.spark,.pop{animation-duration:.01s}}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <section class="screen" id="home">
+    <div class="toprow"><a class="hublink" href="../../">‹ 全部遊戲</a><button class="soundbtn" id="sound" aria-label="切換音效">🔊 音效</button></div>
+    <div class="hero">
+      <div class="diamond"><span>春</span></div>
+      <h1>過年好話押韻王</h1>
+      <p>食物配好話，押韻押予著！</p>
+    </div>
+    <div class="modes">
+      <button class="mode" data-go="float"><span class="ic">🎈</span><span><b>好話飄飄</b><small>食物飄上來，60 秒內點中 10 個押韻的。點錯扣 3 秒。</small></span><span class="best" data-best="float"></span></button>
+      <button class="mode" data-go="memo"><span class="ic">🧧</span><span><b>翻紅包</b><small>翻開兩個紅包，上下半句押韻就配成一對。3 關，剩越多秒分越高。</small></span><span class="best" data-best="memo"></span></button>
+      <button class="mode" data-go="quiz"><span class="ic">🧨</span><span><b>搶答放炮</b><small>10 題，每題 8 秒，選出押韻的另一半，越快答分越高。</small></span><span class="best" data-best="quiz"></span></button>
+      <button class="mode" data-go="hist"><span class="ic">🏆</span><span><b>我的成績</b><small>每一局的分數都記在這裡，最高分會標出來。</small></span><span></span></button>
+      <button class="mode" data-go="list"><span class="ic">📜</span><span><b>好話題庫</b><small>看全部的吉祥話和押韻字的台羅。</small></span><span></span></button>
+    </div>
+    <div class="foot">押同一個韻就算對，對調也通！</div>
+  </section>
+
+  <section class="screen" id="float" hidden>
+    <div class="hud"><button class="back">‹ 離開</button><div class="stat"><span>分數 <b class="sc">0</b></span><span>⏱ <b class="tm">60</b></span></div></div>
+    <div class="timebar"><i></i></div>
+    <div class="prompt"><small id="fHint">點出押韻的食物</small><div class="txt" id="fPrompt"></div></div>
+    <div class="field" id="field"></div>
+  </section>
+
+  <section class="screen" id="quiz" hidden>
+    <div class="hud"><button class="back">‹ 離開</button><div class="stat"><span>分數 <b class="sc">0</b></span><span>連擊 <b class="cb">0</b></span></div></div>
+    <div class="timebar"><i></i></div>
+    <div class="qno" id="qNo"></div>
+    <div class="prompt"><small id="qHint"></small><div class="txt" id="qPrompt"></div></div>
+    <div class="opts" id="qOpts"></div>
+  </section>
+
+  <section class="screen" id="memo" hidden>
+    <div class="hud"><button class="back">‹ 離開</button><div class="stat"><span>分數 <b class="sc">0</b></span><span>⏱ <b class="tm">100</b></span></div></div>
+    <div class="timebar"><i></i></div>
+    <div class="round" id="mRound"></div>
+    <div class="grid" id="mGrid"></div>
+  </section>
+
+  <section class="screen" id="hist" hidden>
+    <div class="hud"><button class="back">‹ 回首頁</button></div>
+    <div class="hbest" id="hBest"></div>
+    <div class="htabs" id="hTabs"></div>
+    <div class="list" id="hList"></div>
+  </section>
+
+  <section class="screen" id="list" hidden>
+    <div class="hud"><button class="back">‹ 回首頁</button></div>
+    <div class="list" id="lList"></div>
+  </section>
+
+  <section class="screen over" id="over" hidden>
+    <h2 id="oTitle">時間到！</h2>
+    <p>這回得分（滿分 100）</p>
+    <div class="big" id="oScore">0</div>
+    <p id="oBest"></p>
+    <div class="btns"><button class="btn" id="oAgain">再玩一次</button><button class="btn ghost" id="oHome">回首頁</button></div>
+  </section>
+</div>
+<div class="toast hide" id="toast"></div>
+
+<script>
+// 題庫：u 上半句、l 下半句、g 韻腳分組（同組可互換）、ut/lt 韻腳字台羅、ic 圖示
+const D=[
+  {u:'正月正',l:'金銀財寶滿大廳',g:'iann',ut:'tsiann',lt:'thiann',ic:'🧧'},
+  {u:'恭喜發財',l:'祝你好額食三代',g:'ai',ut:'tsâi',lt:'tāi',ic:'💰'},
+  {u:'食菜頭',l:'好彩頭',g:'au',ut:'thâu',lt:'thâu',ic:'🥕'},
+  {u:'食塗豆',l:'食甲老老老',g:'au',ut:'tāu',lt:'lāu',ic:'🥜'},
+  {u:'食瓜子',l:'樓仔厝直直起',g:'i',ut:'tsí',lt:'khí',ic:'🌻'},
+  {u:'食麻糍',l:'予你年年趁大錢',g:'i',ut:'tsî',lt:'tsînn',ic:'🍡'},
+  {u:'食紅柿',l:'予你事事攏如意',g:'i',ut:'khī',lt:'ì',ic:'🍅'},
+  {u:'食紅棗',l:'年年好',g:'o',ut:'tsó',lt:'hó',ic:'🍒'},
+  {u:'食甜粿',l:'予你賺家伙',g:'ue',ut:'kué',lt:'hué',ic:'🍮'},
+  {u:'食紅茶',l:'予你身體健康無問題',g:'e',ut:'tê',lt:'tê',ic:'🍵'},
+  {u:'食龍眼',l:'賺錢若海湧',g:'ing',ut:'gíng',lt:'íng',ic:'🌰'},
+  {u:'食甜甜',l:'予你好緣規厝邊',g:'i',ut:'tinn',lt:'pinn',ic:'🍭'},
+  {u:'食鹹鹹',l:'予你做人做事無人嫌',g:'iam',ut:'kiâm',lt:'hiâm',ic:'🧂'},
+  {u:'食貢丸',l:'予你現金開袂完',g:'uan',ut:'uân',lt:'uân',ic:'🍢'},
+  {u:'食肉餅',l:'予你代代出好囝',g:'iann',ut:'piánn',lt:'kiánn',ic:'🥮'},
+  {u:'食餅糖',l:'予你有好田園',g:'ng',ut:'thn̂g',lt:'hn̂g',ic:'🍪'},
+  {u:'食雞',l:'予你會起家',g:'e',ut:'ke',lt:'ke',ic:'🐔'},
+  {u:'食鳳梨',l:'予你旺旺來',g:'ai',ut:'lâi',lt:'lâi',ic:'🍍'},
+  {u:'食魚',l:'予你年年有餘',g:'i',ut:'hî',lt:'î',ic:'🐟'},
+];
+const $=s=>document.querySelector(s);
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const hl=s=>'<span>'+s+'</span>';
+const rhymeText=(a,b)=>`${a.u.slice(-1)} ${a.ut} ／ ${b.l.slice(-1)} ${b.lt}`;
+
+// 最高分（只存在這支手機）
+const store={get(k){try{return +localStorage.getItem('hy2_'+k)||0}catch(e){return 0}},set(k,v){try{localStorage.setItem('hy2_'+k,v)}catch(e){}}};
+// 每局成績紀錄（只存在這支手機）
+function getHist(){try{return JSON.parse(localStorage.getItem('hy2_hist'))||[]}catch(e){return[]}}
+function addHist(m,s){const h=getHist();h.push({m,s,t:Date.now()});try{localStorage.setItem('hy2_hist',JSON.stringify(h.slice(-300)))}catch(e){}}
+let histFilter='all';
+function fmtTime(t){const d=new Date(t),p=n=>String(n).padStart(2,'0');return `${d.getMonth()+1}/${d.getDate()} ${p(d.getHours())}:${p(d.getMinutes())}`}
+function renderHist(){const h=getHist();
+  $('#hBest').innerHTML=['float','memo','quiz'].map(m=>{const xs=h.filter(r=>r.m===m);return `<div><small>${TITLE[m]} 最高</small><b>${xs.length?Math.max(...xs.map(r=>r.s)):'—'}</b><small>玩了 ${xs.length} 次</small></div>`}).join('');
+  $('#hTabs').innerHTML=[['all','全部'],['float','好話飄飄'],['memo','翻紅包'],['quiz','搶答放炮']].map(([k,n])=>`<button data-f="${k}" aria-pressed="${histFilter===k}">${n}</button>`).join('');
+  $('#hTabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{histFilter=b.dataset.f;renderHist()});
+  const rows=h.map((r,i)=>({...r,i})).filter(r=>histFilter==='all'||r.m===histFilter);
+  if(!rows.length){$('#hList').innerHTML='<div class="empty">還沒有紀錄，先去玩一局吧！</div>';return}
+  const best={};h.forEach(r=>{if(!best[r.m]||r.s>best[r.m].s)best[r.m]=r});
+  const no={};h.forEach(r=>{no[r.m]=(no[r.m]||0)+1;r.n=no[r.m]});
+  $('#hList').innerHTML=rows.reverse().map(r=>`<div class="hrow${best[r.m]===h[r.i]?' top':''}"><span class="no">#${h[r.i].n}</span><span class="m">${TITLE[r.m]}<small>${fmtTime(r.t)}</small></span><span class="s">${r.s}</span></div>`).join('')}
+function showBest(){document.querySelectorAll('[data-best]').forEach(el=>{const b=store.get(el.dataset.best);el.textContent=b?'最高 '+b:''})}
+
+// 音效
+let ac=null,muted=false;
+function tone(f,d=.12,type='triangle',v=.15){if(muted)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(v,ac.currentTime);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+d);o.connect(g).connect(ac.destination);o.start();o.stop(ac.currentTime+d)}catch(e){}}
+const sfx={ok(){tone(784);setTimeout(()=>tone(1046),80)},bad(){tone(180,.25,'sawtooth',.1);try{navigator.vibrate&&navigator.vibrate(120)}catch(e){}},flip(){tone(520,.06)},end(){[523,659,784,1046].forEach((f,i)=>setTimeout(()=>tone(f,.18),i*110))}};
+$('#sound').onclick=()=>{muted=!muted;$('#sound').textContent=muted?'🔇 靜音':'🔊 音效'};
+
+// 特效
+let toastT;
+function toast(html){const t=$('#toast');t.innerHTML=html;t.classList.remove('hide');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.add('hide'),1400)}
+function burst(x,y,pts){const cs=['#f2c14e','#ffe3a1','#ff7a59','#fff'];for(let i=0;i<14;i++){const s=document.createElement('i');s.className='spark';const a=Math.random()*Math.PI*2,r=40+Math.random()*50;s.style.cssText=`left:${x}px;top:${y}px;background:${rnd(cs)};--dx:${Math.cos(a)*r}px;--dy:${Math.sin(a)*r}px`;document.body.appendChild(s);setTimeout(()=>s.remove(),750)}
+  if(pts){const p=document.createElement('div');p.className='pop';p.textContent='+'+pts;p.style.left=(x-20)+'px';p.style.top=(y-30)+'px';document.body.appendChild(p);setTimeout(()=>p.remove(),850)}}
+const center=el=>{const r=el.getBoundingClientRect();return[r.left+r.width/2,r.top+r.height/2]};
+
+// 畫面切換
+let cur='home',stopFn=null,lastMode=null;
+function go(id){if(stopFn){stopFn();stopFn=null}
+  document.querySelectorAll('.screen').forEach(s=>s.hidden=s.id!==id);cur=id;
+  if(id==='home')showBest();
+  if(id==='float'){lastMode=id;startFloat()}
+  if(id==='quiz'){lastMode=id;startQuiz()}
+  if(id==='memo'){lastMode=id;startMemo()}
+  if(id==='list')renderList();
+  if(id==='hist')renderHist()}
+document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{tone(660,.05);go(b.dataset.go)});
+document.querySelectorAll('.back').forEach(b=>b.onclick=()=>go('home'));
+$('#oAgain').onclick=()=>go(lastMode);
+$('#oHome').onclick=()=>go('home');
+const TITLE={float:'好話飄飄',quiz:'搶答放炮',memo:'翻紅包'};
+function gameOver(mode,score,title){if(stopFn){stopFn();stopFn=null}
+  const best=store.get(mode),isNew=score>best;if(isNew)store.set(mode,score);addHist(mode,score);
+  document.querySelectorAll('.screen').forEach(s=>s.hidden=s.id!=='over');
+  $('#oTitle').textContent=title;$('#oScore').textContent=score;
+  $('#oBest').textContent=isNew&&score>0?'🎉 新紀錄！':`${TITLE[mode]} 最高分：${Math.max(best,score)}`;sfx.end()}
+function setBar(scr,frac){const bar=scr.querySelector('.timebar');bar.querySelector('i').style.transform=`scaleX(${Math.max(0,frac)})`;bar.classList.toggle('low',frac<.25)}
+
+// ===== 好話飄飄 =====
+function startFloat(){
+  const scr=$('#float'),field=$('#field');field.innerHTML='';
+  const T=60,GOAL=10;let time=T,score=0,combo=0,hits=0,P=null,promptAt=0,tokens=[],spawnCd=0,raf,last=performance.now(),clock=0,alive=true;
+  const sc=scr.querySelector('.sc'),tm=scr.querySelector('.tm');
+  function newPrompt(){let n;do{n=rnd(D)}while(P&&n.g===P.g);P=n;promptAt=clock;$('#fPrompt').innerHTML=hl(P.l);$('#fHint').textContent=`點出押韻的食物（${hits+1}／${GOAL}）`}
+  function spawn(){const W=field.clientWidth,H=field.clientHeight;
+    const good=tokens.some(t=>t.it.g===P.g);
+    let it;if(!good||Math.random()<.2){it=rnd(D.filter(d=>d.g===P.g))}else{it=rnd(D.filter(d=>d.g!==P.g))}
+    const el=document.createElement('button');el.className='token';el.innerHTML=`<span class="ic">${it.ic}</span><span class="nm">${it.u}</span>`;
+    const t={el,it,x:Math.random()*Math.max(0,W-96),y:H+4,vy:(38+Math.random()*26)*(1+(T-time)/T*.8),ph:Math.random()*6.28};
+    el.addEventListener('pointerdown',e=>{e.preventDefault();hit(t)});field.appendChild(el);tokens.push(t)}
+  function remove(t){t.el.remove();tokens=tokens.filter(x=>x!==t)}
+  function hit(t){if(!alive||t.dead)return;const[x,y]=center(t.el);
+    if(t.it.g===P.g){t.dead=true;combo++;const pts=5+Math.max(0,Math.round(5-(clock-promptAt)*.8));score+=pts;hits++;sc.textContent=score;
+      sfx.ok();burst(x,y,pts);toast(`${hl(t.it.u)}，${hl(P.l)}　<small>${rhymeText(t.it,P)}</small>`+(combo>1?`　🔥${combo} 連擊`:''));remove(t);if(hits>=GOAL){alive=false;setTimeout(()=>gameOver('float',score,'10 個全點中！'),500);return}newPrompt()}
+    else{combo=0;time=Math.max(0,time-3);sfx.bad();t.el.classList.remove('wrong');void t.el.offsetWidth;t.el.classList.add('wrong');toast('押無著！扣 3 秒')}}
+  function loop(now){if(!alive)return;const dt=Math.min(.05,(now-last)/1000);last=now;clock+=dt;time-=dt;
+    if(time<=0){alive=false;gameOver('float',score,'時間到！');return}
+    tm.textContent=Math.ceil(time);setBar(scr,time/T);
+    spawnCd-=dt;if(spawnCd<=0&&tokens.length<7){spawn();spawnCd=.75+Math.random()*.4}
+    for(const t of tokens.slice()){t.y-=t.vy*dt;const sx=Math.sin(clock*1.6+t.ph)*14;t.el.style.transform=`translate(${t.x+sx}px,${t.y}px)`;if(t.y<-110)remove(t)}
+    raf=requestAnimationFrame(loop)}
+  sc.textContent=0;newPrompt();spawn();raf=requestAnimationFrame(loop);
+  stopFn=()=>{alive=false;cancelAnimationFrame(raf)}}
+
+// ===== 搶答放炮 =====
+function startQuiz(){
+  const scr=$('#quiz'),N=10,LIM=8;let qi=0,score=0,combo=0,timer,t0,locked=false,alive=true;
+  const sc=scr.querySelector('.sc'),cb=scr.querySelector('.cb');
+  const order=shuffle(D).slice(0,N);
+  function next(){if(!alive)return;if(qi>=N){gameOver('quiz',score,'放炮完成！');return}
+    const P=order[qi];qi++;locked=false;const up=Math.random()<.5;
+    $('#qNo').textContent=`第 ${qi} ／ ${N} 題`;$('#qHint').textContent=up?'選出押韻的下半句':'選出押韻的上半句';
+    $('#qPrompt').innerHTML=hl(up?P.u:P.l);
+    const used=new Set([P.g]),opts=[P];for(const d of shuffle(D)){if(opts.length>=4)break;if(!used.has(d.g)){used.add(d.g);opts.push(d)}}
+    const box=$('#qOpts');box.innerHTML='';
+    shuffle(opts).forEach(o=>{const b=document.createElement('button');b.className='opt';b.innerHTML=up?hl(o.l):`<span class="ic">${o.ic}</span>${hl(o.u)}`;b._o=o;
+      b.onclick=()=>answer(b,P,up);box.appendChild(b)});
+    t0=performance.now();cancelAnimationFrame(timer);tick()}
+  function tick(){const left=LIM-(performance.now()-t0)/1000;setBar(scr,left/LIM);if(left<=0){answer(null,$('#qPrompt')._P||null,null,true);return}timer=requestAnimationFrame(tick)}
+  function answer(b,P,up,timeout){if(locked)return;locked=true;cancelAnimationFrame(timer);
+    const btns=[...$('#qOpts').children],target=order[qi-1];
+    btns.forEach(x=>{if(x._o.g===target.g)x.classList.add('right');else if(x!==b)x.classList.add('no')});
+    if(!timeout&&b._o.g===target.g){combo++;const left=Math.max(0,LIM-(performance.now()-t0)/1000);const pts=5+Math.round(left/LIM*5);score+=pts;sc.textContent=score;cb.textContent=combo;sfx.ok();const[x,y]=center(b);burst(x,y,pts);toast(rhymeText(target,target))}
+    else{combo=0;cb.textContent=0;if(b)b.classList.add('bad');sfx.bad();toast(timeout?'時間到！':'押無著！')}
+    setTimeout(next,timeout||!(b&&b._o.g===target.g)?1300:800)}
+  sc.textContent=0;cb.textContent=0;next();
+  stopFn=()=>{alive=false;cancelAnimationFrame(timer)}}
+
+// ===== 翻紅包 =====
+function startMemo(){
+  const scr=$('#memo'),T=100,ROUNDS=3;let time=T,score=0,combo=0,round=0,raf,last=performance.now(),open=[],busy=false,matched=0,alive=true;
+  const sc=scr.querySelector('.sc'),tm=scr.querySelector('.tm'),grid=$('#mGrid');
+  function deal(){round++;matched=0;open=[];$('#mRound').textContent=`第 ${round} ／ ${ROUNDS} 關　找出 4 對押韻好話`;
+    const used=new Set(),picks=[];for(const d of shuffle(D)){if(picks.length>=4)break;if(!used.has(d.g)){used.add(d.g);picks.push(d)}}
+    const cards=shuffle(picks.flatMap(d=>[{d,s:'u'},{d,s:'l'}]));grid.innerHTML='';
+    cards.forEach(c=>{const b=document.createElement('button');b.className='card';
+      b.innerHTML=`<div class="in"><div class="f"><span>福</span></div><div class="b">${c.s==='u'?`<span class="ic">${c.d.ic}</span>${hl(c.d.u)}`:hl(c.d.l)}</div></div>`;
+      b._c=c;b.onclick=()=>flip(b);grid.appendChild(b)})}
+  function flip(b){if(busy||!alive||b.classList.contains('open'))return;sfx.flip();b.classList.add('open');open.push(b);
+    if(open.length<2)return;const[a,c]=open;open=[];
+    const ok=a._c.s!==c._c.s&&a._c.d.g===c._c.d.g;
+    if(ok){combo++;const pts=5;score+=pts;sc.textContent=score;matched++;
+      setTimeout(()=>{a.classList.add('done');c.classList.add('done');sfx.ok();const[x,y]=center(c);burst(x,y,pts);
+        const up=a._c.s==='u'?a._c.d:c._c.d,lo=a._c.s==='l'?a._c.d:c._c.d;toast(rhymeText(up,lo))},250);
+      if(matched===4){busy=true;setTimeout(()=>{busy=false;if(round>=ROUNDS){const bonus=Math.round(Math.max(0,time)/T*40);score+=bonus;gameOver('memo',score,`全部翻完！時間獎勵 +${bonus}`)}else{toast('過關！下一關');deal()}},900)}}
+    else{combo=0;busy=true;setTimeout(()=>{sfx.bad();a.classList.remove('open');c.classList.remove('open');busy=false},750)}}
+  function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;time-=dt;
+    if(time<=0){alive=false;gameOver('memo',score,'時間到！');return}
+    tm.textContent=Math.ceil(time);setBar(scr,time/T);raf=requestAnimationFrame(loop)}
+  sc.textContent=0;deal();raf=requestAnimationFrame(loop);
+  stopFn=()=>{alive=false;cancelAnimationFrame(raf)}}
+
+// ===== 題庫 =====
+const GN={iann:'-iann 韻',ai:'-ai 韻',au:'-au 韻',i:'-i／-inn 韻',o:'-o 韻',ue:'-ue 韻',e:'-e 韻',ing:'-ing 韻',iam:'-iam 韻',uan:'-uan 韻',ng:'-ng 韻'};
+function renderList(){const groups={};D.forEach(d=>(groups[d.g]=groups[d.g]||[]).push(d));
+  $('#lList').innerHTML=Object.keys(groups).map(g=>`<div class="g" style="color:var(--gold);padding:4px 2px 0">${GN[g]}${groups[g].length>1?'（這組可以互換）':''}</div>`+groups[g].map(d=>
+    `<div class="row"><span class="ic">${d.ic}</span><div><div class="t">${hl(d.u)}，${hl(d.l)}</div><div class="tl">${d.u.slice(-1)} ${d.ut}　／　${d.l.slice(-1)} ${d.lt}</div></div></div>`).join('')).join('')}
+
+showBest();
+</script>
+
+</body>
+</html>
