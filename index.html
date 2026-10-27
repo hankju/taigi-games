@@ -4,24 +4,24 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#17120d">
-<meta name="description" content="台語學習小遊戲合集：單詞練習、押韻挑戰，手機掃 QR Code 就能玩。">
+<meta name="description" content="高中閩南語文課的台語學習小遊戲：單詞、押韻、台羅拼音，手機掃 QR Code 就能玩。">
 <title>台語小遊戲</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans:wght@400;500&family=Noto+Sans+TC:wght@400;500;700&display=swap">
 <style>
-/* 大廳：廟埕暗木色底＋窗花格紋、金色字、紅色印章；遊戲卡片沿用各遊戲自己的配色
-   手機（掃 QR Code 進來）＝單欄；平板＝兩欄卡片；電腦＝左側標題與大 QR Code、右側卡片 */
+/* 大廳：廟口夜景。主角是「逐字標台羅」的標題；遊戲卡片用各遊戲的顏色，名稱同樣逐字標台羅
+   標題與遊戲名稱用霞鶩文楷（像課本楷體），卡片內文用 Noto Sans TC，台羅用 Noto Sans（聲調符號才完整）
+   動態只留燈籠（搖晃＋閃爍）；手機單欄，電腦左側標題與 QR Code、右側兩欄卡片 */
 :root{
-  --bg:#17120d; --bg-2:#231a12; --paper:#fbf3e4; --ink:#2a1d12; --muted:#bfb19c;
-  --gold:#f2b84b; --seal:#c23a2b;
-  --display:"LXGW WenKai TC","Kaiti TC","DFKai-SB","BiauKai",serif;
-  --body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --night:#17120d; --gold:#f2b84b; --paper:#fbf3e4; --muted:#bfb19c; --ink:#2a1d12;
+  --han:"LXGW WenKai TC","Kaiti TC","DFKai-SB","BiauKai",serif;
+  --lo:"Noto Sans","Segoe UI","Helvetica Neue",Arial,sans-serif;
   color-scheme:dark;
 }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
-body{--lan-h:84px;--sky-h:150px;position:relative;overflow-x:hidden;margin:0;min-height:100vh;background:var(--bg);color:var(--paper);font-family:var(--body);-webkit-tap-highlight-color:transparent;
-  background-image:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(242,184,75,.18),transparent 70%),radial-gradient(ellipse 60% 40% at 100% 100%,rgba(194,58,43,.12),transparent 70%)}
+body{--lan-h:84px;--sky-h:150px;position:relative;overflow-x:hidden;margin:0;min-height:100vh;background:var(--night);color:var(--paper);font-family:var(--han);-webkit-tap-highlight-color:transparent;
+  background-image:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(242,184,75,.16),transparent 70%),radial-gradient(ellipse 60% 40% at 100% 100%,rgba(194,58,43,.12),transparent 70%)}
 /* 窗花格紋，往下漸漸淡掉 */
 body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Cpath d='M22 2L42 22L22 42L2 22Z' fill='none' stroke='%23f2b84b' stroke-opacity='.09'/%3E%3Ccircle cx='22' cy='22' r='2.5' fill='%23f2b84b' fill-opacity='.08'/%3E%3C/svg%3E");
@@ -29,14 +29,18 @@ body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
 a{color:inherit}
 button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
 :focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
-/* 背景裝飾：廟埕夜景（月娘、燈籠串、祥雲、火星、廟宇與夜市剪影），全部是程式畫的 SVG，不擋點擊 */
+/* 逐字標音：台羅在字頂，像課本的注音排法 */
+.ruby{display:inline-flex;flex-wrap:wrap;justify-content:inherit;gap:0 .06em}
+.ch{display:inline-flex;flex-direction:column;align-items:center;line-height:1}
+.ch i{font-style:normal;font-family:var(--lo);font-weight:400;font-size:max(11px,.26em);letter-spacing:0;margin-bottom:.32em;white-space:nowrap}
+
+/* 背景：窗花格紋、星、月娘、燈籠串、祥雲、廟宇與夜市剪影，全部是程式畫的 SVG，不擋點擊 */
 .deco{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
-.moon{position:absolute;top:10px;right:-26px;width:84px;height:84px;border-radius:50%;
-  background:radial-gradient(circle at 38% 35%,#fff6dc,#f7d98e 55%,#e9b95a);opacity:.85;
-  box-shadow:0 0 40px 10px rgba(247,217,142,.35),0 0 140px 40px rgba(242,184,75,.15)}
-.moon::after{content:"";position:absolute;inset:0;border-radius:50%;
-  background:radial-gradient(circle at 62% 60%,rgba(190,140,60,.35) 0 9%,transparent 10%),radial-gradient(circle at 35% 68%,rgba(190,140,60,.25) 0 6%,transparent 7%),radial-gradient(circle at 55% 30%,rgba(190,140,60,.2) 0 5%,transparent 6%)}
+.moon{position:absolute;top:10px;right:-26px;width:84px;height:84px;border-radius:50%;opacity:.8;
+  background:radial-gradient(circle at 40% 38%,#fff4d6,#f3d38c 60%,#e2b45c);
+  box-shadow:0 0 50px 12px rgba(247,217,142,.25)}
 .rope{position:absolute;left:0;top:0;width:100%;height:var(--lan-h);overflow:visible}
 .lan{position:absolute;width:var(--w);margin-left:calc(var(--w) / -2);transform-origin:50% 0;animation:sway var(--d) ease-in-out infinite alternate;animation-delay:var(--dl)}
 .lan svg{position:relative;display:block;width:100%;height:auto;animation:flick-b var(--fd) linear infinite;animation-delay:var(--fdl)}
@@ -46,42 +50,29 @@ button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
   background:radial-gradient(circle,var(--glow) 0,transparent 62%);animation:flicker var(--fd) linear infinite;animation-delay:var(--fdl)}
 @keyframes flicker{0%,100%{opacity:.8}7%{opacity:.45}9%{opacity:.95}30%{opacity:.7}33%{opacity:1}55%{opacity:.75}57%{opacity:.4}60%{opacity:.9}82%{opacity:.7}}
 @keyframes flick-b{0%,100%{filter:brightness(1)}7%{filter:brightness(.82)}9%{filter:brightness(1.12)}33%{filter:brightness(1.18)}57%{filter:brightness(.8)}60%{filter:brightness(1.08)}}
-/* 月娘光暈慢慢呼吸 */
-.moon::before{content:"";position:absolute;inset:-40%;z-index:-1;border-radius:50%;background:radial-gradient(circle,rgba(247,217,142,.35),transparent 65%);animation:breathe 6s ease-in-out infinite}
-@keyframes breathe{0%,100%{opacity:.45}50%{opacity:1}}
-/* 廟窗燈火微微跳動、夜市燈串輪流閃 */
-.win{animation:win-flick var(--wd) ease-in-out infinite;animation-delay:var(--wdl)}
-@keyframes win-flick{0%,100%{opacity:var(--o)}40%{opacity:calc(var(--o) * .55)}45%{opacity:calc(var(--o) * 1.3)}70%{opacity:calc(var(--o) * .85)}}
-.bulb{animation:twinkle 1.6s ease-in-out infinite}
-.bulb.b{animation-delay:-.8s}
-@keyframes twinkle{0%,100%{opacity:1}50%{opacity:.2}}
+.stars{position:absolute;left:0;right:0;top:0;height:70vh;-webkit-mask-image:linear-gradient(#000 40%,transparent);mask-image:linear-gradient(#000 40%,transparent)}
+.stars i{position:absolute;border-radius:50%;background:#fff3d6}
 .cloud{position:absolute;color:var(--gold);opacity:.13}
 .cloud.c1{left:-30px;top:44%;width:180px}
 .cloud.c2{right:-20px;top:28%;width:150px;transform:scaleX(-1)}
 .cloud.c3{display:none}
-.spark{position:absolute;bottom:calc(var(--sky-h) * .4);width:4px;height:4px;border-radius:50%;background:#ffd27a;box-shadow:0 0 8px 2px rgba(255,190,90,.7);opacity:0;animation:rise-spark var(--d) linear infinite;animation-delay:var(--dl)}
-@keyframes rise-spark{0%{opacity:0;transform:translate(0,0)}15%{opacity:.9}100%{opacity:0;transform:translate(var(--dx),-70vh)}}
 .sky{position:absolute;left:0;right:0;bottom:0;height:var(--sky-h)}
 .sky svg{display:block;width:100%;height:100%}
-.sky::before{content:"";position:absolute;left:10%;right:10%;bottom:0;height:140%;background:radial-gradient(ellipse 50% 60% at 50% 100%,rgba(242,140,60,.22),transparent 70%)}
+.sky::before{content:"";position:absolute;left:10%;right:10%;bottom:0;height:140%;background:radial-gradient(ellipse 50% 60% at 50% 100%,rgba(242,140,60,.18),transparent 70%)}
 
 .wrap{position:relative;z-index:1;max-width:560px;margin:0 auto;
-  padding:calc(var(--lan-h) + 4px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(var(--sky-h) + 8px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+  padding:calc(var(--lan-h) + 10px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(var(--sky-h) + 8px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
 
 /* 標題區 */
 .side{text-align:center}
-.brand{display:inline-flex;align-items:center;gap:14px}
-.seal{flex:none;width:58px;height:58px;display:grid;place-items:center;background:var(--seal);color:#fff4e6;border-radius:8px;transform:rotate(-6deg);
-  font-family:var(--display);font-weight:700;font-size:22px;line-height:1.05;writing-mode:vertical-rl;letter-spacing:.08em;
-  box-shadow:inset 0 0 0 3px var(--seal),inset 0 0 0 4.5px rgba(255,244,230,.75),0 6px 16px rgba(0,0,0,.35)}
-h1{margin:0;font-family:var(--display);font-weight:700;font-size:clamp(34px,10vw,46px);line-height:1.1;letter-spacing:.06em;color:var(--gold);text-shadow:0 3px 0 rgba(0,0,0,.4)}
-.lo{margin:4px 0 0;font-size:13px;letter-spacing:.2em;color:var(--muted);text-align:left}
-.lead{margin:16px 0 0;font-size:16px;color:var(--paper);opacity:.9}
-/* 背景音樂開關：預設關，開了以後有跳動的音量條 */
-.music{display:inline-flex;align-items:center;gap:8px;margin-top:14px;padding:8px 16px 8px 12px;border-radius:999px;border:1px solid rgba(242,184,75,.5);background:rgba(0,0,0,.25);color:var(--gold);font-size:14px;transition:background .2s,color .2s}
-.music:hover{background:rgba(242,184,75,.12)}
+h1{margin:0;font-weight:700;font-size:clamp(46px,14vw,64px);letter-spacing:.04em;color:var(--gold);justify-content:center;text-shadow:0 3px 0 rgba(0,0,0,.45)}
+h1 .ruby{justify-content:inherit}
+h1 .ch i{color:var(--muted);text-shadow:none;font-size:max(12px,.24em)}
+.lead{margin:14px 0 0;font-size:17px;line-height:1.6}
+.music{display:inline-flex;align-items:center;gap:8px;margin-top:12px;padding:6px 14px 6px 10px;border-radius:6px;border:1px solid rgba(242,184,75,.45);background:transparent;color:var(--gold);font-size:15px}
+.music:hover{border-color:var(--gold)}
 .music[aria-pressed="true"]{background:var(--gold);color:var(--ink);border-color:var(--gold)}
-.eq{display:inline-flex;align-items:flex-end;gap:2px;width:16px;height:14px}
+.eq{display:inline-flex;align-items:flex-end;gap:2px;width:14px;height:13px}
 .eq i{flex:1;height:30%;background:currentColor;border-radius:1px}
 .music[aria-pressed="true"] .eq i{animation:eq .9s ease-in-out infinite alternate}
 .music[aria-pressed="true"] .eq i:nth-child(2){animation-delay:-.3s;animation-duration:.7s}
@@ -89,11 +80,10 @@ h1{margin:0;font-family:var(--display);font-weight:700;font-size:clamp(34px,10vw
 @keyframes eq{from{height:25%}to{height:100%}}
 .scan{display:none}
 
-/* 卡片區 */
-.sec{display:flex;align-items:baseline;gap:10px;margin:28px 2px 12px}
-.sec h2{margin:0;font-family:var(--display);font-size:20px;color:var(--gold);letter-spacing:.1em}
-.sec span{font-size:13px;color:var(--muted)}
-.sec::after{content:"";flex:1;height:1px;align-self:center;background:linear-gradient(90deg,rgba(242,184,75,.35),transparent)}
+/* 遊戲卡片：各遊戲的顏色漸層、左上圓框圖示＋右上 QR、角落淡淡的大圖示；名稱逐字標台羅 */
+.grid{margin-top:30px}
+/* 卡片內文用一般黑體（跟最早的版本一樣），只有遊戲名稱用楷體 */
+.game{font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif}
 .grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(min(100%,290px),1fr))}
 
 .game{position:relative;overflow:hidden;isolation:isolate;display:flex;flex-direction:column;gap:10px;padding:18px 18px 16px;border-radius:20px;
@@ -108,8 +98,11 @@ h1{margin:0;font-family:var(--display);font-weight:700;font-size:clamp(34px,10vw
 .qrbtn{position:relative;z-index:2;display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.22);background:rgba(0,0,0,.2);font-size:13px;color:var(--paper)}
 .qrbtn svg{width:16px;height:16px}
 .qrbtn:hover{background:rgba(0,0,0,.35);border-color:var(--a)}
-.kicker{font-size:13px;letter-spacing:.12em;color:var(--a);opacity:.9;margin-top:2px}
-.game h3{margin:-4px 0 0;font-family:var(--display);font-size:28px;line-height:1.25;color:var(--a);letter-spacing:.04em}
+.game h3{margin:4px 0 0;font-family:var(--han);font-size:34px;line-height:1.25;color:var(--a);letter-spacing:.04em}
+/* 名稱逐字標台羅：台羅浮在字的正上方，不撐開字距 */
+.game h3 .ruby{flex-wrap:nowrap;gap:0 .06em}
+.game h3 .ch{position:relative;padding-top:19px}
+.game h3 .ch i{position:absolute;top:0;left:50%;transform:translateX(-50%);margin:0;color:var(--paper);opacity:.8;font-size:14px;font-weight:400}
 .game h3 a{text-decoration:none}
 .game h3 a::after{content:"";position:absolute;inset:0;z-index:1;border-radius:inherit}
 .game h3 a:focus-visible{outline:none}
@@ -121,81 +114,62 @@ h1{margin:0;font-family:var(--display);font-weight:700;font-size:clamp(34px,10vw
 .stat{font-size:13px;line-height:1.4;opacity:.9}
 .stat b{color:var(--a);font-size:16px}
 .play{flex:none;display:inline-flex;align-items:center;gap:4px;padding:9px 18px;border-radius:999px;background:var(--a);color:var(--c);font-weight:700;font-size:15px;box-shadow:0 3px 0 rgba(0,0,0,.3)}
-.play i{font-style:normal;transition:transform .2s}
-.game:active{transform:scale(.985)}
-@media (hover:hover){
-  .game:hover{transform:translateY(-5px);box-shadow:0 18px 36px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.12)}
-  .game:hover .play i{transform:translateX(4px)}
-}
-@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.play i{font-style:normal}
+.game:hover,.game:focus-within{border-color:var(--a)}
 
-footer{margin-top:28px;text-align:center;font-size:12px;line-height:1.7;color:var(--muted)}
+footer{margin-top:30px;text-align:center;font-size:13px;line-height:1.7;color:var(--muted)}
 
 /* QR Code 放大視窗：投影給全班掃 */
-dialog{border:0;padding:0;border-radius:24px;background:var(--paper);color:var(--ink);width:min(92vw,460px);max-height:92vh;box-shadow:0 30px 80px rgba(0,0,0,.6)}
-dialog::backdrop{background:rgba(10,7,4,.75);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+dialog{border:0;padding:0;border-radius:8px;background:var(--paper);color:var(--ink);width:min(92vw,460px);max-height:92vh;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+dialog::backdrop{background:rgba(10,7,4,.78)}
 .dlg{padding:22px 22px 18px;text-align:center}
-.dlg small{display:block;font-size:13px;color:#8a6d4a;letter-spacing:.12em}
-.dlg h2{margin:2px 0 14px;font-family:var(--display);font-size:28px;color:var(--ink)}
-.dlg .code{width:min(100%,62vh,380px);margin:0 auto;aspect-ratio:1;background:#fff;border-radius:14px;padding:6px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
+.dlg small{display:block;font-size:14px;color:#8a6d4a}
+.dlg h2{margin:2px 0 14px;font-size:28px}
+.dlg .code{width:min(100%,62vh,380px);margin:0 auto;aspect-ratio:1;background:#fff;border-radius:4px;padding:6px}
 .dlg .code svg{display:block;width:100%;height:100%}
-.dlg .url{margin:12px 0 0;font-size:13px;color:#6b5640;word-break:break-all}
+.dlg .url{margin:12px 0 0;font-family:var(--lo);font-size:13px;color:#6b5640;word-break:break-all}
 .dlg .btns{display:flex;gap:10px;justify-content:center;margin-top:16px}
-.dlg .btns button{padding:10px 18px;border-radius:999px;border:0;font-weight:700;font-size:15px}
+.dlg .btns button{padding:9px 18px;border-radius:6px;border:0;font-weight:700;font-size:15px}
 .dlg .copy{background:var(--ink);color:var(--paper)}
 .dlg .close{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink)}
 
-/* 平板：卡片兩欄，標題置中 */
 @media (min-width:640px){
   .wrap{max-width:860px}
 }
-/* 電腦：左邊標題＋大 QR Code（方便投影），右邊卡片 */
+/* 電腦：左邊標題＋大 QR Code（老師投影用），右邊兩欄卡片；QR 按鈕只在電腦出現 */
 @media (min-width:960px){
-  body{--lan-h:118px}
-  .wrap{max-width:1180px;display:grid;grid-template-columns:340px 1fr;gap:56px;align-items:start;padding-left:40px;padding-right:40px}
-  .moon{top:22px;right:6%;width:140px;height:140px}
-  /* 電腦畫面通常一頁就看完，廟宇剪影固定在視窗底部，不用捲到底才看得到 */
-  body{--sky-h:220px}
-  .sky{position:fixed}
-  .wrap{padding-bottom:110px}
+  body{--lan-h:118px;--sky-h:220px}
+  .wrap{max-width:1180px;display:grid;grid-template-columns:330px 1fr;gap:64px;align-items:start;padding-left:40px;padding-right:40px;padding-bottom:110px}
+  .moon{top:22px;right:6%;width:130px;height:130px}
   .cloud.c1{left:2%;top:58%;width:260px}
   .cloud.c2{right:3%;top:40%;width:220px}
   .cloud.c3{display:block;left:40%;top:calc(var(--lan-h) + 10px);width:150px;opacity:.08}
+  .sky{position:fixed}
   .side{position:sticky;top:48px;text-align:left}
-  .seal{width:66px;height:66px;font-size:25px}
-  h1{font-size:46px}
-  .lead{font-size:17px}
-  .scan{display:block;margin-top:28px;padding:18px;border-radius:20px;background:var(--paper);color:var(--ink);box-shadow:0 14px 30px rgba(0,0,0,.4);text-align:center}
-  .scan .code{width:100%;aspect-ratio:1;border:0;padding:0;background:#fff;border-radius:12px;cursor:zoom-in}
+  h1{font-size:58px;justify-content:flex-start}
+  .scan{display:block;margin-top:30px;padding:16px;border-radius:6px;background:var(--paper);color:var(--ink);text-align:center;box-shadow:0 14px 30px rgba(0,0,0,.4)}
+  .scan .code{display:block;width:100%;aspect-ratio:1;border:0;padding:0;background:#fff;cursor:zoom-in}
   .scan .code svg{display:block;width:100%;height:100%}
-  .scan b{display:block;margin-top:12px;font-family:var(--display);font-size:20px}
-  .scan span{display:block;margin-top:2px;font-size:13px;color:#6b5640}
-  .sec{margin-top:6px}
+  .scan b{display:block;margin-top:12px;font-size:19px}
+  .scan span{display:block;margin-top:2px;font-size:14px;color:#6b5640}
+  .grid{margin-top:44px}
   main footer{text-align:left}
 }
-/* 「更多遊戲準備中」卡片 */
-.soon{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:200px;padding:24px;text-align:center;border-radius:20px;
-  border:1.5px dashed rgba(242,184,75,.35);background:rgba(255,248,234,.03);color:var(--muted);animation:rise .5s ease both;animation-delay:calc(var(--i) * 90ms)}
-.soon .ic{font-size:34px}
-.soon b{font-family:var(--display);font-size:22px;color:var(--gold);letter-spacing:.06em}
-.soon span{font-size:14px;line-height:1.5}
-/* 系統設定「減少動態效果」（Windows 關閉動畫效果、iOS 減少動態）：停掉會移動的動畫，燈火明暗閃爍保留 */
+/* 系統設定「減少動態效果」：燈籠不搖，明暗閃爍保留 */
 @media (prefers-reduced-motion:reduce){
-  .game,.soon{animation:none;transition:none}
-  .play i{transition:none}
   .lan{animation:none}
-  .spark{display:none}
+  .game{transition:none}
   .music[aria-pressed="true"] .eq i{animation:none;height:70%}
 }
 </style>
 </head>
 <body>
-<div class="deco" id="deco" aria-hidden="true">
+<div class="deco" aria-hidden="true">
+  <div class="stars" id="stars"></div>
   <div class="moon"></div>
   <svg class="cloud c1" viewBox="0 0 200 80"><use href="#cloudS"/></svg>
   <svg class="cloud c2" viewBox="0 0 200 80"><use href="#cloudS"/></svg>
   <svg class="cloud c3" viewBox="0 0 200 80"><use href="#cloudS"/></svg>
-  <div id="sparks"></div>
   <svg class="rope" id="rope" viewBox="0 0 1000 100" preserveAspectRatio="none"></svg>
   <div id="lanterns"></div>
   <div class="sky" id="sky"></div>
@@ -203,10 +177,6 @@ dialog::backdrop{background:rgba(10,7,4,.75);-webkit-backdrop-filter:blur(4px);b
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
     <radialGradient id="lanHi" cx=".35" cy=".3" r=".75"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".45" stop-color="#fff" stop-opacity=".08"/><stop offset="1" stop-color="#000" stop-opacity=".25"/></radialGradient>
-    <symbol id="cloudS" viewBox="0 0 200 80"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
-      <path d="M18 64H176c18 0 20-24 2-26 2-20-24-26-36-12-6-20-38-22-44-2-10-12-34-8-32 12-18-4-28 16-16 26"/>
-      <path d="M98 24c12 2 14 20 0 22-10 1-12-11-3-12"/><path d="M142 26c10 4 8 18-3 17-8-1-7-10 0-9"/><path d="M66 36c-10 2-10 16 1 16 7 0 7-8 1-8"/>
-      <path d="M40 72h120"/></g></symbol>
     <symbol id="lanR" viewBox="0 0 40 70">
       <line x1="20" y1="0" x2="20" y2="9" stroke="#5a4128" stroke-width="1.5"/>
       <rect x="12.5" y="8" width="15" height="5" rx="1.5" fill="#e6b450"/>
@@ -224,26 +194,27 @@ dialog::backdrop{background:rgba(10,7,4,.75);-webkit-backdrop-filter:blur(4px);b
       <rect x="12.5" y="48" width="15" height="5" rx="1.5" fill="#b4372a"/>
       <path d="M17 53v11M20 53v15M23 53v11" stroke="#d2402c" stroke-width="1.4"/>
     </symbol>
+    <symbol id="cloudS" viewBox="0 0 200 80"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+      <path d="M18 64H176c18 0 20-24 2-26 2-20-24-26-36-12-6-20-38-22-44-2-10-12-34-8-32 12-18-4-28 16-16 26"/>
+      <path d="M98 24c12 2 14 20 0 22-10 1-12-11-3-12"/><path d="M142 26c10 4 8 18-3 17-8-1-7-10 0-9"/><path d="M66 36c-10 2-10 16 1 16 7 0 7-8 1-8"/>
+      <path d="M40 72h120"/></g></symbol>
   </defs>
 </svg>
 <div class="wrap">
   <aside class="side">
-    <div class="brand">
-      <div class="seal" aria-hidden="true">台語</div>
-      <div><h1>台語小遊戲</h1><p class="lo">Tâi-gí Sió Iû-hì</p></div>
-    </div>
-    <p class="lead">揀一款來耍，邊耍邊學台語！</p>
+    <h1 id="title" aria-label="台語小遊戲"></h1>
+    <p class="lead">揀一款，邊耍邊學台語。</p>
     <button class="music" id="music" aria-pressed="false"><span class="eq" aria-hidden="true"><i></i><i></i><i></i></span><span id="musicTxt">背景音樂：關</span></button>
     <div class="scan">
       <button class="code" id="siteCode" aria-label="放大 QR Code"></button>
       <b>手機掃一下就會當耍</b>
-      <span>點 QR Code 放大，投影予全班掃</span>
+      <span>點一下放大，投影予全班掃</span>
     </div>
   </aside>
   <main>
-    <div class="sec"><h2>遊戲</h2><span id="count"></span></div>
+    <h2 class="vh">遊戲</h2>
     <div class="grid" id="list"></div>
-    <footer>錄音與部分詞條取自教育部《臺灣台語常用詞辭典》，CC BY-ND 3.0 TW</footer>
+    <footer>錄音與部分詞條取自教育部《臺灣台語常用詞辭典》，<span style="white-space:nowrap">CC BY-ND 3.0 TW</span></footer>
   </main>
 </div>
 
@@ -272,6 +243,13 @@ if (GAMES.some(g => g.id === h)) location.replace('games/' + h + '/');
 const siteUrl = new URL('./', location.href).href;
 const gameUrl = g => new URL('games/' + g.id + '/', siteUrl).href;
 
+// 逐字標台羅：字數跟音節數對得上才逐字標，對不上就整串放在上面
+function ruby(han, lo) {
+  const chars = [...han], syl = (lo || '').split(/[-\s]+/).filter(Boolean);
+  if (chars.length !== syl.length) return `<span class="ruby"><span class="ch"><i lang="nan-Latn">${esc(lo || '')}</i>${esc(han)}</span></span>`;
+  return '<span class="ruby">' + chars.map((c, k) => `<span class="ch"><i lang="nan-Latn">${esc(syl[k])}</i>${esc(c)}</span>`).join('') + '</span>';
+}
+
 // 從各遊戲自己存的成績算出最高分與次數
 function stats(g) {
   if (!g.hist) return null;
@@ -291,20 +269,18 @@ function qrSvg(text, label) {
 }
 
 const qrIcon = '<svg viewBox="0 0 16 16" aria-hidden="true" fill="currentColor"><path d="M1 1h6v6H1zm1.5 1.5v3h3v-3zM9 1h6v6H9zm1.5 1.5v3h3v-3zM1 9h6v6H1zm1.5 1.5v3h3v-3zM9 9h2v2H9zm2 2h2v2h-2zm2-2h2v2h-2zm-4 4h2v2H9zm4 0h2v2h-2z"/></svg>';
-
-$('#count').textContent = GAMES.length + ' 款';
+$('#title').innerHTML = ruby('台語小遊戲', 'Tâi-gí sió iû-hì');
 $('#list').innerHTML = GAMES.map((g, i) => {
   const st = stats(g);
-  return `<article class="game" style="--c:${esc(g.color)};--a:${esc(g.accent)};--i:${i}">
+  return `<article class="game" style="--c:${esc(g.color)};--a:${esc(g.accent)}">
     <span class="wm" aria-hidden="true">${esc(g.icon)}</span>
     <div class="top"><span class="badge" aria-hidden="true">${esc(g.icon)}</span><button class="qrbtn" data-qr="${i}" aria-label="顯示「${esc(g.name)}」的 QR Code">${qrIcon}QR Code</button></div>
-    <small class="kicker">${esc(g.tag)}</small>
-    <h3><a href="games/${esc(g.id)}/">${esc(g.name)}</a></h3>
+    <h3><a href="games/${esc(g.id)}/" aria-label="${esc(g.name)}">${ruby(g.name, g.lo)}</a></h3>
     <p>${esc(g.desc)}</p>
     ${g.tags && g.tags.length ? `<ul class="chips">${g.tags.map(t => `<li>${esc(t)}</li>`).join('')}</ul>` : ''}
     <div class="foot"><span class="stat">${st ? `🏆 最高 <b>${st.best}</b> 分・耍過 ${st.n} 擺` : '猶未耍過，緊來試看覓！'}</span><span class="play" aria-hidden="true">開始 <i>›</i></span></div>
   </article>`;
-}).join('') + `<div class="soon" style="--i:${GAMES.length}"><span class="ic">✨</span><b>新遊戲準備中</b><span>下一款閣咧做，請小等一下！</span></div>`;
+}).join('');
 
 // ── 背景裝飾 ──
 const desk = matchMedia('(min-width:960px)');
@@ -324,16 +300,6 @@ function drawLanterns() {
   $('#lanterns').innerHTML = html;
 }
 
-// 飄上去的火星
-function drawSparks() {
-  let html = '';
-  const n = desk.matches ? 16 : 9;
-  for (let k = 0; k < n; k++) {
-    const d = 9 + Math.random() * 9;
-    html += `<i class="spark" style="left:${(Math.random() * 100).toFixed(1)}%;--d:${d.toFixed(1)}s;--dl:-${(Math.random() * d).toFixed(1)}s;--dx:${(Math.random() * 80 - 40).toFixed(0)}px"></i>`;
-  }
-  $('#sparks').innerHTML = html;
-}
 
 // 廟宇（燕尾脊）＋兩旁夜市攤仔的剪影；畫面窄時只露出中央的廟
 function roof(cx, yb, W, H) {
@@ -344,8 +310,8 @@ function roof(cx, yb, W, H) {
   return `<path d="${body}${ridge}" fill="var(--sil)"/><path d="${rim}" fill="none" stroke="rgba(242,184,75,.28)" stroke-width="1.5"/>`;
 }
 function drawSky() {
-  const G = 240, glow = (x, y, w, h, o) => `<rect class="win" x="${x}" y="${y}" width="${w}" height="${h}" rx="2" fill="#f2a64a" opacity="${o}" style="--o:${o};--wd:${(3 + Math.random() * 3).toFixed(1)}s;--wdl:-${(Math.random() * 5).toFixed(1)}s"/>`;
-  let s = `<svg viewBox="0 0 1440 ${G}" preserveAspectRatio="xMidYMax slice" style="--sil:#0b0805">`;
+  const G = 240, glow = (x, y, w, h, o) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2" fill="#f2a64a" opacity="${o}"/>`;
+  let s = `<svg viewBox="0 0 1440 ${G}" preserveAspectRatio="xMidYMax slice" style="--sil:#0b0805">`
   // 遠山
   s += `<path d="M0 ${G}V170Q160 130 330 160T700 150T1060 155T1440 165V${G}Z" fill="#1c150e"/>`;
   // 夜市攤仔與燈串
@@ -357,7 +323,7 @@ function drawSky() {
     for (let t = .06; t < 1; t += .08) {
       const x = a + (b - a) * t, y = 150 + 92 * t * (1 - t);
       const odd = Math.round(t * 12) % 2;
-      s += `<circle class="bulb${odd ? ' b' : ''}" cx="${x.toFixed(1)}" cy="${(y + 3).toFixed(1)}" r="3" fill="${odd ? '#f2b84b' : '#e2553c'}"/>`;
+      s += `<circle cx="${x.toFixed(1)}" cy="${(y + 3).toFixed(1)}" r="3" fill="${odd ? '#f2b84b' : '#e2553c'}"/>`;
     }
   }
   // 樹影
@@ -372,10 +338,22 @@ function drawSky() {
   $('#sky').innerHTML = s + '</svg>';
 }
 
-drawLanterns(); drawSparks(); drawSky();
+// 夜空的星：固定的亂數種子，每次打開位置都一樣；不會動
+function drawStars() {
+  let seed = 7, h = '';
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const n = desk.matches ? 70 : 34;
+  for (let k = 0; k < n; k++) {
+    const sz = rnd() < .15 ? 2.5 : 1 + rnd() * 1.2;
+    h += `<i style="left:${(rnd() * 100).toFixed(2)}%;top:${(rnd() * 100).toFixed(2)}%;width:${sz.toFixed(1)}px;height:${sz.toFixed(1)}px;opacity:${(.25 + rnd() * .5).toFixed(2)}${sz > 2 ? ';box-shadow:0 0 6px 1px rgba(255,243,214,.5)' : ''}"></i>`;
+  }
+  $('#stars').innerHTML = h;
+}
+
+drawStars(); drawLanterns(); drawSky();
 let rt;
 addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(drawLanterns, 150); });
-desk.addEventListener('change', () => { drawLanterns(); drawSparks(); });
+desk.addEventListener('change', () => { drawStars(); drawLanterns(); });
 
 // ── 背景音樂 ──
 // 瀏覽器不准網頁自己出聲，一定要先點一下；上次有開的話，這次點畫面任何地方就自動開始
@@ -418,7 +396,7 @@ $('#siteCode').onclick = () => openQr('台語小遊戲', siteUrl);
 $('#dlgClose').onclick = () => dlg.close();
 dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
 $('#dlgCopy').onclick = async () => {
-  try { await navigator.clipboard.writeText(dlgUrl); $('#dlgCopy').textContent = '已複製 ✓'; }
+  try { await navigator.clipboard.writeText(dlgUrl); $('#dlgCopy').textContent = '已複製'; }
   catch (e) { $('#dlgCopy').textContent = '請手動複製'; }
 };
 
