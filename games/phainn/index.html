@@ -144,6 +144,12 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offse
 .fb .ex{font-family:var(--display);font-size:17px;color:var(--ink)}
 .fb .ex small{display:block;font-family:var(--body);font-size:13px;color:var(--muted)}
 .fbsay{border:0;background:#e0d4b6;border-radius:999px;padding:3px 10px;font-size:14px}
+.parts{display:flex;flex-wrap:wrap;gap:6px}
+.parts .fbsay{padding:5px 12px;font-family:var(--display);font-size:16px}
+.parts .fbsay .lo{font-family:var(--lo);font-size:12.5px;color:var(--muted);margin-left:2px}
+.pnote{font-size:12.5px!important;color:var(--muted)!important}
+.row .parts{grid-column:1/-1}
+.ctag{font-size:11px;border-radius:999px;padding:1px 7px;background:var(--wall);color:var(--gold-soft);vertical-align:middle}
 .exrow{display:flex;gap:10px;align-items:flex-start;justify-content:space-between}
 .exrow .fbsay{flex:none;padding:6px 12px;margin-top:2px;white-space:nowrap}
 .next{width:100%;height:50px;border:0;border-radius:14px;background:var(--gold);color:var(--wall);font-size:18px;font-weight:700;box-shadow:0 4px 0 #9c7d2c}
@@ -302,7 +308,7 @@ function renderHome() {
 // 出題
 function pool(mode) {
   const ws = W.filter(inCats);
-  return mode === 'scene' ? ws.filter(w => w.ex && w.ex.han.includes(w.han) && w.ex.hua) : ws.filter(w => w.audio);
+  return mode === 'scene' ? ws.filter(w => w.ex && w.ex.han.includes(w.han) && w.ex.hua) : ws.filter(w => w.audio || w.parts);
 }
 function makeQ(w, mode) {
   // 錯誤選項先揀同類別的，袂夠才用別類
@@ -339,10 +345,10 @@ function next() {
   $('#fbwrap').innerHTML = '';
   const cover = `<span class="cover">毋通講<span class="stamp">封</span></span>`;
   if (mode === 'listen') {
-    $('#card').innerHTML = `<button class="say" id="say" aria-label="重聽">🔊</button><div class="ask">這句歹話是啥意思？</div>
-      <span class="word" id="word">${esc(w.han)}${cover}</span><div class="lo big">${esc(w.lo)}</div>`;
-    $('#say').onclick = () => play(w.audio);
-    setTimeout(() => play(w.audio), 250);
+    // 組合詞沒有整句錄音：只看台羅作答，答完再分開聽
+    $('#card').innerHTML = `${w.audio ? '<button class="say" id="say" aria-label="重聽">🔊</button>' : ''}<div class="ask">這句歹話是啥意思？</div>
+      <span class="word" id="word">${esc(w.han)}${cover}</span><div class="lo big">${esc(w.lo)}</div>${w.audio ? '' : '<div class="ask">組合詞，答了會使逐字聽</div>'}`;
+    if (w.audio) { $('#say').onclick = () => play(w.audio); setTimeout(() => play(w.audio), 250); }
   } else {
     $('#card').innerHTML = `<div class="scene"><b>情境</b>　${esc(w.ex.hua)}</div><div class="ask">台語會按怎講？</div>
       <div class="sent">${esc(w.ex.han).replace(esc(w.han), '<u>＿＿</u>')}</div>`;
@@ -369,8 +375,9 @@ function judge(b, o, q) {
   const exSay = w.ex && w.ex.audio ? '<button class="fbsay" id="exsay">🔊 聽整句</button>' : '';
   const ex = w.ex ? `<div class="exrow"><p class="ex">${esc(w.ex.han)}<small>${esc(w.ex.lo)}<br>${esc(w.ex.hua)}</small></p>${exSay}</div>` : '';
   $('#fbwrap').innerHTML = `<div class="fb"><div class="h"><b>${esc(w.han)}</b><span class="lo">${esc(w.lo)}</span>${w.audio ? '<button class="fbsay" id="fbsay">🔊</button>' : ''}<span class="tag">${CAT[w.cat]}</span></div>
-    <p>${esc(w.def)}</p>${ex}</div><button class="next" id="nx">${qi + 1 >= qs.length ? '看結算' : '下一題'}</button>`;
+    <p>${esc(w.def)}</p>${partsHtml(w)}${ex}</div><button class="next" id="nx">${qi + 1 >= qs.length ? '看結算' : '下一題'}</button>`;
   const fs = $('#fbsay'); if (fs) fs.onclick = () => play(w.audio);
+  bindParts($('#fbwrap'));
   const es = $('#exsay'); if (es) es.onclick = () => play(w.ex.audio);
   // 情境題答完只念單詞，想聽整句再按「聽整句」；聽聲題已經聽過單詞，不自動播
   if (mode === 'scene' && w.audio) setTimeout(() => play(w.audio), 300);
@@ -420,6 +427,14 @@ function goldPaper(n) {
   $('#smoke').innerHTML = s; $('#ash').innerHTML = a;
 })();
 
+// 組合詞：逐字的辭典錄音按鈕（連讀會變調，所以不接成一句）
+function partsHtml(w) {
+  if (!w.parts) return '';
+  const btns = w.parts.map(p => `<button class="fbsay" data-pa="${esc(p.audio)}">🔊 ${esc(p.han)} <span class="lo">${esc(p.lo)}</span></button>`).join('');
+  return `<div class="parts">${btns}</div><p class="pnote">辭典詞組合，毋是辭典詞條。逐字聽是單獨唸的本調，連起來講的時陣頭前的字會變調。</p>`;
+}
+function bindParts(root) { for (const b of root.querySelectorAll('[data-pa]')) b.onclick = () => play(b.dataset.pa); }
+
 // 歹話辭典
 function renderDict(q) {
   q = (q || '').trim().toLowerCase();
@@ -432,13 +447,14 @@ function renderDict(q) {
     html += `<h3>${CAT[c]}（${ws.length}）</h3>` + ws.map(w => {
       const i = W.indexOf(w);
       const ex = w.ex ? `<p class="dex">例：${esc(w.ex.han)}${w.ex.audio ? ` <button class="fbsay" data-e="${i}" aria-label="聽例句">🔊 整句</button>` : ''}</p>` : '';
-      return `<div class="row"><span><b>${esc(w.han)}</b><span class="lo">${esc(w.lo)}</span></span>${w.audio ? `<button class="say2" data-a="${i}" aria-label="聽 ${esc(w.han)}">🔊</button>` : '<span></span>'}<p>${esc(w.def)}</p>${ex}</div>`;
+      return `<div class="row"><span><b>${esc(w.han)}</b><span class="lo">${esc(w.lo)}</span>${w.combo ? ' <span class="ctag">組合</span>' : ''}</span>${w.audio ? `<button class="say2" data-a="${i}" aria-label="聽 ${esc(w.han)}">🔊</button>` : '<span></span>'}<p>${esc(w.def)}</p>${partsHtml(w)}${ex}</div>`;
     }).join('');
   }
   $('#dlist').innerHTML = html || '<p style="text-align:center;color:#cbbfa6">揣無這个詞</p>';
   $('#dn').textContent = `${n} 个詞`;
   for (const b of document.querySelectorAll('[data-a]')) b.onclick = () => play(W[+b.dataset.a].audio);
   for (const b of document.querySelectorAll('[data-e]')) b.onclick = () => play(W[+b.dataset.e].ex.audio);
+  bindParts($('#dlist'));
 }
 $('#q').addEventListener('input', e => renderDict(e.target.value));
 
