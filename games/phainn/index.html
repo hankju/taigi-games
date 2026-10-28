@@ -99,7 +99,7 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offse
 .gate .paper p{margin:0 0 8px}
 .gate .paper ul{margin:0 0 8px;padding-left:1.3em}
 .gate .paper li{margin:2px 0}
-.gate .paper .fine{font-size:13px;color:#5b4f40;margin:0}
+.gate .paper .fine{font-size:13px;line-height:1.6;color:#5b4f40;margin:0;padding-right:3.6em}
 .gate .skip{display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px;color:#d9cdb2;cursor:pointer}
 .gate .skip input{width:20px;height:20px;accent-color:var(--seal);margin:0}
 .gate .paper .sig{position:absolute;right:16px;bottom:12px;font-family:var(--display);color:var(--seal);border:2px solid var(--seal);border-radius:4px;padding:2px 6px;transform:rotate(-8deg);font-size:15px}
@@ -210,22 +210,20 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offse
 <section class="screen gate" id="gate" hidden>
   <div class="paper" role="document" aria-labelledby="gatetitle">
     <h2 id="gatetitle">入來進前，先看遮</h2>
-    <p>本遊戲的詞語出自教育部《臺灣台語常用詞辭典》，<strong>內容含髒話、粗俗與不雅字眼</strong>，包括：</p>
-    <ul>
-      <li>髒話與罵人的粗話，含性器官、性行為相關的辱罵用語</li>
-      <li>帶有歧視意味的稱呼（辭典註明「應避免使用」的詞）</li>
-      <li>喪葬、死亡相關的禁忌說法</li>
-      <li>屎尿、屁股等身體排泄的粗俗講法</li>
-      <li>性與色情交易相關的詞</li>
+    <p>遮收的是教育部《臺灣台語常用詞辭典》收錄的<strong>罵人話、粗俗話、喪葬禁忌、身體屎尿佮性相關的詞</strong>。</p>
+    <p><strong>內底有粗俗、歹聽的字眼。</strong>目的是了解這寡話的意思、來源佮背後的文化，<strong>毋是鼓勵你用來罵人</strong>。有的詞辭典有註明「有歧視意味，應避免使用」，答題了後會共這段說明攏列出來。</p>
+    <p>袂確定會使用的時陣，就莫講。</p>
+    <h3>免責聲明</h3>
+    <ul class="fine">
+      <li>目的是認識語言文化，不代表認同或鼓勵使用。</li>
+      <li>部分內容可能造成不適，請自行斟酌。</li>
+      <li>未成年人建議在師長指導下使用。</li>
+      <li>因使用或轉述內容產生的後果，由使用者自行負責。</li>
     </ul>
-    <p>另有 14 個常見罵人話是辭典裡的字組合而成、辭典沒有收錄，解釋為自行撰寫。</p>
-    <h3>使用前請注意</h3>
-    <p>本遊戲的目的是認識這些詞的意思、來源與背後的文化，<strong>不代表認同或鼓勵使用</strong>。部分內容可能造成不適，請自行斟酌是否進入；未成年人建議在師長指導下使用。</p>
-    <p class="fine">內容僅供語言學習參考；因使用或轉述本遊戲內容所產生的任何後果，由使用者自行負責。</p>
     <span class="sig">歹話</span>
   </div>
   <label class="skip"><input type="checkbox" id="skipgate">以後不要再顯示這個提醒</label>
-  <button class="btn" id="agree">我了解，進入遊戲</button>
+  <button class="btn" id="agree">我知影矣，入去</button>
   <a class="hublink" href="../../" style="align-self:center">‹ 轉去全部遊戲</a>
 </section>
 
