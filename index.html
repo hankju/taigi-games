@@ -139,15 +139,16 @@ dialog::backdrop{background:rgba(10,7,4,.78)}
 /* 電腦：左邊標題＋大 QR Code（老師投影用），右邊兩欄卡片；QR 按鈕只在電腦出現 */
 @media (min-width:960px){
   body{--lan-h:118px;--sky-h:220px}
-  .wrap{max-width:1180px;display:grid;grid-template-columns:330px 1fr;gap:64px;align-items:start;padding-left:40px;padding-right:40px;padding-bottom:110px}
+  .wrap{max-width:1180px;display:grid;grid-template-columns:370px 1fr;gap:56px;align-items:start;padding-left:40px;padding-right:40px;padding-bottom:110px}
   .moon{top:22px;right:6%;width:130px;height:130px}
   .cloud.c1{left:2%;top:58%;width:260px}
   .cloud.c2{right:3%;top:40%;width:220px}
   .cloud.c3{display:block;left:40%;top:calc(var(--lan-h) + 10px);width:150px;opacity:.08}
   .sky{position:fixed}
-  /* 讓大標題漢字的頂端跟右邊卡片頂端切齊（上方那行台羅往上凸出去） */
-  .side{text-align:left;margin-top:-28px}
-  h1{font-size:58px;justify-content:flex-start}
+  .side{text-align:left;margin-top:-15px}  /* 台羅小字頂端跟卡片頂端對齊 */
+  /* 大標題放大，左欄整組跟右邊卡片一樣有份量 */
+  h1{font-size:72px;letter-spacing:.02em;justify-content:flex-start}
+  .lead{font-size:19px}
   h1 .ch{align-items:flex-start}
   .scan{display:block;margin-top:30px;padding:16px;border-radius:6px;background:var(--paper);color:var(--ink);text-align:center;box-shadow:0 14px 30px rgba(0,0,0,.4)}
   .scan .code{display:block;width:100%;aspect-ratio:1;border:0;padding:0;background:#fff;cursor:zoom-in}
