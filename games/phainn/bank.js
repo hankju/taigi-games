@@ -1,4 +1,5 @@
 // 歹話毋通講題庫：教育部《臺灣台語常用詞辭典》（CC BY-ND 3.0 TW），釋義、例句照原文，錄音為原檔
+// combo：由辭典已有的字詞組合的常用罵人話（非辭典詞條），parts 是各組成的辭典錄音，連讀會變調所以不接成一句
 // cat：rude 罵人粗俗、death 喪葬禁忌、body 屎尿身體、sex 性相關；要刪詞直接刪那一行
 window.PW_BANK = [
   {"han": "毋成人", "lo": "m̄-tsiânn-lâng", "cat": "rude", "def": "不肖之徒。罵人不像樣。", "ex": {"han": "伊去予彼个毋成人氣甲欲死。", "lo": "I khì hōo hit ê m̄-tsiânn-lâng khì kah beh-sí.", "hua": "他被那個不肖之徒氣個半死。", "audio": "audio/ex/46530.mp3"}, "audio": "audio/m-tsiann-lang.mp3"},
@@ -378,5 +379,8 @@ window.PW_BANK = [
   {"han": "牛𡳞脬檨", "lo": "gû-lān-pha-suāinn", "cat": "sex", "def": "瓜果類。芒果的一種品名，大小及外形像牛的陰囊。", "audio": "audio/gu-lan-pha-suainn.mp3"},
   {"han": "奶", "lo": "ling", "alt": ["ni"], "cat": "sex", "def": "哺乳動物的乳房。", "audio": "audio/ling.mp3"},
   {"han": "奶頭", "lo": "ling-thâu", "alt": ["ni-thâu"], "cat": "sex", "def": "乳頭。乳房中央突起的尖端部分。", "audio": "audio/ling-thau.mp3"},
-  {"han": "子宮", "lo": "tsú-kiong", "cat": "sex", "def": "雌性動物生殖器的主要部分。位於小骨盤內膀胱與直腸之間，以子宮頸與陰道相連，底部兩側與輸卵管相通，為胎兒發育的場所。", "audio": "audio/tsu-kiong.mp3"}
+  {"han": "子宮", "lo": "tsú-kiong", "cat": "sex", "def": "雌性動物生殖器的主要部分。位於小骨盤內膀胱與直腸之間，以子宮頸與陰道相連，底部兩側與輸卵管相通，為胎兒發育的場所。", "audio": "audio/tsu-kiong.mp3"},
+  {"han": "姦恁娘", "lo": "kàn lín-niâ", "cat": "rude", "combo": true, "def": "罵人的粗話。用「姦」（性交）加上「恁娘」（對方的母親）來辱罵對方，是台語最常見的髒話之一。口語常寫成「幹你娘」，也有人改講「駛恁娘」(sái lín-niâ) 來減輕語氣。", "parts": [{"han": "姦", "lo": "kàn", "audio": "audio/kan.mp3"}, {"han": "恁娘", "lo": "lín-niâ", "audio": "audio/lin-nia.mp3"}], "note": "辭典詞組合，非辭典詞條；解釋為初稿，請老師確認"},
+  {"han": "姦恁老母", "lo": "kàn lín lāu-bú", "cat": "rude", "combo": true, "def": "罵人的粗話，意思和「姦恁娘」相同，「老母」就是母親。口語常寫成「幹你老母」。", "parts": [{"han": "姦", "lo": "kàn", "audio": "audio/kan.mp3"}, {"han": "恁", "lo": "lín", "audio": "audio/lin.mp3"}, {"han": "老母", "lo": "lāu-bú", "audio": "audio/lau-bu.mp3"}], "note": "辭典詞組合，非辭典詞條；解釋為初稿，請老師確認"},
+  {"han": "破媌", "lo": "phuà-bâ", "cat": "rude", "combo": true, "def": "罵女性的粗話。「媌」原指野貓，後來成為娼妓的代稱，「破媌」用來辱罵女性行為不檢點。口語常寫成「破麻」。", "parts": [{"han": "破", "lo": "phuà", "audio": "audio/phua.mp3"}, {"han": "媌", "lo": "bâ", "audio": "audio/ba.mp3"}], "note": "辭典詞組合，非辭典詞條；解釋為初稿，請老師確認"}
 ];
