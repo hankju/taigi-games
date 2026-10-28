@@ -12,6 +12,6 @@
 - 台羅拼音練習（`games/tailo/`）的現況、規格與補題庫步驟寫在 `games/tailo/README.md`，接手前先讀；改題庫後跑 `python3 games/tailo/tools/check_bank.py --fix`。
 - `games/tailo/` 題庫裡第一課單詞沿用 `games/yeshi/audio/` 的錄音（路徑 `../yeshi/audio/…`），搬動 yeshi 的錄音時要一起改；其他詞的錄音在 `games/tailo/audio/`。
 - 使用者是高中生（高中閩南語文課），選詞與難度以高中程度為準，但正式課程的遊戲排除粗俗不雅的詞。
-- 粗俗、罵人、喪葬、性相關的詞集中在課外遊戲 `games/phainn/`（localStorage 前綴 `pw_`）。題庫照使用者要求不另外剔除冒犯性的詞，由任課老師把關；要刪詞就改 `games/phainn/bank.js`。釋義照辭典原文，含「應避免使用」等說明。題庫裡 `combo: true` 的是辭典詞組合的常用罵人話（非辭典詞條），`parts` 列各組成的辭典錄音；不要把錄音接成一句，因為連讀會變調，而且授權不能改錄音。`bank.js` 尾端的 `PW_SAME` 是意思相近的詞組，同組的詞不會互相當錯誤選項（釋義第一句有相同說法的也會自動避開）；新增詞時若有近義詞，要一起加進對應的組。
+- 粗俗、罵人、喪葬、性相關的詞集中在 `games/phainn/`（localStorage 前綴 `pw_`）；大廳卡片用 `warn` 欄位顯示內容警示，遊戲每次進入都先顯示內容提醒（勾「以後不要再顯示」才記在 `pw_skipgate`）。題庫照使用者要求不另外剔除冒犯性的詞，由任課老師把關；要刪詞就改 `games/phainn/bank.js`。釋義照辭典原文，含「應避免使用」等說明。題庫裡 `combo: true` 的是辭典詞組合的常用罵人話（非辭典詞條），`parts` 列各組成的辭典錄音；不要把錄音接成一句，因為連讀會變調，而且授權不能改錄音。`bank.js` 尾端的 `PW_SAME` 是意思相近的詞組，同組的詞不會互相當錯誤選項（釋義第一句有相同說法的也會自動避開）；新增詞時若有近義詞，要一起加進對應的組。
 - 雲端開發環境（Claude Code 網頁版）連不到教育部辭典網站；要查詞、下載錄音請在本機做（步驟見 `games/tailo/README.md`），先用 curl 確認連得上，連不上就請老師提供錄音。台羅、釋義也可從 GitHub 上的 g0v/moedict-data-twblg 取得。
 - Windows 主控台是 cp950，跑 Python 印中文罕用字會當掉；工具程式要把 stdout 設成 UTF-8（`check_bank.py` 已處理）。

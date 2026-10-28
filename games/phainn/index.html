@@ -4,7 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#2a2420">
-<title>歹話毋通講・課外</title>
+<title>歹話毋通講</title>
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans:wght@500;600&family=Noto+Sans+TC:wght@400;500;700&display=swap">
 <style>
@@ -59,7 +61,7 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offse
 
 /* 首頁 */
 .hero{text-align:center;padding-top:4px}
-.hero .kick{display:inline-block;font-size:13px;color:var(--gold-soft);border:1px dashed rgba(215,176,74,.6);border-radius:6px;padding:2px 10px}
+.hero .kick{display:inline-block;background:transparent;font-size:13px;color:var(--gold-soft);border:1px dashed rgba(215,176,74,.6);border-radius:6px;padding:2px 10px}
 .hero .lo{display:block;margin-top:14px;color:var(--gold-soft);font-size:15px}
 .hero h1{margin:6px 0 0;font-size:clamp(34px,10.5vw,52px);letter-spacing:.1em;transform:rotate(-2deg)}
 /* 開場唯一的動作：封條「啪」一聲貼上去 */
@@ -87,10 +89,19 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offse
 .credit{text-align:center;font-size:11.5px;line-height:1.5;color:#a89a80}
 
 /* 進入前的說明 */
-.gate{justify-content:center;gap:18px}
-.gate .paper{background:var(--paper);color:var(--ink);border-radius:6px;padding:22px 20px;box-shadow:0 10px 30px rgba(0,0,0,.4);line-height:1.75;font-size:15px;position:relative}
-.gate .paper h2{margin:0 0 8px;font-family:var(--display);font-size:26px;color:var(--seal)}
-.gate .paper p{margin:0 0 10px}
+/* 每次進來都先顯示；內容較長，手機上可以捲動（上下用 auto margin 置中，捲動時才不會切到頂端） */
+.gate{gap:14px;overflow-y:auto;padding-block:6px}
+.gate>:first-child{margin-top:auto}
+.gate>:last-child{margin-bottom:auto}
+.gate .paper{background:var(--paper);color:var(--ink);border-radius:6px;padding:20px 18px 22px;box-shadow:0 10px 30px rgba(0,0,0,.4);line-height:1.7;font-size:14.5px;position:relative}
+.gate .paper h2{margin:0 0 4px;font-family:var(--display);font-size:26px;color:var(--seal)}
+.gate .paper h3{margin:14px 0 4px;font-size:15px;color:var(--seal-d)}
+.gate .paper p{margin:0 0 8px}
+.gate .paper ul{margin:0 0 8px;padding-left:1.3em}
+.gate .paper li{margin:2px 0}
+.gate .paper .fine{font-size:13px;color:#5b4f40;margin:0}
+.gate .skip{display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px;color:#d9cdb2;cursor:pointer}
+.gate .skip input{width:20px;height:20px;accent-color:var(--seal);margin:0}
 .gate .paper .sig{position:absolute;right:16px;bottom:12px;font-family:var(--display);color:var(--seal);border:2px solid var(--seal);border-radius:4px;padding:2px 6px;transform:rotate(-8deg);font-size:15px}
 .btn{height:52px;border:0;border-radius:14px;background:var(--seal);color:#fff;font-size:18px;font-weight:700;box-shadow:0 4px 0 var(--seal-d)}
 .btn.ghost{background:transparent;color:var(--gold-soft);border:1.5px solid rgba(215,176,74,.6);box-shadow:none}
@@ -197,21 +208,31 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offse
 <div id="app">
 
 <section class="screen gate" id="gate" hidden>
-  <div class="paper">
-    <h2>入來進前，先看遮</h2>
-    <p>遮收的是教育部《臺灣台語常用詞辭典》收錄的<strong>罵人話、粗俗話、喪葬禁忌、身體屎尿佮性相關的詞</strong>。</p>
-    <p>這是課外的遊戲，毋是正式課程。目的是了解這寡話的意思、來源佮背後的文化，<strong>毋是鼓勵你用來罵人</strong>。有的詞辭典有註明「有歧視意味，應避免使用」，答題了後會共這段說明攏列出來。</p>
-    <p>袂確定會使用的時陣，就莫講。</p>
+  <div class="paper" role="document" aria-labelledby="gatetitle">
+    <h2 id="gatetitle">入來進前，先看遮</h2>
+    <p>本遊戲的詞語出自教育部《臺灣台語常用詞辭典》，<strong>內容含髒話、粗俗與不雅字眼</strong>，包括：</p>
+    <ul>
+      <li>髒話與罵人的粗話，含性器官、性行為相關的辱罵用語</li>
+      <li>帶有歧視意味的稱呼（辭典註明「應避免使用」的詞）</li>
+      <li>喪葬、死亡相關的禁忌說法</li>
+      <li>屎尿、屁股等身體排泄的粗俗講法</li>
+      <li>性與色情交易相關的詞</li>
+    </ul>
+    <p>另有 14 個常見罵人話是辭典裡的字組合而成、辭典沒有收錄，解釋為自行撰寫。</p>
+    <h3>使用前請注意</h3>
+    <p>本遊戲的目的是認識這些詞的意思、來源與背後的文化，<strong>不代表認同或鼓勵使用</strong>。部分內容可能造成不適，請自行斟酌是否進入；未成年人建議在師長指導下使用。</p>
+    <p class="fine">內容僅供語言學習參考；因使用或轉述本遊戲內容所產生的任何後果，由使用者自行負責。</p>
     <span class="sig">歹話</span>
   </div>
-  <button class="btn" id="agree">我知影矣，入去</button>
+  <label class="skip"><input type="checkbox" id="skipgate">以後不要再顯示這個提醒</label>
+  <button class="btn" id="agree">我了解，進入遊戲</button>
   <a class="hublink" href="../../" style="align-self:center">‹ 轉去全部遊戲</a>
 </section>
 
 <section class="screen" id="home" hidden>
   <div class="toprow"><a class="hublink" href="../../">‹ 全部遊戲</a><span class="tbtns"><button class="tog" id="bgm">🎵 配樂：關</button><button class="tog" id="sfx">🔊 音效</button></span></div>
   <div class="hero">
-    <span class="kick">課外・毋是正式課程</span>
+    <button class="kick" id="showgate" aria-label="看內容提醒">⚠ 含髒話與不雅字眼</button>
     <span class="lo">Pháinn-uē m̄-thang kóng</span>
     <h1><span class="seal">歹話毋通講<span class="stamp">封</span></span></h1>
     <p>聽辭典的真人錄音，揣出這寡歹聽話的意思；看情境，猜台語會按怎講。一擺 10 題。</p>
@@ -490,7 +511,9 @@ $('#dback').onclick = () => { if (audio) audio.pause(); renderHome(); show('home
 $('#home2').onclick = () => { renderHome(); show('home'); };
 $('#again').onclick = () => start(mode);
 $('#retry').onclick = () => start(mode, wrong.slice());
-$('#agree').onclick = () => { store.set('pw_ok', 1); renderHome(); show('home'); };
+// 內容提醒：預設每次都顯示，勾「以後不要再顯示」才記在 pw_skipgate；首頁的警示標籤可以再叫出來看
+$('#agree').onclick = () => { store.set('pw_skipgate', $('#skipgate').checked ? 1 : 0); renderHome(); show('home'); };
+$('#showgate').onclick = () => { $('#skipgate').checked = !!store.get('pw_skipgate', 0); show('gate'); };
 document.addEventListener('keydown', e => {
   if ($('#play').hidden) return;
   const i = '1234'.indexOf(e.key);
@@ -501,7 +524,8 @@ document.addEventListener('keydown', e => {
 HubMusic.attachToggle($('#bgm'), 'phainn');
 FX.attachToggle($('#sfx'));
 renderHome();
-show(store.get('pw_ok', 0) ? 'home' : 'gate');
+try { localStorage.removeItem('pw_ok'); } catch (e) {}   // 舊版「看過一次就不再顯示」的紀錄，改版後不用了
+show(store.get('pw_skipgate', 0) ? 'home' : 'gate');
 </script>
 </body>
 </html>

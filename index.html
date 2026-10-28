@@ -6,6 +6,8 @@
 <meta name="theme-color" content="#17120d">
 <meta name="description" content="高中閩南語文課的台語學習小遊戲：單詞、押韻、台羅拼音，手機掃 QR Code 就能玩。">
 <title>台語小遊戲</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans:wght@400;500&family=Noto+Sans+TC:wght@400;500;700&display=swap">
 <style>
@@ -108,6 +110,8 @@ h1 .ch i{color:var(--muted);text-shadow:none;font-size:max(12px,.24em)}
 .game h3 a:focus-visible{outline:none}
 .game:has(h3 a:focus-visible){outline:3px solid var(--a);outline-offset:3px}
 .game p{margin:0;font-size:15px;line-height:1.6;opacity:.92}
+/* 內容警示（例如含髒話）：比標籤醒目，放在說明上面 */
+.game .warn{display:flex;gap:6px;align-items:baseline;margin:0;padding:6px 10px;border-radius:8px;font-family:var(--lo),"Noto Sans TC",sans-serif;font-size:13px;line-height:1.45;color:#ffd6c8;background:rgba(210,64,44,.2);border:1px solid rgba(235,110,80,.55)}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 0;padding:0;list-style:none}
 .chips li{font-size:12px;padding:3px 10px;border-radius:999px;background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.18);border-color:color-mix(in srgb,var(--a) 40%,transparent)}
 .foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:auto;padding-top:14px;border-top:1px dashed rgba(255,255,255,.2)}
@@ -280,6 +284,7 @@ $('#list').innerHTML = GAMES.map((g, i) => {
     <span class="wm" aria-hidden="true">${esc(g.icon)}</span>
     <div class="top"><span class="badge" aria-hidden="true">${esc(g.icon)}</span><button class="qrbtn" data-qr="${i}" aria-label="顯示「${esc(g.name)}」的 QR Code">${qrIcon}QR Code</button></div>
     <h3><a href="games/${esc(g.id)}/" aria-label="${esc(g.name)}">${ruby(g.name, g.lo)}</a></h3>
+    ${g.warn ? `<p class="warn"><span aria-hidden="true">⚠</span>${esc(g.warn)}</p>` : ''}
     <p>${esc(g.desc)}</p>
     ${g.tags && g.tags.length ? `<ul class="chips">${g.tags.map(t => `<li>${esc(t)}</li>`).join('')}</ul>` : ''}
     <div class="foot"><span class="stat">${st ? `🏆 最高 <b>${st.best}</b> 分・耍過 ${st.n} 擺` : '猶未耍過，緊來試看覓！'}</span><span class="play" aria-hidden="true">開始 <i>›</i></span></div>
