@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2a2420">
+<title>歹話毋通講・課外</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans:wght@500;600&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<style>
+/* 版面：廟埕煙燻牆色底、舊紙卡、印泥紅、金紙金；題目漢字用「封條」蓋住，答了才撕開 */
+:root{
+  --wall:#2a2420; --wall-2:#3a322c; --paper:#ebe1c8; --paper-2:#f4ecd8; --ink:#2b231d; --muted:#7d6f5a;
+  --seal:#b3262c; --seal-d:#8a1b20; --gold:#d7b04a; --gold-soft:#efd88f;
+  --ok:#2f8a57; --bad:#b3262c;
+  --display:"LXGW WenKai TC","Kaiti TC","DFKai-SB",serif;
+  --body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --lo:"Noto Sans","Segoe UI",Arial,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+[hidden]{display:none!important}
+body{background:var(--wall);color:var(--paper);font-family:var(--body);-webkit-tap-highlight-color:transparent;
+  background-image:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(215,176,74,.16),transparent 70%),radial-gradient(ellipse 60% 40% at 100% 100%,rgba(179,38,44,.12),transparent 70%)}
+#app{position:relative;height:100%;max-width:560px;margin:0 auto;display:flex;flex-direction:column;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:10px}
+.screen{flex:1;display:flex;flex-direction:column;gap:12px;min-height:0}
+button{font:inherit;cursor:pointer;touch-action:manipulation;color:inherit}
+button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.lo{font-family:var(--lo);font-weight:600;letter-spacing:.01em}
+
+/* 上方列 */
+.toprow{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.hublink{color:var(--gold-soft);font-size:14px;font-weight:700;text-decoration:none;padding:6px 14px;border:1px solid rgba(215,176,74,.5);border-radius:999px}
+.tbtns{display:flex;gap:6px}
+.tog{background:transparent;border:1px solid rgba(235,225,200,.3);color:var(--paper);border-radius:999px;padding:6px 10px;font-size:13px}
+
+/* 封條：白紙條＋紅字＋紅印，題目跟標題共用 */
+.seal{position:relative;display:inline-flex;align-items:center;gap:.4em;background:var(--paper-2);color:var(--seal);
+  font-family:var(--display);font-weight:700;padding:.18em .9em;border-top:2px solid var(--seal);border-bottom:2px solid var(--seal);
+  box-shadow:0 6px 16px rgba(0,0,0,.35)}
+.seal .stamp{display:inline-grid;place-items:center;width:1.35em;height:1.35em;border:2px solid var(--seal);border-radius:4px;font-size:.62em;line-height:1;transform:rotate(-8deg);color:var(--seal);background:rgba(179,38,44,.06)}
+
+/* 首頁 */
+.hero{text-align:center;padding-top:4px}
+.hero .kick{display:inline-block;font-size:13px;color:var(--gold-soft);border:1px dashed rgba(215,176,74,.6);border-radius:6px;padding:2px 10px}
+.hero .lo{display:block;margin-top:14px;color:var(--gold-soft);font-size:15px}
+.hero h1{margin:6px 0 0;font-size:clamp(34px,10.5vw,52px);letter-spacing:.1em;transform:rotate(-2deg)}
+.hero h1 .seal{padding:.12em .7em}
+.hero p{margin:16px auto 0;max-width:30em;font-size:14.5px;line-height:1.65;color:#d9cdb2}
+.cats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.cat{border:1.5px solid rgba(235,225,200,.25);background:transparent;border-radius:12px;padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:2px;color:#cbbf a6;color:#cbbfa6}
+.cat b{font-family:var(--display);font-size:20px;font-weight:700}
+.cat small{font-size:11.5px}
+.cat[aria-pressed="true"]{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+.cat[aria-pressed="true"] b{color:var(--seal)}
+.catnote{text-align:center;font-size:12.5px;color:#bfb196;min-height:1.2em}
+.modes{display:grid;gap:10px;margin-top:auto}
+.mode{display:grid;grid-template-columns:1fr auto;gap:4px 12px;align-items:center;text-align:left;background:var(--paper);color:var(--ink);border:0;border-radius:14px;padding:14px 16px;box-shadow:0 4px 0 #15110e}
+.mode:active{transform:translateY(2px);box-shadow:0 2px 0 #15110e}
+.mode b{font-family:var(--display);font-size:23px}
+.mode small{grid-column:1;color:var(--muted);font-size:13.5px;line-height:1.45}
+.mode .best{grid-row:1/span 2;grid-column:2;font-size:13px;color:var(--seal);font-weight:700;white-space:nowrap}
+.mode.sub{background:var(--wall-2);color:var(--paper);box-shadow:none;border:1px solid rgba(235,225,200,.15)}
+.mode.sub small{color:#cbbfa6}
+.credit{text-align:center;font-size:11.5px;line-height:1.5;color:#a89a80}
+
+/* 進入前的說明 */
+.gate{justify-content:center;gap:18px}
+.gate .paper{background:var(--paper);color:var(--ink);border-radius:6px;padding:22px 20px;box-shadow:0 10px 30px rgba(0,0,0,.4);line-height:1.75;font-size:15px;position:relative}
+.gate .paper h2{margin:0 0 8px;font-family:var(--display);font-size:26px;color:var(--seal)}
+.gate .paper p{margin:0 0 10px}
+.gate .paper .sig{position:absolute;right:16px;bottom:12px;font-family:var(--display);color:var(--seal);border:2px solid var(--seal);border-radius:4px;padding:2px 6px;transform:rotate(-8deg);font-size:15px}
+.btn{height:52px;border:0;border-radius:14px;background:var(--seal);color:#fff;font-size:18px;font-weight:700;box-shadow:0 4px 0 var(--seal-d)}
+.btn.ghost{background:transparent;color:var(--gold-soft);border:1.5px solid rgba(215,176,74,.6);box-shadow:none}
+
+/* 遊戲中 */
+.hud{display:flex;align-items:center;gap:10px}
+.back{background:transparent;border:1px solid rgba(235,225,200,.35);border-radius:10px;padding:6px 12px;font-size:14px;color:var(--paper)}
+.hud .qn{flex:1;text-align:center;font-size:14px;color:#cbbfa6}
+.hud .sc{font-size:14px}
+.hud .sc b{font-size:20px;color:var(--gold)}
+.bar{height:6px;border-radius:3px;background:rgba(235,225,200,.15);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--gold);transition:width .3s}
+.card{position:relative;background:var(--paper);color:var(--ink);border-radius:8px;padding:18px 16px 16px;text-align:center;box-shadow:0 8px 22px rgba(0,0,0,.35);display:flex;flex-direction:column;align-items:center;gap:8px}
+.card .ask{font-size:13.5px;color:var(--muted)}
+.word{position:relative;display:inline-block;font-family:var(--display);font-size:clamp(38px,11vw,54px);font-weight:700;line-height:1.25;letter-spacing:.06em;min-width:3em;padding:0 .2em}
+/* 蓋在漢字上的封條；.torn 撕開 */
+.word .cover{position:absolute;left:-14%;right:-14%;top:-4%;bottom:-4%;display:flex;align-items:center;justify-content:center;gap:.3em;background:var(--paper-2);color:var(--seal);
+  border-top:2px solid var(--seal);border-bottom:2px solid var(--seal);font-size:.5em;letter-spacing:.3em;transform:rotate(-4deg);box-shadow:0 4px 10px rgba(0,0,0,.25);transition:transform .45s cubic-bezier(.3,1.4,.6,1),opacity .45s}
+.word .cover .stamp{display:inline-grid;place-items:center;width:1.5em;height:1.5em;border:2px solid var(--seal);border-radius:4px;letter-spacing:0;transform:rotate(-8deg);font-size:.8em}
+.word.torn .cover{transform:translate(40%,-60%) rotate(18deg);opacity:0;pointer-events:none}
+.card .lo.big{font-size:clamp(20px,6vw,26px)}
+.say{position:absolute;top:10px;right:10px;width:44px;height:44px;border-radius:50%;border:0;background:#e0d4b6;color:var(--ink);font-size:19px}
+.say:active{transform:scale(.94)}
+.scene{text-align:left;width:100%;font-size:15px;line-height:1.6;color:#4d4131;background:#e1d6b9;border-radius:6px;padding:8px 12px}
+.scene b{color:var(--seal);font-weight:700}
+.sent{font-family:var(--display);font-size:clamp(22px,6.5vw,28px);line-height:1.55}
+.sent u{text-decoration:none;display:inline-block;min-width:2.4em;border-bottom:3px solid var(--seal);margin:0 .15em}
+.opts{display:grid;gap:9px}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;background:var(--wall-2);border:1.5px solid rgba(235,225,200,.18);border-radius:12px;padding:12px 14px;font-size:clamp(16px,4.6vw,18px);line-height:1.5;color:var(--paper)}
+.opt .k{flex:none;width:24px;height:24px;border-radius:50%;background:var(--paper);color:var(--wall);display:grid;place-items:center;font-size:13px;font-weight:700;margin-top:2px}
+.opt.han{font-family:var(--display);font-size:clamp(21px,6vw,25px);align-items:center}
+.opt.right{background:var(--ok);border-color:#a9e2c0}
+.opt.wrong{background:#5b2022;border-color:var(--bad)}
+.opt.dim{opacity:.45}
+.opt[disabled]{cursor:default}
+.fb{background:var(--paper);color:var(--ink);border-radius:8px;padding:12px 14px;display:grid;gap:6px;box-shadow:0 6px 16px rgba(0,0,0,.3)}
+.fb .h{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.fb .h b{font-family:var(--display);font-size:26px}
+.fb .h .lo{font-size:17px}
+.fb .tag{margin-left:auto;font-size:12px;border-radius:999px;padding:2px 9px;background:var(--wall);color:var(--gold-soft)}
+.fb p{margin:0;font-size:14.5px;line-height:1.6;color:#4d4131}
+.fb .ex{font-family:var(--display);font-size:17px;color:var(--ink)}
+.fb .ex small{display:block;font-family:var(--body);font-size:13px;color:var(--muted)}
+.fbsay{border:0;background:#e0d4b6;border-radius:999px;padding:3px 10px;font-size:14px}
+.next{width:100%;height:50px;border:0;border-radius:14px;background:var(--gold);color:var(--wall);font-size:18px;font-weight:700;box-shadow:0 4px 0 #9c7d2c}
+#fbwrap{display:grid;gap:10px;padding-bottom:10px}
+.play-scroll{overflow:auto;display:flex;flex-direction:column;gap:12px;min-height:0;flex:1;padding-bottom:4px}
+
+/* 結算 */
+.over{justify-content:center;text-align:center}
+.over h2{margin:0;font-family:var(--display);font-size:32px;color:var(--gold-soft)}
+.over .big{font-family:var(--display);font-size:84px;line-height:1;color:var(--paper);font-weight:700}
+.over .big small{font-size:22px;color:#a89a80}
+.over .verdict{font-size:16px;color:var(--gold-soft)}
+.over .verdict span{display:block;font-size:13px;color:#cbbfa6;margin-top:2px}
+.review{background:var(--paper);color:var(--ink);border-radius:8px;padding:8px 12px;text-align:left;max-height:34vh;overflow:auto}
+.review h3{margin:4px 0;font-size:13px;color:var(--muted);font-weight:500}
+.review div{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-top:1px dashed #cfc2a2;font-size:15px}
+.review div:first-of-type{border-top:0}
+.review .d{color:var(--muted);font-size:13px;text-align:right}
+.btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btns .retry{grid-column:1/-1;background:var(--gold);color:var(--wall);box-shadow:0 4px 0 #9c7d2c}
+
+/* 歹話辭典 */
+.dict{overflow:auto;display:grid;gap:8px;padding-bottom:12px}
+.dict h3{margin:10px 0 0;font-family:var(--display);font-size:20px;color:var(--gold-soft);font-weight:700}
+.row{background:var(--paper);color:var(--ink);border-radius:8px;padding:10px 12px;display:grid;grid-template-columns:1fr auto;gap:2px 8px;align-items:center}
+.row b{font-family:var(--display);font-size:22px}
+.row .lo{font-size:14px;color:#5b4d3a;margin-left:6px}
+.row p{grid-column:1/-1;margin:0;font-size:13.5px;line-height:1.55;color:#5b4d3a}
+.row .say2{border:0;background:#e0d4b6;border-radius:50%;width:36px;height:36px}
+.search{width:100%;height:42px;border-radius:10px;border:1.5px solid rgba(235,225,200,.25);background:var(--wall-2);color:var(--paper);padding:0 12px;font:inherit;font-size:15px}
+
+@media (prefers-reduced-motion:reduce){.word .cover{transition:none}}
+</style>
+</head>
+<body>
+<div id="app">
+
+<section class="screen gate" id="gate" hidden>
+  <div class="paper">
+    <h2>入來進前，先看遮</h2>
+    <p>遮收的是教育部《臺灣台語常用詞辭典》收錄的<strong>罵人話、粗俗話、喪葬禁忌、身體屎尿佮性相關的詞</strong>。</p>
+    <p>這是課外的遊戲，毋是正式課程。目的是了解這寡話的意思、來源佮背後的文化，<strong>毋是鼓勵你用來罵人</strong>。有的詞辭典有註明「有歧視意味，應避免使用」，答題了後會共這段說明攏列出來。</p>
+    <p>袂確定會使用的時陣，就莫講。</p>
+    <span class="sig">歹話</span>
+  </div>
+  <button class="btn" id="agree">我知影矣，入去</button>
+  <a class="hublink" href="../../" style="align-self:center">‹ 轉去全部遊戲</a>
+</section>
+
+<section class="screen" id="home" hidden>
+  <div class="toprow"><a class="hublink" href="../../">‹ 全部遊戲</a><span class="tbtns"><button class="tog" id="bgm">🎵 配樂：關</button><button class="tog" id="sfx">🔊 音效</button></span></div>
+  <div class="hero">
+    <span class="kick">課外・毋是正式課程</span>
+    <span class="lo">Pháinn-uē m̄-thang kóng</span>
+    <h1><span class="seal">歹話毋通講<span class="stamp">封</span></span></h1>
+    <p>聽辭典的真人錄音，揣出這寡歹聽話的意思；看情境，猜台語會按怎講。一擺 10 題。</p>
+  </div>
+  <div class="cats" id="cats">
+    <button class="cat" data-cat="rude"><b>罵</b><small>罵人粗俗</small></button>
+    <button class="cat" data-cat="death"><b>喪</b><small>喪葬禁忌</small></button>
+    <button class="cat" data-cat="body"><b>屎</b><small>屎尿身體</small></button>
+    <button class="cat" data-cat="sex"><b>色</b><small>性相關</small></button>
+  </div>
+  <div class="catnote" id="catnote"></div>
+  <div class="modes">
+    <button class="mode" data-go="listen"><b>聽聲揣意思</b><small>聽錄音、看台羅，選出這句歹話的意思</small><span class="best" data-best="listen"></span></button>
+    <button class="mode" data-go="scene"><b>情境題</b><small>看情境佮句子，選出台語會按怎講</small><span class="best" data-best="scene"></span></button>
+    <button class="mode sub" data-go="dict"><b>歹話辭典</b><small>全部的詞照類別排，會使聽發音</small></button>
+  </div>
+  <div class="credit">詞條、釋義、例句與錄音：教育部《臺灣台語常用詞辭典》CC BY-ND 3.0 TW</div>
+</section>
+
+<section class="screen" id="play" hidden>
+  <div class="hud"><button class="back" id="quit">‹ 離開</button><span class="qn" id="qn"></span><span class="sc">分數 <b id="sc">0</b></span></div>
+  <div class="bar"><i id="bar"></i></div>
+  <div class="play-scroll">
+    <div class="card" id="card"></div>
+    <div class="opts" id="opts"></div>
+    <div id="fbwrap"></div>
+  </div>
+</section>
+
+<section class="screen over" id="over" hidden>
+  <h2 id="oTitle">結算</h2>
+  <div class="big" id="oScore">0<small> / 100</small></div>
+  <div class="verdict" id="oVerdict"></div>
+  <div class="review" id="oReview"></div>
+  <div class="btns"><button class="btn retry" id="retry" hidden></button><button class="btn" id="again">閣耍一擺</button><button class="btn ghost" id="home2">回首頁</button></div>
+</section>
+
+<section class="screen" id="dict" hidden>
+  <div class="hud"><button class="back" id="dback">‹ 回首頁</button><span class="qn" id="dn"></span></div>
+  <input class="search" id="q" type="search" placeholder="揣詞：漢字、台羅抑是意思" aria-label="搜尋詞">
+  <div class="dict" id="dlist"></div>
+</section>
+
+</div>
+<script src="../../music.js"></script>
+<script src="../../fx.js"></script>
+<script src="bank.js"></script>
+<script>
+const W = PW_BANK, N = 10, PT = 10;
+const CAT = {rude: '罵人粗俗', death: '喪葬禁忌', body: '屎尿身體', sex: '性相關'};
+const NAME = {listen: '聽聲揣意思', scene: '情境題'};
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const short = d => { const s = d.split('。')[0]; return s.length > 34 ? s.slice(0, 33) + '…' : s + '。'; };
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+};
+
+// 錄音
+let audio = null;
+function play(src) { if (!src) return; try { if (audio) audio.pause(); audio = new Audio(src); audio.play().catch(() => {}); } catch (e) {} }
+
+// 畫面
+function show(id) { for (const s of document.querySelectorAll('.screen')) s.hidden = s.id !== id; window.scrollTo(0, 0); }
+
+// 類別：記在 pw_cats，預設四類全開；至少要留一類
+let cats = store.get('pw_cats', Object.keys(CAT)).filter(c => CAT[c]);
+if (!cats.length) cats = Object.keys(CAT);
+const inCats = w => cats.includes(w.cat);
+function renderCats() {
+  for (const b of document.querySelectorAll('[data-cat]')) {
+    const c = b.dataset.cat, n = W.filter(w => w.cat === c).length;
+    b.setAttribute('aria-pressed', cats.includes(c));
+    b.querySelector('small').textContent = `${CAT[c]} ${n}`;
+  }
+  const n = W.filter(inCats).length;
+  $('#catnote').textContent = `揀好的類別：${n} 个詞（點類別會使開關）`;
+}
+for (const b of document.querySelectorAll('[data-cat]')) b.addEventListener('click', () => {
+  const c = b.dataset.cat;
+  if (cats.includes(c)) { if (cats.length === 1) { $('#catnote').textContent = '上少愛留一類'; return; } cats = cats.filter(x => x !== c); }
+  else cats.push(c);
+  store.set('pw_cats', cats); renderCats();
+});
+
+// 成績：pw_hist = [{m, s, t}]
+const hist = () => store.get('pw_hist', []);
+function renderHome() {
+  renderCats();
+  for (const m in NAME) {
+    const xs = hist().filter(r => r.m === m);
+    $(`[data-best="${m}"]`).textContent = xs.length ? `最高 ${Math.max(...xs.map(r => r.s))}` : '';
+  }
+}
+
+// 出題
+function pool(mode) {
+  const ws = W.filter(inCats);
+  return mode === 'scene' ? ws.filter(w => w.ex && w.ex.han.includes(w.han) && w.ex.hua) : ws.filter(w => w.audio);
+}
+function makeQ(w, mode) {
+  // 錯誤選項先揀同類別的，袂夠才用別類
+  const same = shuffle(W.filter(x => x !== w && x.cat === w.cat)), other = shuffle(W.filter(x => x !== w && x.cat !== w.cat));
+  const key = mode === 'scene' ? x => x.han : x => short(x.def);
+  const opts = [key(w)];
+  for (const x of [...same, ...other]) {
+    if (opts.length >= 4) break;
+    const k = key(x);
+    if (opts.includes(k)) continue;
+    if (mode === 'scene' && w.ex.han.includes(x.han)) continue;
+    opts.push(k);
+  }
+  return {w, mode, opts: shuffle(opts), answer: key(w)};
+}
+
+let qs, qi, score, mode, wrong, retryMode;
+function start(m, given) {
+  mode = m; qi = 0; score = 0; wrong = []; retryMode = !!given;
+  if (given) qs = given.map(q => makeQ(q.w, m));
+  else {
+    const p = pool(m);
+    if (p.length < 4) { $('#catnote').textContent = '這幾類的題目傷少，加揀一類'; return; }
+    qs = shuffle(p).slice(0, N).map(w => makeQ(w, m));
+  }
+  $('#sc').textContent = 0;
+  show('play'); next();
+}
+function next() {
+  if (qi >= qs.length) return finish();
+  const q = qs[qi], w = q.w;
+  $('#qn').textContent = `${NAME[mode]}・第 ${qi + 1} / ${qs.length} 題`;
+  $('#bar').style.width = (qi / qs.length * 100) + '%';
+  $('#fbwrap').innerHTML = '';
+  const cover = `<span class="cover">毋通講<span class="stamp">封</span></span>`;
+  if (mode === 'listen') {
+    $('#card').innerHTML = `<button class="say" id="say" aria-label="重聽">🔊</button><div class="ask">這句歹話是啥意思？</div>
+      <span class="word" id="word">${esc(w.han)}${cover}</span><div class="lo big">${esc(w.lo)}</div>`;
+    $('#say').onclick = () => play(w.audio);
+    setTimeout(() => play(w.audio), 250);
+  } else {
+    $('#card').innerHTML = `<div class="scene"><b>情境</b>　${esc(w.ex.hua)}</div><div class="ask">台語會按怎講？</div>
+      <div class="sent">${esc(w.ex.han).replace(esc(w.han), '<u>＿＿</u>')}</div>`;
+  }
+  const box = $('#opts'); box.innerHTML = '';
+  q.opts.forEach((o, i) => {
+    const b = document.createElement('button');
+    b.className = 'opt' + (mode === 'scene' ? ' han' : '');
+    b.innerHTML = `<span class="k">${'ABCD'[i]}</span><span>${esc(o)}</span>`;
+    b.onclick = () => judge(b, o, q);
+    box.appendChild(b);
+  });
+}
+function judge(b, o, q) {
+  if (q.done) return; q.done = true;
+  const ok = o === q.answer, w = q.w;
+  for (const x of $('#opts').children) { x.disabled = true; if (x.textContent.slice(1) === q.answer) x.classList.add('right'); else if (x !== b) x.classList.add('dim'); }
+  if (ok) { score += PT; FX.ok(); } else { b.classList.add('wrong'); wrong.push(q); FX.bad(); }
+  $('#sc').textContent = score;
+  const wd = $('#word'); if (wd) wd.classList.add('torn');
+  const ex = w.ex ? `<p class="ex">${esc(w.ex.han)}<small>${esc(w.ex.lo)}<br>${esc(w.ex.hua)}</small></p>` : '';
+  $('#fbwrap').innerHTML = `<div class="fb"><div class="h"><b>${esc(w.han)}</b><span class="lo">${esc(w.lo)}</span>${w.audio ? '<button class="fbsay" id="fbsay">🔊</button>' : ''}<span class="tag">${CAT[w.cat]}</span></div>
+    <p>${esc(w.def)}</p>${ex}</div><button class="next" id="nx">${qi + 1 >= qs.length ? '看結算' : '下一題'}</button>`;
+  const fs = $('#fbsay'); if (fs) fs.onclick = () => play(w.audio);
+  if (mode === 'scene' && w.audio) setTimeout(() => play(w.audio), 300);
+  $('#nx').onclick = () => { qi++; next(); };
+  $('#nx').scrollIntoView({block: 'nearest', behavior: 'smooth'});
+}
+function finish() {
+  if (audio) audio.pause();
+  const total = qs.length * PT, s100 = Math.round(score / total * 100);
+  const prev = hist().filter(r => r.m === mode).slice(-1)[0];
+  if (!retryMode) { const h = hist(); h.push({m: mode, s: s100, t: Date.now()}); store.set('pw_hist', h.slice(-500)); }
+  $('#oTitle').textContent = retryMode ? '錯題練習完成' : NAME[mode];
+  $('#oScore').innerHTML = `${s100}<small> / 100</small>`;
+  const v = FX.verdict(s100, 100, retryMode || !prev ? null : prev.s);
+  $('#oVerdict').innerHTML = `${esc(v.msg)}${v.diff ? `<span>${esc(v.diff)}</span>` : ''}`;
+  $('#oReview').innerHTML = wrong.length ? '<h3>答毋著的</h3>' + wrong.map(q => `<div><span><b>${esc(q.w.han)}</b>　<span class="lo">${esc(q.w.lo)}</span></span><span class="d">${esc(short(q.w.def))}</span></div>`).join('') : '<h3>攏答著矣</h3>';
+  const rb = $('#retry'); rb.hidden = !wrong.length; rb.textContent = `再練錯的這 ${wrong.length} 題`;
+  $('#bar').style.width = '100%';
+  show('over');
+}
+
+// 歹話辭典
+function renderDict(q) {
+  q = (q || '').trim().toLowerCase();
+  const hit = w => !q || w.han.includes(q) || w.lo.toLowerCase().includes(q) || w.def.includes(q);
+  let html = '', n = 0;
+  for (const c in CAT) {
+    const ws = W.filter(w => w.cat === c && hit(w));
+    if (!ws.length) continue;
+    n += ws.length;
+    html += `<h3>${CAT[c]}（${ws.length}）</h3>` + ws.map(w => `<div class="row"><span><b>${esc(w.han)}</b><span class="lo">${esc(w.lo)}</span></span>${w.audio ? `<button class="say2" data-a="${W.indexOf(w)}" aria-label="聽 ${esc(w.han)}">🔊</button>` : '<span></span>'}<p>${esc(w.def)}</p></div>`).join('');
+  }
+  $('#dlist').innerHTML = html || '<p style="text-align:center;color:#cbbfa6">揣無這个詞</p>';
+  $('#dn').textContent = `${n} 个詞`;
+  for (const b of document.querySelectorAll('[data-a]')) b.onclick = () => play(W[+b.dataset.a].audio);
+}
+$('#q').addEventListener('input', e => renderDict(e.target.value));
+
+// 按鈕
+for (const b of document.querySelectorAll('[data-go]')) b.addEventListener('click', () => {
+  const g = b.dataset.go;
+  if (g === 'dict') { renderDict($('#q').value); show('dict'); } else start(g);
+});
+$('#quit').onclick = () => { if (audio) audio.pause(); renderHome(); show('home'); };
+$('#dback').onclick = () => { if (audio) audio.pause(); renderHome(); show('home'); };
+$('#home2').onclick = () => { renderHome(); show('home'); };
+$('#again').onclick = () => start(mode);
+$('#retry').onclick = () => start(mode, wrong.slice());
+$('#agree').onclick = () => { store.set('pw_ok', 1); renderHome(); show('home'); };
+document.addEventListener('keydown', e => {
+  if ($('#play').hidden) return;
+  const i = '1234'.indexOf(e.key);
+  if (i >= 0) { const b = $('#opts').children[i]; if (b && !b.disabled) b.click(); }
+  if (e.key === 'Enter') { const nx = $('#nx'); if (nx) nx.click(); }
+});
+
+HubMusic.attachToggle($('#bgm'), 'phainn');
+FX.attachToggle($('#sfx'));
+renderHome();
+show(store.get('pw_ok', 0) ? 'home' : 'gate');
+</script>
+</body>
+</html>
