@@ -168,7 +168,6 @@ body.playing .tree{opacity:.3}
   #play .card{flex:0 1 auto;min-height:380px}
 }
 @media (prefers-reduced-motion:reduce){
-  .petal{animation:none;display:none}
   .stamp,.gain{animation:none}
   .bar i{transition:none}
 }
@@ -463,8 +462,10 @@ addEventListener('keydown', e => {
 // 飄落的花瓣
 (function () {
   let h = '';
-  for (let k = 0; k < 10; k++) {
-    const d = 10 + Math.random() * 10, s = 8 + Math.random() * 8;
+  // 系統設定「減少動態效果」（例如 Windows 關閉動畫效果）時照樣飄，只是少一半、慢一倍
+  const calm = matchMedia('(prefers-reduced-motion:reduce)').matches;
+  for (let k = 0; k < (calm ? 5 : 10); k++) {
+    const d = (10 + Math.random() * 10) * (calm ? 2 : 1), s = 8 + Math.random() * 8;
     h += `<span class="petal" style="left:${(Math.random() * 100).toFixed(1)}%;width:${s.toFixed(0)}px;height:${s.toFixed(0)}px;--d:${d.toFixed(1)}s;--dl:-${(Math.random() * d).toFixed(1)}s;--dx:${(Math.random() * 120 - 60).toFixed(0)}px;color:${k % 3 ? '#9b78c9' : '#c6aee6'}"><svg viewBox="0 0 20 20"><use href="#flower"/></svg></span>`;
   }
   $('#petals').innerHTML = h;
@@ -472,6 +473,7 @@ addEventListener('keydown', e => {
 
 // 結算時的花瓣雨（只下一陣）
 function petalShower(n) {
+  if (matchMedia('(prefers-reduced-motion:reduce)').matches) return;
   const box = $('#petals');
   for (let k = 0; k < n; k++) {
     const d = 2.2 + Math.random() * 1.8, s = 10 + Math.random() * 10, el = document.createElement('span');
