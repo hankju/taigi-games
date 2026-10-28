@@ -336,6 +336,17 @@ function makeQ(w, mode) {
   return {w, mode, opts: shuffle(opts), answer: key(w)};
 }
 
+// 輪流抽：先出這輪猶未出過的題目，攏出了才閣重新一輪；出過的記在 pw_seen_<模式>_<類別>（記漢字）
+function draw(p, m) {
+  const k = `pw_seen_${m}_${cat}`, seen = new Set(store.get(k, []));
+  const pick = shuffle(p.filter(w => !seen.has(w.han))).slice(0, N);
+  if (pick.length === N) { store.set(k, [...seen, ...pick.map(w => w.han)]); return pick; }
+  // 這輪賰的無夠一局：先出賰的，閣對別的題目補，補的算新的一輪
+  const fill = shuffle(p.filter(w => !pick.includes(w))).slice(0, N - pick.length);
+  store.set(k, fill.map(w => w.han));
+  return shuffle([...pick, ...fill]);
+}
+
 let qs, qi, score, mode, wrong, retryMode;
 function start(m, given) {
   mode = m; qi = 0; score = 0; wrong = []; retryMode = !!given;
@@ -343,7 +354,7 @@ function start(m, given) {
   else {
     const p = pool(m);
     if (p.length < 4) { $('#catnote').textContent = '這類的題目傷少，請換別類抑是揀「混合」'; return; }
-    qs = shuffle(p).slice(0, N).map(w => makeQ(w, m));
+    qs = draw(p, m).map(w => makeQ(w, m));
   }
   $('#sc').textContent = 0;
   show('play'); next();
