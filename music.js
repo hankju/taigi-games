@@ -180,6 +180,9 @@
     if (!AC) return;
     const th = THEMES[name] || THEMES.hub; cur = th;
     ctx = new AC();
+    // iOS 要在點擊的同一瞬間真的放出聲音才算解鎖：先播一個聽不到的極短靜音
+    try { const sb = ctx.createBufferSource(); sb.buffer = ctx.createBuffer(1, 1, ctx.sampleRate); sb.connect(ctx.destination); sb.start(0); } catch (e) {}
+    if (ctx.state !== 'running') ctx.resume().catch(() => {});
     master = ctx.createGain(); master.gain.value = 0;
     duck = ctx.createGain(); duck.gain.value = playingMedia.size ? DUCK : 1;
     master.connect(duck).connect(ctx.destination);
@@ -188,13 +191,11 @@
     next = ctx.currentTime + .15; n = 0;
     const tick = () => { while (ctx && next < ctx.currentTime + 1) { loop(v, th, next, n++); next += L; } };
     tick(); timer = setInterval(tick, 300);
-    // 保險：瀏覽器若還是把配樂暫停（iOS 常見），下一次點畫面就恢復
-    if (ctx.state !== 'running') {
-      const c = ctx, wake = () => { if (c.state !== 'closed') c.resume(); if (c.state === 'running' || c !== ctx) for (const ev of GESTURES) removeEventListener(ev, wake, true); };
-      for (const ev of GESTURES) addEventListener(ev, wake, true);
-      c.resume().catch(() => {});
-    }
   }
+  // 配樂被暫停或被中斷（iOS 播錄音時會把網頁合成的聲音切成 interrupted，而且不會自己回來）：
+  // 只要配樂是開的，每次點畫面就檢查、恢復；學生作答一直在點，最多中斷到下一下
+  function wake() { if (ctx && !document.hidden && ctx.state !== 'running' && ctx.state !== 'closed') ctx.resume().catch(() => {}); }
+  for (const ev of GESTURES) addEventListener(ev, wake, true);
   function stop() {
     if (!ctx) return;
     const c = ctx; ctx = null; clearInterval(timer);
@@ -213,6 +214,7 @@
   const DUCK = .12, playingMedia = new Set();
   function setDuck() {
     if (!ctx || !duck) return;
+    if (!playingMedia.size) wake();
     const t = ctx.currentTime, on = playingMedia.size > 0;
     duck.gain.cancelScheduledValues(t);
     duck.gain.setValueAtTime(duck.gain.value, t);
