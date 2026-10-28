@@ -53,6 +53,8 @@ em{font-style:normal;color:var(--red-2);background:var(--gold-soft);border-radiu
 .ruby{display:inline-flex;gap:0 .02em;justify-content:center}
 .ch{position:relative;display:inline-block;padding-top:20px}
 .ch i{position:absolute;top:0;left:50%;transform:translateX(-50%);font-style:normal;font-family:"Noto Sans",Arial,sans-serif;font-weight:500;font-size:13px;letter-spacing:0;color:var(--gold-soft);text-shadow:none;white-space:nowrap}
+.tbtns{display:flex;gap:6px}
+.soundbtn.bgm[aria-pressed="true"]{background:var(--gold);color:var(--red-deep)}
 .soundbtn{background:transparent;border:1px solid var(--gold);color:var(--gold);border-radius:20px;padding:4px 10px;font-size:13px}
 
 /* 遊戲共用上方列 */
@@ -159,7 +161,7 @@ em{font-style:normal;color:var(--red-2);background:var(--gold-soft);border-radiu
 
 <div id="app">
   <section class="screen" id="home">
-    <div class="toprow"><a class="hublink" href="../../">‹ 全部遊戲</a><button class="soundbtn" id="sound" aria-label="切換音效">🔊 音效</button></div>
+    <div class="toprow"><a class="hublink" href="../../">‹ 全部遊戲</a><span class="tbtns"><button class="soundbtn bgm" id="bgm" aria-pressed="false">🎵 配樂：關</button><button class="soundbtn" id="sound" aria-label="切換音效">🔊 音效</button></span></div>
     <div class="hero">
       <div class="diamond"><span>春</span></div>
       <h1 id="title" aria-label="過年好話押韻王"></h1>
@@ -218,6 +220,7 @@ em{font-style:normal;color:var(--red-2);background:var(--gold-soft);border-radiu
 </div>
 <div class="toast hide" id="toast"></div>
 
+<script src="../../music.js"></script>
 <script>
 // 題庫：u 上半句、l 下半句、g 韻腳分組（同組可互換）、ut/lt 韻腳字台羅、ic 圖示
 const D=[
@@ -394,6 +397,8 @@ function renderList(){const groups={};D.forEach(d=>(groups[d.g]=groups[d.g]||[])
 
 // 標題上方標一整行台羅（以詞為單位、詞內用連字號，不逐字拆開）
 $('#title').innerHTML = '<span class="ruby"><span class="ch"><i lang="nan-Latn">Kuè-nî hó-uē ah-ūn-ông</i>過年好話押韻王</span></span>';
+
+HubMusic.attachToggle($('#bgm'),'newyear');
 
 showBest();
 </script>
