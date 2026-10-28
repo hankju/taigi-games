@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans:wght@400;500&family=Noto+Sans+TC:wght@400;500;700&display=swap">
 <style>
-/* 大廳：廟口夜景。主角是「逐字標台羅」的標題；遊戲卡片用各遊戲的顏色，名稱同樣逐字標台羅
+/* 大廳：廟口夜景。主角是上方標台羅的標題；遊戲卡片用各遊戲的顏色，名稱上方同樣標台羅
    標題與遊戲名稱用霞鶩文楷（像課本楷體），卡片內文用 Noto Sans TC，台羅用 Noto Sans（聲調符號才完整）
    動態只留燈籠（搖晃＋閃爍）；手機單欄，電腦左側標題與 QR Code、右側兩欄卡片 */
 :root{
@@ -31,7 +31,7 @@ button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
 :focus-visible{outline:3px solid var(--gold);outline-offset:3px}
 .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
-/* 逐字標音：台羅在字頂，像課本的注音排法 */
+/* 台羅標在名稱上方（一整行，以詞為單位） */
 .ruby{display:inline-flex;flex-wrap:wrap;justify-content:inherit;gap:0 .06em}
 .ch{display:inline-flex;flex-direction:column;align-items:center;line-height:1}
 .ch i{font-style:normal;font-family:var(--lo);font-weight:400;font-size:max(11px,.26em);letter-spacing:0;margin-bottom:.32em;white-space:nowrap}
@@ -80,7 +80,7 @@ h1 .ch i{color:var(--muted);text-shadow:none;font-size:max(12px,.24em)}
 @keyframes eq{from{height:25%}to{height:100%}}
 .scan{display:none}
 
-/* 遊戲卡片：各遊戲的顏色漸層、左上圓框圖示＋右上 QR、角落淡淡的大圖示；名稱逐字標台羅 */
+/* 遊戲卡片：各遊戲的顏色漸層、左上圓框圖示＋右上 QR、角落淡淡的大圖示；名稱上方標台羅 */
 .grid{margin-top:30px}
 /* 卡片內文用一般黑體（跟最早的版本一樣），只有遊戲名稱用楷體 */
 .game{font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif}
@@ -99,10 +99,10 @@ h1 .ch i{color:var(--muted);text-shadow:none;font-size:max(12px,.24em)}
 .qrbtn svg{width:16px;height:16px}
 .qrbtn:hover{background:rgba(0,0,0,.35);border-color:var(--a)}
 .game h3{margin:4px 0 0;font-family:var(--han);font-size:34px;line-height:1.25;color:var(--a);letter-spacing:.04em}
-/* 名稱逐字標台羅：台羅浮在字的正上方，不撐開字距 */
+/* 名稱上方一整行台羅 */
 .game h3 .ruby{flex-wrap:nowrap;gap:0 .06em}
 .game h3 .ch{position:relative;padding-top:19px}
-.game h3 .ch i{position:absolute;top:0;left:50%;transform:translateX(-50%);margin:0;color:var(--paper);opacity:.8;font-size:14px;font-weight:400}
+.game h3 .ch i{position:absolute;top:0;left:0;margin:0;color:var(--paper);opacity:.8;font-size:14px;font-weight:400}
 .game h3 a{text-decoration:none}
 .game h3 a::after{content:"";position:absolute;inset:0;z-index:1;border-radius:inherit}
 .game h3 a:focus-visible{outline:none}
@@ -139,14 +139,20 @@ dialog::backdrop{background:rgba(10,7,4,.78)}
 /* 電腦：左邊標題＋大 QR Code（老師投影用），右邊兩欄卡片；QR 按鈕只在電腦出現 */
 @media (min-width:960px){
   body{--lan-h:118px;--sky-h:220px}
-  .wrap{max-width:1180px;display:grid;grid-template-columns:330px 1fr;gap:64px;align-items:start;padding-left:40px;padding-right:40px;padding-bottom:110px}
+  .wrap{max-width:1180px;display:grid;grid-template-columns:370px 1fr;gap:56px;align-items:start;padding-left:40px;padding-right:40px;padding-bottom:110px}
   .moon{top:22px;right:6%;width:130px;height:130px}
   .cloud.c1{left:2%;top:58%;width:260px}
   .cloud.c2{right:3%;top:40%;width:220px}
   .cloud.c3{display:block;left:40%;top:calc(var(--lan-h) + 10px);width:150px;opacity:.08}
   .sky{position:fixed}
-  .side{text-align:left}
-  h1{font-size:58px;justify-content:flex-start}
+  .side{text-align:left;margin-top:-15px}  /* 台羅小字頂端跟卡片頂端對齊 */
+  /* 大標題放大，左欄整組跟右邊卡片一樣有份量 */
+  h1{font-size:72px;letter-spacing:.02em;justify-content:flex-start}
+  /* 大字左邊有字身留白，把漢字往左挪，跟上方台羅、下方標語的左緣對齊 */
+  h1 .ch{position:relative;left:-7px}
+  h1 .ch i{position:relative;left:7px}
+  .lead{font-size:19px}
+  h1 .ch{align-items:flex-start}
   .scan{display:block;margin-top:30px;padding:16px;border-radius:6px;background:var(--paper);color:var(--ink);text-align:center;box-shadow:0 14px 30px rgba(0,0,0,.4)}
   .scan .code{display:block;width:100%;aspect-ratio:1;border:0;padding:0;background:#fff;cursor:zoom-in}
   .scan .code svg{display:block;width:100%;height:100%}
@@ -243,11 +249,9 @@ if (GAMES.some(g => g.id === h)) location.replace('games/' + h + '/');
 const siteUrl = new URL('./', location.href).href;
 const gameUrl = g => new URL('games/' + g.id + '/', siteUrl).href;
 
-// 逐字標台羅：字數跟音節數對得上才逐字標，對不上就整串放在上面
+// 名稱上方標一整行台羅（台羅以詞為單位、詞內用連字號，不逐字拆開）
 function ruby(han, lo) {
-  const chars = [...han], syl = (lo || '').split(/[-\s]+/).filter(Boolean);
-  if (chars.length !== syl.length) return `<span class="ruby"><span class="ch"><i lang="nan-Latn">${esc(lo || '')}</i>${esc(han)}</span></span>`;
-  return '<span class="ruby">' + chars.map((c, k) => `<span class="ch"><i lang="nan-Latn">${esc(syl[k])}</i>${esc(c)}</span>`).join('') + '</span>';
+  return `<span class="ruby"><span class="ch"><i lang="nan-Latn">${esc(lo || '')}</i>${esc(han)}</span></span>`;
 }
 
 // 從各遊戲自己存的成績算出最高分與次數

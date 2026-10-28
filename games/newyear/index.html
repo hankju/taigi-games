@@ -49,7 +49,7 @@ em{font-style:normal;color:var(--red-2);background:var(--gold-soft);border-radiu
 .foot{text-align:center;font-size:12px;color:var(--gold-soft);opacity:.8}
 .toprow{display:flex;justify-content:space-between;align-items:center}
 .hublink{color:var(--gold);font-size:14px;font-weight:700;text-decoration:none;padding:6px 14px;border:1px solid rgba(242,193,78,.6);border-radius:999px;background:rgba(92,15,19,.45)}
-/* 標題逐字標台羅（跟大廳一樣） */
+/* 標題上方一整行台羅（跟大廳一樣） */
 .ruby{display:inline-flex;gap:0 .02em;justify-content:center}
 .ch{position:relative;display:inline-block;padding-top:20px}
 .ch i{position:absolute;top:0;left:50%;transform:translateX(-50%);font-style:normal;font-family:"Noto Sans",Arial,sans-serif;font-weight:500;font-size:13px;letter-spacing:0;color:var(--gold-soft);text-shadow:none;white-space:nowrap}
@@ -392,8 +392,8 @@ function renderList(){const groups={};D.forEach(d=>(groups[d.g]=groups[d.g]||[])
   $('#lList').innerHTML=Object.keys(groups).map(g=>`<div class="g" style="color:var(--gold);padding:4px 2px 0">${GN[g]}${groups[g].length>1?'（這組可以互換）':''}</div>`+groups[g].map(d=>
     `<div class="row"><span class="ic">${d.ic}</span><div><div class="t">${hl(d.u)}，${hl(d.l)}</div><div class="tl">${d.u.slice(-1)} ${d.ut}　／　${d.l.slice(-1)} ${d.lt}</div></div></div>`).join('')).join('')}
 
-// 標題逐字標台羅
-$('#title').innerHTML='<span class="ruby">'+[...'過年好話押韻王'].map((c,k)=>`<span class="ch"><i lang="nan-Latn">${['kuè','nî','hó','uē','ah','ūn','ông'][k]}</i>${c}</span>`).join('')+'</span>';
+// 標題上方標一整行台羅（以詞為單位、詞內用連字號，不逐字拆開）
+$('#title').innerHTML = '<span class="ruby"><span class="ch"><i lang="nan-Latn">Kuè-nî hó-uē ah-ūn-ông</i>過年好話押韻王</span></span>';
 
 showBest();
 </script>
