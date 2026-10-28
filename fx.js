@@ -1,28 +1,65 @@
-// 遊戲共用的回饋：答對／答錯音效、手機震動、結算評語
-// 音效用 Web Audio 即時合成，很短很輕，不會蓋過詞語朗讀；設定記在 fx_muted（各遊戲共用）
+// 遊戲共用的回饋：答對／答錯音效、震動（Android）、觸覺回饋（iPhone，iOS 18 起）、結算評語
+// 音效用 Web Audio 即時合成；響的時候配樂（music.js）會讓位一下；設定記在 fx_muted（各遊戲共用）
 (function () {
   const KEY = 'fx_muted';
   let muted = false;
   try { muted = localStorage.getItem(KEY) === '1'; } catch (e) {}
   let ac = null;
-  function tone(f, dur, type, vol, at) {
-    if (muted) return;
+  // f：頻率；at：幾秒後響；lp：低通濾波頻率（方波刺耳，濾一下比較圓）
+  function tone(f, dur, type, vol, at, lp) {
     try {
       ac = ac || new (window.AudioContext || window.webkitAudioContext)();
-      if (ac.state === 'suspended') ac.resume();
+      if (ac.state !== 'running') ac.resume();
       const t = ac.currentTime + (at || 0), o = ac.createOscillator(), g = ac.createGain();
       o.type = type; o.frequency.value = f;
-      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .008);
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .01);
+      g.gain.setValueAtTime(vol, t + dur * .4);
       g.gain.exponentialRampToValueAtTime(.0001, t + dur);
-      o.connect(g).connect(ac.destination); o.start(t); o.stop(t + dur + .02);
+      let node = o;
+      if (lp) { const fl = ac.createBiquadFilter(); fl.type = 'lowpass'; fl.frequency.value = lp; o.connect(fl); node = fl; }
+      node.connect(g).connect(ac.destination); o.start(t); o.stop(t + dur + .02);
     } catch (e) {}
   }
-  const buzz = ms => { try { if (!muted && navigator.vibrate) navigator.vibrate(ms); } catch (e) {} };
 
-  // 答對：清脆兩聲「叮叮」（0.15 秒內結束，朗讀幾乎同時開始也聽得清楚）
-  function ok() { tone(1046, .12, 'sine', .12); tone(1568, .14, 'sine', .1, .06); }
-  // 答錯：低低一聲＋手機短震
-  function bad() { tone(196, .22, 'triangle', .14); buzz(90); }
+  // 震動：Android 用 navigator.vibrate；iPhone 的 Safari 不支援，iOS 18 起改用「切換開關」的觸覺回饋
+  let hapticLabel = null;
+  function iosTick() {
+    try {
+      if (!hapticLabel) {
+        const sw = document.createElement('input'); sw.type = 'checkbox'; sw.setAttribute('switch', ''); sw.id = 'fx-haptic';
+        hapticLabel = document.createElement('label'); hapticLabel.htmlFor = 'fx-haptic';
+        for (const el of [sw, hapticLabel]) { el.setAttribute('aria-hidden', 'true'); el.tabIndex = -1; el.style.cssText = 'position:fixed;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none'; document.body.appendChild(el); }
+      }
+      hapticLabel.click();
+    } catch (e) {}
+  }
+  function buzz(pattern, ticks) {
+    if (muted) return;
+    try {
+      if (navigator.vibrate) navigator.vibrate(pattern);
+      else for (let i = 0; i < ticks; i++) setTimeout(iosTick, i * 120);
+    } catch (e) {}
+  }
+  const duckBgm = ms => { try { if (window.HubMusic && HubMusic.duckFor) HubMusic.duckFor(ms); } catch (e) {} };
+
+  // 答對：明亮的三連音「叮叮叮↑」＋高音閃一下，約 0.4 秒
+  function ok() {
+    if (!muted) {
+      duckBgm(450);
+      [[1047, 0], [1319, .07], [1568, .14]].forEach(([f, at]) => tone(f, .22, 'triangle', .3, at));
+      tone(2093, .3, 'sine', .12, .14);
+    }
+    buzz(35, 1);
+  }
+  // 答錯：手機喇叭放得出來的中音「噗噗↓」兩聲往下掉，約 0.45 秒；震動兩段
+  function bad() {
+    if (!muted) {
+      duckBgm(500);
+      tone(330, .18, 'square', .2, 0, 1500);
+      tone(233, .26, 'square', .22, .17, 1300);
+    }
+    buzz([110, 70, 160], 2);
+  }
 
   // 「🔊 音效」開關
   function attachToggle(btn) {

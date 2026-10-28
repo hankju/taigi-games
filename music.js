@@ -220,6 +220,16 @@
     duck.gain.setValueAtTime(duck.gain.value, t);
     duck.gain.linearRampToValueAtTime(on ? DUCK : 1, t + (on ? .12 : .9));
   }
+  // 答題音效響的時候，配樂讓位一下（壓到 35%，ms 毫秒後回來）；正在播錄音時本來就壓低了，不用管
+  function duckFor(ms) {
+    if (!ctx || !duck || playingMedia.size) return;
+    const t = ctx.currentTime;
+    duck.gain.cancelScheduledValues(t);
+    duck.gain.setValueAtTime(duck.gain.value, t);
+    duck.gain.linearRampToValueAtTime(.35, t + .03);
+    duck.gain.setValueAtTime(.35, t + ms / 1000);
+    duck.gain.linearRampToValueAtTime(1, t + ms / 1000 + .5);
+  }
   document.addEventListener('play', e => { playingMedia.add(e.target); setDuck(); }, true);
   for (const ev of ['pause', 'ended', 'error', 'emptied']) document.addEventListener(ev, e => { playingMedia.delete(e.target); setDuck(); }, true);
   // 遊戲多半用 new Audio() 播錄音，這種不在網頁上，事件到不了 document，所以另外接 play()
@@ -264,5 +274,5 @@
   }
 
   // duckLevel：目前配樂被壓低到幾成（1＝沒壓低），測試用
-  window.HubMusic = { start, stop, playing: () => !!ctx, state: () => ctx ? ctx.state : 'off', gestures: GESTURES, render, attachToggle, themes: Object.keys(THEMES), duckLevel: () => duck ? +duck.gain.value.toFixed(2) : null };
+  window.HubMusic = { duckFor, start, stop, playing: () => !!ctx, state: () => ctx ? ctx.state : 'off', gestures: GESTURES, render, attachToggle, themes: Object.keys(THEMES), duckLevel: () => duck ? +duck.gain.value.toFixed(2) : null };
 })();
