@@ -172,6 +172,7 @@
   }
   const loopLen = th => th.mel.reduce((a, x) => a + x[1], 0) * 60 / th.bpm / 2;
 
+  const GESTURES = ['touchend', 'click', 'keydown'];
   let ctx = null, master = null, duck = null, timer = 0, next = 0, n = 0, cur = null;
   function start(name) {
     if (ctx) return;
@@ -187,6 +188,12 @@
     next = ctx.currentTime + .15; n = 0;
     const tick = () => { while (ctx && next < ctx.currentTime + 1) { loop(v, th, next, n++); next += L; } };
     tick(); timer = setInterval(tick, 300);
+    // 保險：瀏覽器若還是把配樂暫停（iOS 常見），下一次點畫面就恢復
+    if (ctx.state !== 'running') {
+      const c = ctx, wake = () => { if (c.state !== 'closed') c.resume(); if (c.state === 'running' || c !== ctx) for (const ev of GESTURES) removeEventListener(ev, wake, true); };
+      for (const ev of GESTURES) addEventListener(ev, wake, true);
+      c.resume().catch(() => {});
+    }
   }
   function stop() {
     if (!ctx) return;
@@ -245,14 +252,15 @@
     label(false);
     if (want) {
       btn.textContent = '🎵 點畫面就開始';
+      // iOS Safari 只允許在手指放開（touchend／click）或按鍵時出聲，按下去（pointerdown）的時候不行
       const first = e => {
-        removeEventListener('pointerdown', first, true); removeEventListener('keydown', first, true);
-        if (!btn.contains(e.target)) set(true);
+        for (const ev of GESTURES) removeEventListener(ev, first, true);
+        if (!btn.contains(e.target) && !ctx) set(true);
       };
-      addEventListener('pointerdown', first, true); addEventListener('keydown', first, true);
+      for (const ev of GESTURES) addEventListener(ev, first, true);
     }
   }
 
   // duckLevel：目前配樂被壓低到幾成（1＝沒壓低），測試用
-  window.HubMusic = { start, stop, playing: () => !!ctx, render, attachToggle, themes: Object.keys(THEMES), duckLevel: () => duck ? +duck.gain.value.toFixed(2) : null };
+  window.HubMusic = { start, stop, playing: () => !!ctx, state: () => ctx ? ctx.state : 'off', gestures: GESTURES, render, attachToggle, themes: Object.keys(THEMES), duckLevel: () => duck ? +duck.gain.value.toFixed(2) : null };
 })();
