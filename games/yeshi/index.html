@@ -58,6 +58,13 @@ button:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
 .mode.sub small{color:var(--lamp-soft)}
 .hublink{align-self:flex-start;color:var(--lamp);font-size:14px;font-weight:700;text-decoration:none;padding:6px 14px;border:1px solid rgba(244,183,64,.6);border-radius:999px;background:rgba(14,24,48,.5)}
 .toprow{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.tbtns{display:flex;gap:6px}
+#sfx{background:rgba(14,24,48,.5);color:var(--lamp)}
+/* 結算評語與進步幅度 */
+.verdict{font-family:var(--display);font-size:24px;font-weight:700;color:var(--lamp)}
+.verdict small{display:block;font-family:var(--body);font-size:15px;font-weight:500;color:var(--lamp-soft);margin-top:2px}
+.verdict small.up{color:#7fe0a8}
+.btn.retry{flex-basis:100%;background:var(--lamp-soft)}
 .bgm{background:rgba(14,24,48,.5);border:1px solid rgba(244,183,64,.6);color:var(--lamp);border-radius:999px;padding:6px 14px;font-size:14px;font-weight:700}
 .bgm[aria-pressed="true"]{background:var(--lamp);color:var(--night)}
 .credit{font-size:12px;color:rgba(255,248,234,.65);text-align:center;line-height:1.5}
@@ -160,7 +167,7 @@ button:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
 <div id="app">
 
 <section class="screen" id="home">
-  <div class="toprow"><a class="hublink" href="../../">‹ 全部遊戲</a><button class="bgm" id="bgm" aria-pressed="false">🎵 配樂：關</button></div>
+  <div class="toprow"><a class="hublink" href="../../">‹ 全部遊戲</a><span class="tbtns"><button class="bgm" id="bgm" aria-pressed="false">🎵 配樂：關</button><button class="bgm" id="sfx">🔊 音效</button></span></div>
   <div class="hero">
     <div class="lamps"><i></i><i></i><i></i></div>
     <small>第一課・單詞練習</small>
@@ -189,9 +196,10 @@ button:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
 <section class="screen center" id="over" hidden>
   <h2 id="oTitle">完成！</h2>
   <div class="ring" id="oRing"><div class="score" id="oScore">0</div></div>
+  <div class="verdict" id="oVerdict"></div>
   <p id="oBest"></p>
   <div class="review" id="oReview"></div>
-  <div class="btns"><button class="btn" id="again">閣耍一擺</button><button class="btn ghost" data-go="home">回首頁</button></div>
+  <div class="btns"><button class="btn retry" id="retry" hidden></button><button class="btn" id="again">閣耍一擺</button><button class="btn ghost" data-go="home">回首頁</button></div>
 </section>
 
 <section class="screen" id="hist" hidden>
@@ -208,6 +216,7 @@ button:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
 
 </div>
 <script src="../../music.js"></script>
+<script src="../../fx.js"></script>
 <script src="bank.js"></script>
 <script>
 const W = BANK.words, N = 10, LIMIT = 180, PTS = [10, 6, 3];
@@ -310,20 +319,23 @@ document.addEventListener('click', e => { const b = e.target.closest('[data-go]'
 $('#again').onclick = () => go(lastMode);
 
 // 一輪遊戲
-function start(mode) {
-  const qs = makeQuestions(mode);
-  let qi = -1, score = 0, tries = 0, done = false, left = LIMIT, log = [];
+// given：錯題再練時只出這幾題（選項重新洗牌），時間照題數算，不記成績
+function start(mode, given) {
+  const retry = !!given, LIM = retry ? Math.max(60, given.length * 18) : LIMIT;
+  const qs = retry ? shuffle(given).map(q => ({...q, opts: shuffle(q.opts)})) : makeQuestions(mode);
+  let qi = -1, score = 0, tries = 0, done = false, left = LIM, log = [];
   const t0 = Date.now();
   const timer = setInterval(() => {
-    left = LIMIT - (Date.now() - t0) / 1000;
+    left = LIM - (Date.now() - t0) / 1000;
     if (left <= 0) { finish('時間到！'); return; }
     const s = Math.ceil(left);
     $('#tm').textContent = Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
-    $('#bar i').style.transform = `scaleX(${left / LIMIT})`;
+    $('#bar i').style.transform = `scaleX(${left / LIM})`;
     $('#bar').classList.toggle('low', left < 30);
   }, 200);
   stop = () => { done = true; clearInterval(timer); if (audio) audio.pause(); };
   $('#sc').textContent = 0;
+  { const s = Math.ceil(LIM); $('#tm').textContent = Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
 
   function next() {
     qi++; tries = 0; $('#fbwrap').innerHTML = ''; $('#card').classList.remove('ok', 'no');
@@ -353,10 +365,10 @@ function start(mode) {
   function answer(b, o, q) {
     if (done || b.disabled) return;
     if (o === q.answer) {
-      const p = PTS[tries] || 0; score += p; $('#sc').textContent = score;
+      const p = PTS[tries] || 0; score += p; $('#sc').textContent = score; FX.ok();
       b.classList.add('right'); gain(p); reveal(q, true); return;
     }
-    tries++; b.classList.add('wrong'); b.disabled = true;
+    tries++; b.classList.add('wrong'); b.disabled = true; FX.bad();
     if (mode === 'm1') { const s = $('#say'); if (s && q.w.audio) { s.disabled = false; s.textContent = '🔊 聽發音'; } }
     if (mode === 'm2' && $('#pad')) { $('#pad').outerHTML = `<div class="big">${esc(q.w.han)}</div>`; if (q.w.ex) $('#hint').innerHTML = `<div class="hint">例句：${esc(q.w.ex.han.replace(q.w.han, '＿＿'))}</div>`; }
     if (mode === 'm3' && q.hua) $('#hint').innerHTML = `<div class="hint">華語：${esc(q.hua)}</div>`;
@@ -378,15 +390,22 @@ function start(mode) {
 
   function finish(title) {
     if (done) return; stop(); stop = null;
-    const best = store.best(mode); store.add(mode, score);
-    $('#oTitle').textContent = title;
+    const total = qs.length * 10, h = store.hist().filter(r => r.m === mode), prev = h.length ? h[h.length - 1].s : null;
+    const best = store.best(mode); if (!retry) store.add(mode, score);
+    $('#oTitle').textContent = retry ? '錯題練習完成！' : title;
+    const vd = FX.verdict(score, total, retry ? null : prev);
+    $('#oVerdict').innerHTML = `${vd.msg}${vd.diff ? `<small class="${vd.up ? 'up' : ''}">${vd.diff}</small>` : ''}`;
+    // 頭一擺就答著以外的題目（包括錯了才答著的），攏會當閣練
+    const miss = log.filter(r => !r.ok || r.tries > 0).map(r => r.q);
+    const rb = $('#retry'); rb.hidden = !miss.length; rb.textContent = `再練錯的這 ${miss.length} 題`;
+    rb.onclick = () => { if (stop) { stop(); stop = null; } show('play'); start(mode, miss); };
     // 分數從 0 跳到得分，圓環跟著填滿；放天燈
     const still = matchMedia('(prefers-reduced-motion:reduce)').matches;
-    const setScore = v => { $('#oScore').innerHTML = `${v}<small>滿分 100</small>`; $('#oRing').style.setProperty('--p', v); };
+    const setScore = v => { $('#oScore').innerHTML = `${v}<small>滿分 ${total}</small>`; $('#oRing').style.setProperty('--p', v / total * 100); };
     if (still) setScore(score);
-    else { const t0 = performance.now(); const tick = now => { const k = Math.min(1, (now - t0) / 800); setScore(Math.round(score * (1 - Math.pow(1 - k, 3)))); if (k < 1) requestAnimationFrame(tick); }; requestAnimationFrame(tick); skyLanterns(score >= 80 ? 10 : 5); }
-    $('#oBest').textContent = score > best && score > 0 ? '🎉 新紀錄！' : `${NAME[mode]} 最高分：${Math.max(best, score)}`;
-    $('#oReview').innerHTML = log.map(r => `<div class="${r.ok ? '' : 'x'}">${r.ok ? '✔' : '✘'} ${esc(r.q.w.han)}　${esc(r.q.w.lo)}　${esc(short(r.q.w.def))}</div>`).join('');
+    else { const t0 = performance.now(); const tick = now => { const k = Math.min(1, (now - t0) / 800); setScore(Math.round(score * (1 - Math.pow(1 - k, 3)))); if (k < 1) requestAnimationFrame(tick); }; requestAnimationFrame(tick); skyLanterns(score >= total * .8 ? 10 : 5); }
+    $('#oBest').textContent = retry ? '' : score > best && score > 0 ? '🎉 新紀錄！' : `${NAME[mode]} 最高分：${Math.max(best, score)}`;
+    $('#oReview').innerHTML = log.map(r => `<div class="${r.ok ? '' : 'x'}">${r.ok ? (r.tries ? '△' : '✔') : '✘'} ${esc(r.q.w.han)}　${esc(r.q.w.lo)}　${esc(short(r.q.w.def))}</div>`).join('');
     show('over');
   }
   next();
@@ -435,6 +454,7 @@ $('#title').innerHTML = '<span class="ruby"><span class="ch"><i lang="nan-Latn">
 })();
 
 HubMusic.attachToggle($('#bgm'), 'yeshi');
+FX.attachToggle($('#sfx'));
 
 go('home');
 </script>

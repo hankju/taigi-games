@@ -94,6 +94,12 @@ em{font-style:normal;color:var(--red-2);background:var(--gold-soft);border-radiu
 .opt{background:var(--red-deep);color:var(--paper);border:2px solid var(--gold);border-radius:14px;padding:14px 12px;font-family:var(--display);font-size:clamp(20px,5.6vw,24px);text-align:left;display:flex;gap:10px;align-items:center}
 .opt .ic{font-size:26px}
 .opt.right{background:var(--ok)}
+/* 搶答：押韻說明直接顯示在正確選項上 */
+.opt .rh{margin-left:auto;font-family:"Noto Sans",var(--body);font-size:15px;background:rgba(0,0,0,.22);border-radius:999px;padding:2px 10px;white-space:nowrap}
+/* 結算評語與進步幅度 */
+.verdict{font-family:var(--display);font-size:24px;font-weight:700;color:var(--gold)}
+.verdict small{display:block;font-family:var(--body);font-size:15px;font-weight:500;color:var(--gold-soft);margin-top:2px}
+.verdict small.up{color:#9ff0c0}
 .opt.no{background:#6b1a1d;opacity:.6}
 .opt.bad{background:#c0392b}
 .qno{text-align:center;color:var(--gold-soft);font-size:14px}
@@ -214,6 +220,7 @@ em{font-style:normal;color:var(--red-2);background:var(--gold-soft);border-radiu
   <section class="screen over" id="over" hidden>
     <h2 id="oTitle">時間到！</h2>
     <div class="ring" id="oRing"><div class="big" id="oScore">0</div></div>
+    <div class="verdict" id="oVerdict"></div>
     <p id="oBest"></p>
     <div class="btns"><button class="btn" id="oAgain">再玩一次</button><button class="btn ghost" id="oHome">回首頁</button></div>
   </section>
@@ -221,6 +228,7 @@ em{font-style:normal;color:var(--red-2);background:var(--gold-soft);border-radiu
 <div class="toast hide" id="toast"></div>
 
 <script src="../../music.js"></script>
+<script src="../../fx.js"></script>
 <script>
 // 題庫：u 上半句、l 下半句、g 韻腳分組（同組可互換）、ut/lt 韻腳字台羅、ic 圖示
 const D=[
@@ -298,7 +306,9 @@ $('#oAgain').onclick=()=>go(lastMode);
 $('#oHome').onclick=()=>go('home');
 const TITLE={float:'好話飄飄',quiz:'搶答放炮',memo:'翻紅包'};
 function gameOver(mode,score,title){if(stopFn){stopFn();stopFn=null}
+  const hs=getHist().filter(r=>r.m===mode),prev=hs.length?hs[hs.length-1].s:null;
   const best=store.get(mode),isNew=score>best;if(isNew)store.set(mode,score);addHist(mode,score);
+  const vd=FX.verdict(score,100,prev);$('#oVerdict').innerHTML=`${vd.msg}${vd.diff?`<small class="${vd.up?'up':''}">${vd.diff}</small>`:''}`;
   document.querySelectorAll('.screen').forEach(s=>s.hidden=s.id!=='over');
   $('#oTitle').textContent=title;
   // 分數從 0 跳到得分，圓環跟著填滿；放煙火
@@ -359,9 +369,11 @@ function startQuiz(){
     btns.forEach(x=>{if(x._o.g===target.g)x.classList.add('right');else if(x!==b)x.classList.add('no')});
     const good=!timeout&&b&&b._o.g===target.g,pr=$('#quiz .prompt');pr.classList.add(good?'ok':'no');
     pr.insertAdjacentHTML('beforeend',`<span class="stamp ${good?'ok':'no'}" aria-hidden="true">${good?'著':'毋著'}</span>`);
-    if(!timeout&&b._o.g===target.g){combo++;const left=Math.max(0,LIM-(performance.now()-t0)/1000);const pts=7+Math.round(left/LIM*3);score+=pts;sc.textContent=score;cb.textContent=combo;sfx.ok();const[x,y]=center(b);burst(x,y,pts);toast(rhymeText(target,target))}
+    if(!timeout&&b._o.g===target.g){combo++;const left=Math.max(0,LIM-(performance.now()-t0)/1000);const pts=7+Math.round(left/LIM*3);score+=pts;sc.textContent=score;cb.textContent=combo;sfx.ok();const[x,y]=center(b);burst(x,y,pts)}
     else{combo=0;cb.textContent=0;if(b)b.classList.add('bad');sfx.bad();toast(timeout?'時間到！':'押無著！')}
-    setTimeout(next,timeout||!(b&&b._o.g===target.g)?1300:800)}
+    // 押韻說明直接貼在正確選項上，停 1.6 秒（答錯 2 秒）讓學生看清楚
+    const rt=btns.find(x=>x._o===target);if(rt)rt.insertAdjacentHTML('beforeend',`<span class="rh">${rhymeText(target,target)}</span>`);
+    setTimeout(next,timeout||!(b&&b._o.g===target.g)?2000:1600)}
   sc.textContent=0;cb.textContent=0;next();
   stopFn=()=>{alive=false;cancelAnimationFrame(timer)}}
 

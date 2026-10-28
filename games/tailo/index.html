@@ -68,6 +68,8 @@ body.playing .tree{opacity:.3}
 .toprow{display:flex;justify-content:space-between;align-items:center;gap:8px;position:relative;z-index:2}
 .bgm{background:rgba(255,255,255,.8);border:0;color:var(--teal-d);border-radius:999px;padding:6px 14px;font-size:14px;font-weight:700;box-shadow:0 2px 0 rgba(47,127,154,.3)}
 .bgm[aria-pressed="true"]{background:var(--purple);color:#fff;box-shadow:0 2px 0 #5b3d86}
+#sfx[aria-pressed]{background:rgba(255,255,255,.8);color:var(--teal-d);box-shadow:0 2px 0 rgba(47,127,154,.3)}
+.tbtns{display:flex;gap:6px}
 /* 出題範圍：第一課／全部 */
 .scope{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:auto;font-size:13px;color:var(--teal-d)}
 .scope .seg{display:inline-flex;background:rgba(255,255,255,.7);border-radius:999px;padding:3px}
@@ -138,12 +140,17 @@ body.playing .tree{opacity:.3}
 .ring .big small{display:block;font-size:16px;color:var(--muted);margin-top:4px}
 .petal.burst{animation-duration:var(--d);animation-iteration-count:1;animation-fill-mode:both}
 .over .today{font-size:14px;color:var(--teal-d)}
+/* 結算評語與進步幅度 */
+.verdict{font-family:var(--display);font-size:24px;font-weight:700;color:var(--purple)}
+.verdict small{display:block;font-family:var(--body);font-size:15px;font-weight:500;color:var(--teal-d);margin-top:2px}
+.verdict small.up{color:var(--ok)}
+.btns .retry{flex-basis:100%;background:#e8dcf8;color:var(--purple);box-shadow:0 3px 0 rgba(91,61,134,.35)}
 .review{background:var(--paper);border-radius:16px;padding:10px 14px;text-align:left;max-height:30vh;overflow:auto;box-shadow:0 3px 0 rgba(47,127,154,.25)}
 .review h3{margin:0 0 4px;font-size:14px;color:var(--muted);font-weight:500}
 .review div{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-top:1px dashed #d9e7ec;font-size:15px}
 .review div:first-of-type{border-top:0}
 .review .no{color:var(--bad);font-size:13px}
-.btns{display:flex;gap:10px}
+.btns{display:flex;flex-wrap:wrap;gap:10px}
 .btns button{flex:1;height:50px;border:0;border-radius:14px;font-size:17px;font-weight:700}
 .btns .again{background:var(--purple);color:#fff;box-shadow:0 3px 0 #5b3d86}
 .btns .home{background:rgba(255,255,255,.85);color:var(--teal-d)}
@@ -189,7 +196,7 @@ body.playing .tree{opacity:.3}
 <div id="app">
 
 <section class="screen" id="home">
-  <div class="toprow"><a class="hublink" href="../../">‹ 全部遊戲</a><button class="bgm" id="bgm" aria-pressed="false">🎵 配樂：關</button></div>
+  <div class="toprow"><a class="hublink" href="../../">‹ 全部遊戲</a><span class="tbtns"><button class="bgm" id="bgm" aria-pressed="false">🎵 配樂：關</button><button class="bgm" id="sfx">🔊 音效</button></span></div>
   <div class="hero">
     <small>閩南語文・拼音練功</small>
     <h1 id="title" aria-label="台羅拼音練習"></h1>
@@ -221,13 +228,15 @@ body.playing .tree{opacity:.3}
 <section class="screen over" id="over" hidden>
   <h2 id="oTitle"></h2>
   <div class="ring" id="oRing"><div class="big" id="oScore"></div></div>
+  <div class="verdict" id="oVerdict"></div>
   <div class="today" id="oToday"></div>
   <div class="review" id="oReview"></div>
-  <div class="btns"><button class="again" id="again">閣練一擺</button><button class="home" id="home2">回封面</button></div>
+  <div class="btns"><button class="retry" id="retry" hidden></button><button class="again" id="again">閣練一擺</button><button class="home" id="home2">回封面</button></div>
 </section>
 
 </div>
 <script src="../../music.js"></script>
+<script src="../../fx.js"></script>
 <script src="bank.js"></script>
 <script>
 const $ = s => document.querySelector(s);
@@ -287,10 +296,11 @@ function play(src) { if (!src) return; try { if (audio) audio.pause(); audio = n
 function show(id) { for (const s of document.querySelectorAll('.screen')) s.hidden = s.id !== id; document.body.classList.toggle('playing', id === 'play'); }
 
 // ── 一回合 ──
-let mode, qs, qi, score, cur, wrong;
-function start(m) {
-  mode = m; qi = 0; score = 0; wrong = [];
-  const pool = TL_BANK.filter(w => w.modes.includes(m) && inScope(w));
+let mode, qs, qi, score, cur, wrong, retry;
+// list：錯題再練時只出這幾個詞，而且不記成績
+function start(m, list) {
+  mode = m; qi = 0; score = 0; wrong = []; retry = !!list;
+  const pool = list || TL_BANK.filter(w => w.modes.includes(m) && inScope(w));
   qs = pool.map(w => [Math.random(), w]).sort((a, b) => a[0] - b[0]).slice(0, N).map(x => x[1]);
   show('play'); next();
 }
@@ -383,7 +393,7 @@ function judge(tone) {
   if (mode === 'tone') { ok = tone === last.tone; yours = `你揀第 ${tone} 調`; cur.ans = [String(tone)]; }
   else { ok = cur.sy.every((s, i) => cur.ans[i] === answerOf(i)); yours = '你的答案：' + cur.ans.join(' - '); }
   cur.done = true;
-  if (ok) score += PT; else wrong.push({han: cur.w.han, lo: cur.w.lo, yours: mode === 'tone' ? `第 ${tone} 調` : cur.ans.join('-')});
+  if (ok) { score += PT; FX.ok(); } else { FX.bad(); wrong.push({w: cur.w, han: cur.w.han, lo: cur.w.lo, yours: mode === 'tone' ? `第 ${tone} 調` : cur.ans.join('-')}); }
   $('#sc').textContent = score;
   // 批改印章、加分
   const card = $('.card');
@@ -406,18 +416,28 @@ function judge(tone) {
 function finish() {
   if (audio) audio.pause();
   $('#bar').style.width = '100%';
-  addHist(mode, score);
-  const t = today(mode);
-  $('#oTitle').textContent = MODES[mode] + '練習完成！';
+  const total = qs.length * PT;
+  // 評語、跟上一擺比（錯題再練不記成績、不比較）
+  const prevs = hist().filter(r => r.m === mode), prev = prevs.length ? prevs[prevs.length - 1].s : null;
+  if (!retry) addHist(mode, score);
+  const t = today(mode), vd = FX.verdict(score, total, retry ? null : prev);
+  $('#oTitle').textContent = retry ? '錯題練習完成！' : MODES[mode] + '練習完成！';
+  $('#oVerdict').innerHTML = `${vd.msg}${vd.diff ? `<small class="${vd.up ? 'up' : ''}">${vd.diff}</small>` : ''}`;
+  // 有錯題就出現「再練錯的這幾題」，一直練到攏著
+  const rb = $('#retry');
+  rb.hidden = !wrong.length;
+  rb.textContent = `再練錯的這 ${wrong.length} 題`;
+  rb.onclick = () => start(mode, wrong.map(r => r.w));
   // 分數從 0 跳到得分，圓環跟著填滿
-  const total = qs.length * PT, still = matchMedia('(prefers-reduced-motion:reduce)').matches;
+  const still = matchMedia('(prefers-reduced-motion:reduce)').matches;
   const setScore = v => { $('#oScore').innerHTML = `${v}<small>滿分 ${total}</small>`; $('#oRing').style.setProperty('--p', v / total * 100); };
   if (still) setScore(score);
   else { const t0 = performance.now(); const tick = now => { const k = Math.min(1, (now - t0) / 800); setScore(Math.round(score * (1 - Math.pow(1 - k, 3)))); if (k < 1) requestAnimationFrame(tick); }; requestAnimationFrame(tick); petalShower(score === total ? 40 : 20); }
-  $('#oToday').textContent = `今日最高 ${t.best} 分・平均 ${t.avg} 分（練 ${t.n} 擺）`;
+  $('#oToday').textContent = t ? `今日最高 ${t.best} 分・平均 ${t.avg} 分（練 ${t.n} 擺）` : '';
   $('#oReview').innerHTML = wrong.length
     ? '<h3>這幾題閣練一下</h3>' + wrong.map(r => `<div><span>${esc(r.han)}　<span class="lo">${esc(r.lo)}</span></span><span class="no">你：${esc(r.yours)}</span></div>`).join('')
-    : '<h3>全對！真勥！</h3>';
+    : '';
+  $('#oReview').hidden = !wrong.length;
   show('over');
 }
 
@@ -465,6 +485,7 @@ function petalShower(n) {
 $('#title').innerHTML = '<span class="ruby"><span class="ch"><i lang="nan-Latn">Tâi-lô phing-im liān-si̍p</i>台羅拼音練習</span></span>';
 
 HubMusic.attachToggle($('#bgm'), 'tailo');
+FX.attachToggle($('#sfx'));
 
 renderHome();
 </script>
