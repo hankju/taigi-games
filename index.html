@@ -148,6 +148,9 @@ dialog::backdrop{background:rgba(10,7,4,.78)}
   .side{text-align:left;margin-top:-15px}  /* 台羅小字頂端跟卡片頂端對齊 */
   /* 大標題放大，左欄整組跟右邊卡片一樣有份量 */
   h1{font-size:72px;letter-spacing:.02em;justify-content:flex-start}
+  /* 大字左邊有字身留白，把漢字往左挪，跟上方台羅、下方標語的左緣對齊 */
+  h1 .ch{position:relative;left:-7px}
+  h1 .ch i{position:relative;left:7px}
   .lead{font-size:19px}
   h1 .ch{align-items:flex-start}
   .scan{display:block;margin-top:30px;padding:16px;border-radius:6px;background:var(--paper);color:var(--ink);text-align:center;box-shadow:0 14px 30px rgba(0,0,0,.4)}
