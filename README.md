@@ -23,6 +23,7 @@
 index.html        遊戲大廳（照 games.js 自動列出卡片）
 games.js          遊戲清單
 music.js          大廳與各遊戲的配樂（Web Audio 合成，播錄音時自動壓低）
+fx.js             遊戲共用回饋：答對／答錯音效與震動（FX.ok／FX.bad）、音效開關、結算評語（FX.verdict）
 vendor/qrcode.js  QR Code 產生器（qrcode-generator 1.4.4，MIT 授權，Kazuhiko Arase）
 games/<id>/       每個遊戲一個資料夾，裡面的 index.html 可以單獨打開
 ```
