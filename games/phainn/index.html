@@ -24,7 +24,21 @@ html,body{height:100%;margin:0}
 [hidden]{display:none!important}
 body{background:var(--wall);color:var(--paper);font-family:var(--body);-webkit-tap-highlight-color:transparent;
   background-image:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(215,176,74,.16),transparent 70%),radial-gradient(ellipse 60% 40% at 100% 100%,rgba(179,38,44,.12),transparent 70%)}
-#app{position:relative;height:100%;max-width:560px;margin:0 auto;display:flex;flex-direction:column;
+/* 背景氛圍：底部金爐的暖光、往上飄的香煙、燒過的紙錢灰燼；都在內容後面、不擋點擊 */
+.atmo{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.furnace{position:absolute;left:50%;bottom:-18vh;width:120vw;height:46vh;transform:translateX(-50%);
+  background:radial-gradient(ellipse 50% 60% at 50% 100%,rgba(232,120,48,.32),rgba(179,38,44,.14) 45%,transparent 72%);animation:furnace 4.6s ease-in-out infinite}
+@keyframes furnace{0%,100%{opacity:.85}30%{opacity:1}55%{opacity:.7}78%{opacity:.95}}
+.wisp{position:absolute;bottom:-34vh;width:var(--w);height:calc(var(--w) * 1.7);border-radius:50%;opacity:0;
+  background:radial-gradient(ellipse at 50% 50%,rgba(226,214,192,var(--a)) 0,rgba(226,214,192,0) 64%);filter:blur(16px);
+  animation:wisp var(--d) linear infinite;animation-delay:var(--dl)}
+@keyframes wisp{0%{transform:translate(0,0) scale(.55,.7);opacity:0}18%{opacity:1}55%{transform:translate(var(--dx),-68vh) scale(1,1.1)}100%{transform:translate(calc(var(--dx) * -.6),-138vh) scale(1.5,1.4);opacity:0}}
+.fleck{position:absolute;bottom:-14px;width:var(--s);height:calc(var(--s) * .72);opacity:0;
+  clip-path:polygon(8% 4%,96% 18%,84% 96%,2% 74%);background:linear-gradient(135deg,#ffbf6a 0,#c4552a 22%,#3a2a22 52%,#1f1814 100%);
+  animation:fleck var(--d) linear infinite;animation-delay:var(--dl)}
+@keyframes fleck{0%{transform:translate(0,0) rotate(0deg);opacity:0}8%{opacity:var(--o)}45%{transform:translate(var(--dx),-48vh) rotate(calc(var(--r) * .5))}80%{opacity:calc(var(--o) * .7)}100%{transform:translate(calc(var(--dx) * -.4),-104vh) rotate(var(--r));opacity:0}}
+
+#app{position:relative;z-index:1;height:100%;max-width:560px;margin:0 auto;display:flex;flex-direction:column;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:10px}
 .screen{flex:1;display:flex;flex-direction:column;gap:12px;min-height:0}
 button{font:inherit;cursor:pointer;touch-action:manipulation;color:inherit}
@@ -48,6 +62,9 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offse
 .hero .kick{display:inline-block;font-size:13px;color:var(--gold-soft);border:1px dashed rgba(215,176,74,.6);border-radius:6px;padding:2px 10px}
 .hero .lo{display:block;margin-top:14px;color:var(--gold-soft);font-size:15px}
 .hero h1{margin:6px 0 0;font-size:clamp(34px,10.5vw,52px);letter-spacing:.1em;transform:rotate(-2deg)}
+/* 開場唯一的動作：封條「啪」一聲貼上去 */
+.hero h1 .seal{animation:slap .5s cubic-bezier(.2,1.5,.45,1) .15s both}
+@keyframes slap{from{transform:scale(1.35) rotate(4deg);opacity:0}to{transform:none;opacity:1}}
 .hero h1 .seal{padding:.12em .7em}
 .hero p{margin:16px auto 0;max-width:30em;font-size:14.5px;line-height:1.65;color:#d9cdb2}
 /* 出題類別：混合或單選一類 */
@@ -82,13 +99,22 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offse
 .hud{display:flex;align-items:center;gap:10px}
 .back{background:transparent;border:1px solid rgba(235,225,200,.35);border-radius:10px;padding:6px 12px;font-size:14px;color:var(--paper)}
 .hud .qn{flex:1;text-align:center;font-size:14px;color:#cbbfa6}
-.hud .sc{font-size:14px}
+.hud .sc{position:relative;font-size:14px}
 .hud .sc b{font-size:20px;color:var(--gold)}
 .bar{height:6px;border-radius:3px;background:rgba(235,225,200,.15);overflow:hidden}
 .bar i{display:block;height:100%;width:0;background:var(--gold);transition:width .3s}
 .card{position:relative;background:var(--paper);color:var(--ink);border-radius:8px;padding:18px 16px 16px;text-align:center;box-shadow:0 8px 22px rgba(0,0,0,.35);display:flex;flex-direction:column;align-items:center;gap:8px}
 .card .ask{font-size:13.5px;color:var(--muted)}
-.word{position:relative;display:inline-block;font-family:var(--display);font-size:clamp(38px,11vw,54px);font-weight:700;line-height:1.25;letter-spacing:.06em;min-width:3em;padding:0 .2em}
+/* 批改印章：答著蓋紅印「著」，答毋著蓋墨印「毋著」；＋10 飄起來 */
+.mark{position:absolute;left:12px;top:10px;width:58px;height:58px;display:grid;place-items:center;font-family:var(--display);font-weight:700;line-height:1;
+  border:3px solid currentColor;border-radius:6px;transform:rotate(-12deg);background:rgba(244,236,216,.92);box-shadow:inset 0 0 0 3px rgba(244,236,216,.92),inset 0 0 0 5px currentColor;
+  animation:mark .3s cubic-bezier(.2,1.6,.4,1) both}
+.mark.ok{color:var(--seal);font-size:28px}
+.mark.no{color:#2b231d;font-size:18px;letter-spacing:-.04em}
+@keyframes mark{from{transform:rotate(-12deg) scale(1.9);opacity:0}to{transform:rotate(-12deg) scale(1);opacity:.92}}
+.gain{position:absolute;right:16px;top:-6px;font-family:var(--lo);font-weight:600;color:var(--gold);font-size:20px;pointer-events:none;animation:gain .9s ease-out both}
+@keyframes gain{from{transform:translateY(0);opacity:1}to{transform:translateY(-28px);opacity:0}}
+.word{position:relative;display:inline-block;font-family:var(--display);font-size:clamp(44px,13vw,64px);font-weight:700;line-height:1.25;letter-spacing:.06em;min-width:3em;padding:0 .2em}
 /* 蓋在漢字上的封條；.torn 撕開 */
 .word .cover{position:absolute;left:-14%;right:-14%;top:-4%;bottom:-4%;display:flex;align-items:center;justify-content:center;gap:.3em;background:var(--paper-2);color:var(--seal);
   border-top:2px solid var(--seal);border-bottom:2px solid var(--seal);font-size:.5em;letter-spacing:.3em;transform:rotate(-4deg);box-shadow:0 4px 10px rgba(0,0,0,.25);transition:transform .45s cubic-bezier(.3,1.4,.6,1),opacity .45s}
@@ -150,10 +176,18 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offse
 .row .dex{font-family:var(--display);font-size:15.5px;color:var(--ink)}
 .search{width:100%;height:42px;border-radius:10px;border:1.5px solid rgba(235,225,200,.25);background:var(--wall-2);color:var(--paper);padding:0 12px;font:inherit;font-size:15px}
 
-@media (prefers-reduced-motion:reduce){.word .cover{transition:none}}
+/* 結算：高分撒金紙 */
+.kimtsua{position:fixed;top:-40px;width:var(--w);height:calc(var(--w) * 1.1);pointer-events:none;z-index:5;
+  background:#d9b04c;box-shadow:inset 0 0 0 2px #e9c86a;border-radius:1px;animation:kimtsua var(--d) linear both}
+.kimtsua::after{content:"";position:absolute;inset:30%;background:#b3262c;opacity:.75}
+@keyframes kimtsua{0%{transform:translate(0,0) rotate(0) rotateX(0);opacity:0}8%{opacity:1}100%{transform:translate(var(--dx),112vh) rotate(var(--r)) rotateX(540deg);opacity:.9}}
+.over .big{animation:slap .45s cubic-bezier(.2,1.5,.45,1) both}
+
+@media (prefers-reduced-motion:reduce){.word .cover{transition:none}.mark,.gain,.hero h1 .seal,.over .big{animation:none}.kimtsua{display:none}}
 </style>
 </head>
 <body>
+<div class="atmo" aria-hidden="true"><div class="furnace"></div><div id="smoke"></div><div id="ash"></div></div>
 <div id="app">
 
 <section class="screen gate" id="gate" hidden>
@@ -328,6 +362,9 @@ function judge(b, o, q) {
   for (const x of $('#opts').children) { x.disabled = true; if (x.textContent.slice(1) === q.answer) x.classList.add('right'); else if (x !== b) x.classList.add('dim'); }
   if (ok) { score += PT; FX.ok(); } else { b.classList.add('wrong'); wrong.push(q); FX.bad(); }
   $('#sc').textContent = score;
+  $('#card').insertAdjacentHTML('beforeend', `<span class="mark ${ok ? 'ok' : 'no'}" aria-hidden="true">${ok ? '著' : '毋著'}</span>`);
+  if (ok) $('.hud .sc').insertAdjacentHTML('beforeend', `<span class="gain" aria-hidden="true">+${PT}</span>`);
+  setTimeout(() => { const g = document.querySelector('.gain'); if (g) g.remove(); }, 950);
   const wd = $('#word'); if (wd) wd.classList.add('torn');
   const exSay = w.ex && w.ex.audio ? '<button class="fbsay" id="exsay">🔊 聽整句</button>' : '';
   const ex = w.ex ? `<div class="exrow"><p class="ex">${esc(w.ex.han)}<small>${esc(w.ex.lo)}<br>${esc(w.ex.hua)}</small></p>${exSay}</div>` : '';
@@ -353,7 +390,35 @@ function finish() {
   const rb = $('#retry'); rb.hidden = !wrong.length; rb.textContent = `再練錯的這 ${wrong.length} 題`;
   $('#bar').style.width = '100%';
   show('over');
+  if (!retryMode && s100 >= 80) setTimeout(() => goldPaper(s100 === 100 ? 34 : 20), 250);
 }
+
+// 高分撒金紙
+function goldPaper(n) {
+  if (matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  for (let k = 0; k < n; k++) {
+    const el = document.createElement('i'), d = 2.8 + Math.random() * 2.2;
+    el.className = 'kimtsua';
+    el.style.cssText = `left:${(Math.random() * 100).toFixed(1)}%;--w:${(16 + Math.random() * 12).toFixed(0)}px;--d:${d.toFixed(2)}s;--dx:${(Math.random() * 120 - 60).toFixed(0)}px;--r:${(Math.random() * 720 - 360).toFixed(0)}deg;animation-delay:${(Math.random() * 1.2).toFixed(2)}s`;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), (d + 1.4) * 1000);
+  }
+}
+
+// 背景：香煙與紙錢灰燼；減少動態效果時數量減半、慢一倍
+(function () {
+  const calm = matchMedia('(prefers-reduced-motion:reduce)').matches, r = (a, b) => a + Math.random() * (b - a);
+  let s = '', a = '';
+  for (let k = 0; k < (calm ? 3 : 5); k++) {
+    const d = r(16, 24) * (calm ? 2 : 1);
+    s += `<i class="wisp" style="left:${r(-10, 80).toFixed(1)}%;--w:${r(150, 260).toFixed(0)}px;--a:${r(.13, .22).toFixed(2)};--d:${d.toFixed(1)}s;--dl:-${r(0, d).toFixed(1)}s;--dx:${r(-60, 60).toFixed(0)}px"></i>`;
+  }
+  for (let k = 0; k < (calm ? 7 : 14); k++) {
+    const d = r(11, 19) * (calm ? 2 : 1);
+    a += `<i class="fleck" style="left:${r(4, 96).toFixed(1)}%;--s:${r(9, 17).toFixed(1)}px;--d:${d.toFixed(1)}s;--dl:-${r(0, d).toFixed(1)}s;--dx:${r(-50, 50).toFixed(0)}px;--r:${r(-540, 540).toFixed(0)}deg;--o:${r(.55, .95).toFixed(2)}"></i>`;
+  }
+  $('#smoke').innerHTML = s; $('#ash').innerHTML = a;
+})();
 
 // 歹話辭典
 function renderDict(q) {
