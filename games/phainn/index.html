@@ -310,17 +310,28 @@ function pool(mode) {
   const ws = W.filter(inCats);
   return mode === 'scene' ? ws.filter(w => w.ex && w.ex.han.includes(w.han) && w.ex.hua) : ws.filter(w => w.audio || w.parts);
 }
+// 意思相近：同屬 PW_SAME 一組，或釋義第一句有相同的說法（例如「妓女。」和「妓女、酒家女。」）
+const SAME = new Map();
+(window.PW_SAME || []).forEach((g, i) => g.forEach(h => SAME.set(h, [...(SAME.get(h) || []), i])));
+const terms = d => d.split('。')[0].split(/[、，；]/).filter(Boolean);
+function near(a, b) {
+  const ga = SAME.get(a.han) || [];
+  if ((SAME.get(b.han) || []).some(i => ga.includes(i))) return true;
+  const ta = terms(a.def);
+  return terms(b.def).some(t => ta.includes(t));
+}
 function makeQ(w, mode) {
-  // 錯誤選項先揀同類別的，袂夠才用別類
+  // 錯誤選項先揀同類別的，袂夠才用別類；意思相近的毋揀，免得兩个選項攏會使講著
   const same = shuffle(W.filter(x => x !== w && x.cat === w.cat)), other = shuffle(W.filter(x => x !== w && x.cat !== w.cat));
   const key = mode === 'scene' ? x => x.han : x => short(x.def);
-  const opts = [key(w)];
+  const opts = [key(w)], picked = [w];
   for (const x of [...same, ...other]) {
     if (opts.length >= 4) break;
     const k = key(x);
     if (opts.includes(k)) continue;
     if (mode === 'scene' && w.ex.han.includes(x.han)) continue;
-    opts.push(k);
+    if (picked.some(p => near(p, x))) continue;
+    opts.push(k); picked.push(x);
   }
   return {w, mode, opts: shuffle(opts), answer: key(w)};
 }
