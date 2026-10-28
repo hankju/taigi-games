@@ -40,7 +40,7 @@ button:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
 .lamps i:nth-child(2){animation-duration:2.6s;animation-delay:-1s}
 .lamps i:nth-child(3){animation-duration:3.8s;animation-delay:-2s}
 @keyframes lamp{0%,100%{filter:brightness(1)}8%{filter:brightness(.75)}10%{filter:brightness(1.15)}45%{filter:brightness(.9)}48%{filter:brightness(1.2)}75%{filter:brightness(.85)}}
-/* 標題逐字標台羅（跟大廳一樣） */
+/* 標題上方一整行台羅（跟大廳一樣） */
 .ruby{display:inline-flex;gap:0 .04em;justify-content:center}
 .ch{position:relative;display:inline-block;padding-top:20px}
 .ch i{position:absolute;top:0;left:50%;transform:translateX(-50%);font-style:normal;font-family:"Noto Sans",Arial,sans-serif;font-weight:500;font-size:14px;color:var(--lamp-soft);text-shadow:none;white-space:nowrap}
@@ -417,8 +417,8 @@ function renderList() {
   $('#wList').querySelectorAll('[data-a]').forEach(b => b.onclick = () => play(W[+b.dataset.a].audio));
 }
 
-// 標題逐字標台羅
-$('#title').innerHTML = '<span class="ruby">' + [...'來去踅夜市'].map((c, k) => `<span class="ch"><i lang="nan-Latn">${['lâi', 'khì', 'se̍h', 'iā', 'tshī'][k]}</i>${c}</span>`).join('') + '</span>';
+// 標題上方標一整行台羅（以詞為單位、詞內用連字號，不逐字拆開）
+$('#title').innerHTML = '<span class="ruby"><span class="ch"><i lang="nan-Latn">Lâi-khì se̍h iā-tshī</i>來去踅夜市</span></span>';
 // 夜空的星：固定亂數種子
 (function () {
   let seed = 11, h = '';

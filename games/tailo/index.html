@@ -48,7 +48,7 @@ body.playing .tree{opacity:.3}
 .hero h1{margin:10px 0 0;font-family:var(--display);font-weight:700;font-size:clamp(42px,13vw,62px);line-height:1.1;color:#fff;letter-spacing:.06em;
   text-shadow:0 3px 0 var(--teal),2px 0 0 var(--teal),-2px 0 0 var(--teal),0 -2px 0 var(--teal),2px 3px 0 var(--teal),-2px 3px 0 var(--teal),0 8px 18px rgba(31,95,116,.35)}
 .hero p{margin:10px 0 0;font-size:15px;color:var(--teal-d)}
-/* 標題逐字標台羅（跟大廳一樣），台羅浮在字的正上方 */
+/* 標題上方一整行台羅（跟大廳一樣） */
 .ruby{display:inline-flex;gap:0 .04em;justify-content:center}
 .ch{position:relative;display:inline-block;padding-top:20px}
 .ch i{position:absolute;top:0;left:50%;transform:translateX(-50%);font-style:normal;font-family:var(--lo);font-weight:600;font-size:14px;letter-spacing:0;color:var(--teal-d);text-shadow:0 1px 0 rgba(255,255,255,.7);white-space:nowrap}
@@ -457,8 +457,8 @@ function petalShower(n) {
   }
 }
 
-// 標題逐字標台羅
-$('#title').innerHTML = '<span class="ruby">' + [...'台羅拼音練習'].map((c, k) => `<span class="ch"><i lang="nan-Latn">${['Tâi', 'lô', 'phing', 'im', 'liān', 'si̍p'][k]}</i>${c}</span>`).join('') + '</span>';
+// 標題上方標一整行台羅（以詞為單位、詞內用連字號，不逐字拆開）
+$('#title').innerHTML = '<span class="ruby"><span class="ch"><i lang="nan-Latn">Tâi-lô phing-im liān-si̍p</i>台羅拼音練習</span></span>';
 
 renderHome();
 </script>
