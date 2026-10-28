@@ -373,11 +373,12 @@ let wantMusic = false;
 try { wantMusic = localStorage.getItem(MKEY) === '1'; } catch (e) {}
 if (wantMusic) {
   $('#musicTxt').textContent = '背景音樂：點畫面就開始';
+  // iOS Safari 只允許在手指放開（touchend／click）或按鍵時出聲
   const first = e => {
-    removeEventListener('pointerdown', first, true); removeEventListener('keydown', first, true);
-    if (!mBtn.contains(e.target)) setMusic(true);
+    for (const ev of HubMusic.gestures) removeEventListener(ev, first, true);
+    if (!mBtn.contains(e.target) && !HubMusic.playing()) setMusic(true);
   };
-  addEventListener('pointerdown', first, true); addEventListener('keydown', first, true);
+  for (const ev of HubMusic.gestures) addEventListener(ev, first, true);
 }
 
 // 放大 QR Code
