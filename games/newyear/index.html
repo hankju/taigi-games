@@ -278,9 +278,10 @@ function showBest(){document.querySelectorAll('[data-best]').forEach(el=>{const 
 
 // 音效
 let ac=null,muted=false;
-function tone(f,d=.12,type='triangle',v=.15){if(muted)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(v,ac.currentTime);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+d);o.connect(g).connect(ac.destination);o.start();o.stop(ac.currentTime+d)}catch(e){}}
-const sfx={ok(){tone(784);setTimeout(()=>tone(1046),80)},bad(){tone(180,.25,'sawtooth',.1);try{navigator.vibrate&&navigator.vibrate(120)}catch(e){}},flip(){tone(520,.06)},end(){[523,659,784,1046].forEach((f,i)=>setTimeout(()=>tone(f,.18),i*110))}};
-$('#sound').onclick=()=>{muted=!muted;$('#sound').textContent=muted?'🔇 靜音':'🔊 音效'};
+function tone(f,d=.12,type='triangle',v=.15){if(FX.muted())return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(v,ac.currentTime);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+d);o.connect(g).connect(ac.destination);o.start();o.stop(ac.currentTime+d)}catch(e){}}
+// 答對／答錯用共用的 fx.js（跟另外兩個遊戲同一套、比較大聲），翻牌與結算音保留原本的
+const sfx={ok(){FX.ok()},bad(){FX.bad()},flip(){tone(520,.06)},end(){[523,659,784,1046].forEach((f,i)=>setTimeout(()=>tone(f,.18),i*110))}};
+FX.attachToggle($('#sound'));
 
 // 特效
 let toastT;

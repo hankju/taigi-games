@@ -410,7 +410,8 @@ function judge(tone) {
   fb.hidden = false;
   $('#nextBtn').onclick = () => { qi++; next(); };
   $('#nextBtn').focus();
-  if (!ok) play(cur.w.audio);
+  // 答錯閣念一擺正確的讀音；等答錯音效（約 0.4 秒）響完才念
+  if (!ok) { const w = cur.w; setTimeout(() => { if (cur && cur.w === w) play(w.audio); }, 450); }
 }
 
 function finish() {
