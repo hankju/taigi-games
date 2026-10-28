@@ -36,5 +36,16 @@ window.GAMES = [
     color: '#2f7f9a',
     accent: '#ffe7a3',
     hist: 'tl_hist'
+  },
+  {
+    id: 'phainn',
+    icon: '🤐',
+    name: '歹話毋通講',
+    lo: 'Pháinn-uē m̄-thang kóng',
+    desc: '課外、毋是正式課程：辭典收錄的罵人話、喪葬禁忌、屎尿佮性相關的詞，聽聲揣意思、看情境猜講法。',
+    tags: ['課外', '非正式課程', '辭典錄音'],
+    color: '#2a2420',
+    accent: '#d7b04a',
+    hist: 'pw_hist'
   }
 ];

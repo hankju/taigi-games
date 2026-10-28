@@ -11,6 +11,7 @@
 - `games/newyear/index.html` 是 CRLF 換行，編輯時保持原樣。
 - 台羅拼音練習（`games/tailo/`）的現況、規格與補題庫步驟寫在 `games/tailo/README.md`，接手前先讀；改題庫後跑 `python3 games/tailo/tools/check_bank.py --fix`。
 - `games/tailo/` 題庫裡第一課單詞沿用 `games/yeshi/audio/` 的錄音（路徑 `../yeshi/audio/…`），搬動 yeshi 的錄音時要一起改；其他詞的錄音在 `games/tailo/audio/`。
-- 使用者是高中生（高中閩南語文課），選詞與難度以高中程度為準，但排除粗俗不雅的詞。
+- 使用者是高中生（高中閩南語文課），選詞與難度以高中程度為準，但正式課程的遊戲排除粗俗不雅的詞。
+- 粗俗、罵人、喪葬、性相關的詞集中在課外遊戲 `games/phainn/`（localStorage 前綴 `pw_`）。題庫照使用者要求不另外剔除冒犯性的詞，由任課老師把關；要刪詞就改 `games/phainn/bank.js`。釋義照辭典原文，含「應避免使用」等說明。
 - 雲端開發環境（Claude Code 網頁版）連不到教育部辭典網站；要查詞、下載錄音請在本機做（步驟見 `games/tailo/README.md`），先用 curl 確認連得上，連不上就請老師提供錄音。台羅、釋義也可從 GitHub 上的 g0v/moedict-data-twblg 取得。
 - Windows 主控台是 cp950，跑 Python 印中文罕用字會當掉；工具程式要把 stdout 設成 UTF-8（`check_bank.py` 已處理）。
