@@ -369,7 +369,7 @@ function start(mode) {
     const fs = $('#fbsay'); if (fs) fs.onclick = () => play(w.audio);
     $('#nx').onclick = next;
     $('#nx').scrollIntoView({block: 'nearest', behavior: 'smooth'});
-    if (ok) play(w.audio);
+    play(w.audio);  // 答對或錯三擺揭曉，攏予學生聽一擺正確的讀音
   }
 
   function finish(title) {
