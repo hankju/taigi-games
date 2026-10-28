@@ -335,8 +335,8 @@ function judge(b, o, q) {
     <p>${esc(w.def)}</p>${ex}</div><button class="next" id="nx">${qi + 1 >= qs.length ? '看結算' : '下一題'}</button>`;
   const fs = $('#fbsay'); if (fs) fs.onclick = () => play(w.audio);
   const es = $('#exsay'); if (es) es.onclick = () => play(w.ex.audio);
-  // 情境題答完先念整句（沒有整句錄音就念單詞）；聽聲題已經聽過單詞，不自動播
-  if (mode === 'scene') { const a = (w.ex && w.ex.audio) || w.audio; if (a) setTimeout(() => play(a), 300); }
+  // 情境題答完只念單詞，想聽整句再按「聽整句」；聽聲題已經聽過單詞，不自動播
+  if (mode === 'scene' && w.audio) setTimeout(() => play(w.audio), 300);
   $('#nx').onclick = () => { qi++; next(); };
   $('#nx').scrollIntoView({block: 'nearest', behavior: 'smooth'});
 }
