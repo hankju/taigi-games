@@ -5,6 +5,7 @@
 - 新增遊戲時一定要：在根目錄 `games.js` 加一筆；遊戲首頁放 `<a class="hublink" href="../../">‹ 全部遊戲</a>`，並在 `<head>` 複製其他遊戲的「課堂專用」片段（網址有 `?class=1` 時給 `<html>` 加 `class-mode`，藏起 `.hublink`），大廳的課堂專用 QR Code 才有效；`localStorage` key 用遊戲專屬前綴（已用：`ys_`＝yeshi、`hy2_`＝newyear、`tl_`＝tailo）；成績紀錄存成 `<前綴>hist`＝`[{m, s, t}]`（分數滿分 100），並填進 `games.js` 的 `hist`，大廳才會顯示最高分。老師用「今天最高分」登記上課成績，所以大廳與各遊戲的成績頁都以今天（本機時間 0 點起）的最高分為主、歷史最高為輔；新遊戲的成績頁照這個做（照日期分段、🏆 標今天最高）。
 - 新遊戲的回饋請用共用的 `fx.js`：答對 `FX.ok()`、答錯 `FX.bad()`、封面放「🔊 音效」開關 `FX.attachToggle(按鈕)`、結算評語 `FX.verdict(得分, 滿分, 上一擺分數)`；配樂用 `music.js` 的 `HubMusic.attachToggle(按鈕, '曲名')`。結算若有錯題，提供「再練錯的這幾題」（不記成績）。
 - 大廳 `index.html` 要同時照顧手機（單欄）與電腦（≥960px 左側 QR Code＋右側卡片）；QR Code 用本地的 `vendor/qrcode.js`，不依賴外部 CDN。
+- 第三方函式庫一律放 `vendor/`，用相對路徑載入：動畫用 GSAP 3.15.0（`gsap.min.js`，外掛 `DrawSVGPlugin.min.js`、`MotionPathPlugin.min.js`，用前 `gsap.registerPlugin(...)`）；慶祝特效用 canvas-confetti 1.9.4（`confetti.js`，全域函式 `confetti()`）。動畫要照顧 `prefers-reduced-motion`。
 - 目標是手機直式畫面：viewport-fit=cover、處理 safe-area、左右至少 16px 留白、不能橫向捲動。
 - 介面文字、註解用繁體中文；遊戲內可用台文漢字，台羅用教育部台羅拼音。
 - 使用教育部辭典的詞條或錄音時，要在遊戲內與 README 標註來源與 CC BY-ND 3.0 TW，錄音不能修改。
