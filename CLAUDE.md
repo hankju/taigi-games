@@ -8,7 +8,8 @@
 - 目標是手機直式畫面：viewport-fit=cover、處理 safe-area、左右至少 16px 留白、不能橫向捲動。
 - 介面文字、註解用繁體中文；遊戲內可用台文漢字，台羅用教育部台羅拼音。
 - 使用教育部辭典的詞條或錄音時，要在遊戲內與 README 標註來源與 CC BY-ND 3.0 TW，錄音不能修改。
-- `games/newyear/index.html` 是 CRLF 換行，編輯時保持原樣。
+- `games/newyear/index.html` 是 CRLF 換行，編輯時保持原樣；大廳 `index.html`、`README.md`、`CLAUDE.md` 在 repo 裡也是 CRLF，同樣保持。
+- 大廳「看介紹影片」的 YouTube 影片 ID 在 `index.html` 的 `VIDEO`（`tall`＝直式 Shorts、`wide`＝橫式）；影片原始專案（Remotion）在 repo 外的 `D:\台語小遊戲\promo-video`，換影片時改這兩個 ID 就好。
 - 台羅拼音練習（`games/tailo/`）的現況、規格與補題庫步驟寫在 `games/tailo/README.md`，接手前先讀；改題庫後跑 `python3 games/tailo/tools/check_bank.py --fix`。
 - `games/tailo/` 題庫裡第一課單詞沿用 `games/yeshi/audio/` 的錄音（路徑 `../yeshi/audio/…`），搬動 yeshi 的錄音時要一起改；其他詞的錄音在 `games/tailo/audio/`。
 - 使用者是高中生（高中閩南語文課），選詞與難度以高中程度為準，但正式課程的遊戲排除粗俗不雅的詞。

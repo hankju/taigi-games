@@ -80,6 +80,10 @@ h1 .ch i{color:var(--muted);text-shadow:none;font-size:max(12px,.24em)}
 .music[aria-pressed="true"] .eq i:nth-child(2){animation-delay:-.3s;animation-duration:.7s}
 .music[aria-pressed="true"] .eq i:nth-child(3){animation-delay:-.6s;animation-duration:1.1s}
 @keyframes eq{from{height:25%}to{height:100%}}
+/* 背景音樂、介紹影片兩個按鈕排一列 */
+.tools{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:12px}
+.tools .music{margin-top:0}
+.vidbtn .tri{width:0;height:0;border-style:solid;border-width:6px 0 6px 10px;border-color:transparent transparent transparent currentColor}
 .scan{display:none}
 
 /* 遊戲卡片：各遊戲的顏色漸層、左上圓框圖示＋右上 QR、角落淡淡的大圖示；名稱上方標台羅 */
@@ -141,6 +145,12 @@ dialog::backdrop{background:rgba(10,7,4,.78)}
 .dmode button{border:0;background:transparent;color:var(--ink);border-radius:999px;padding:7px 16px;font-size:15px;font-weight:700}
 .dmode button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
 .dlg .note{margin:0 0 12px;font-size:13.5px;color:#8a6d4a}
+/* 介紹影片視窗：直的螢幕放直式 Shorts，橫的螢幕放橫式影片；點開才載入 YouTube */
+#vdlg{width:fit-content;max-width:none;background:#000;border-radius:12px;overflow:visible}
+#vdlg .vbox{position:relative}
+#vdlg iframe{display:block;border:0;border-radius:12px}
+#vdlg .vclose{position:absolute;right:0;bottom:calc(100% + 10px);padding:7px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.35);background:rgba(0,0,0,.5);color:var(--paper);font-size:15px}
+#vdlg .vclose:hover{border-color:var(--gold)}
 
 @media (min-width:640px){
   .wrap{max-width:860px}
@@ -155,6 +165,7 @@ dialog::backdrop{background:rgba(10,7,4,.78)}
   .cloud.c3{display:block;left:40%;top:calc(var(--lan-h) + 10px);width:150px;opacity:.08}
   .sky{position:fixed}
   .side{text-align:left;margin-top:-15px}  /* 台羅小字頂端跟卡片頂端對齊 */
+  .tools{justify-content:flex-start}
   /* 大標題放大，左欄整組跟右邊卡片一樣有份量 */
   h1{font-size:72px;letter-spacing:.02em;justify-content:flex-start}
   /* 大字左邊有字身留白，把漢字往左挪，跟上方台羅、下方標語的左緣對齊 */
@@ -219,7 +230,10 @@ dialog::backdrop{background:rgba(10,7,4,.78)}
   <aside class="side">
     <h1 id="title" aria-label="台語小遊戲"></h1>
     <p class="lead">揀一款，邊耍邊學台語。</p>
-    <button class="music" id="music" aria-pressed="false"><span class="eq" aria-hidden="true"><i></i><i></i><i></i></span><span id="musicTxt">背景音樂：關</span></button>
+    <div class="tools">
+      <button class="music" id="music" aria-pressed="false"><span class="eq" aria-hidden="true"><i></i><i></i><i></i></span><span id="musicTxt">背景音樂：關</span></button>
+      <button class="music vidbtn" id="vidBtn" aria-haspopup="dialog"><span class="tri" aria-hidden="true"></span>看介紹影片</button>
+    </div>
     <div class="scan">
       <button class="code" id="siteCode" aria-label="放大 QR Code"></button>
       <b>手機掃一下就會當耍</b>
@@ -243,6 +257,10 @@ dialog::backdrop{background:rgba(10,7,4,.78)}
     <p class="url" id="dlgUrl"></p>
     <div class="btns"><button class="copy" id="dlgCopy">複製網址</button><button class="close" id="dlgClose">關閉</button></div>
   </div>
+</dialog>
+
+<dialog id="vdlg" aria-label="台語小遊戲介紹影片">
+  <div class="vbox"><button class="vclose" id="vClose">關閉 ✕</button><div id="vFrame"></div></div>
 </dialog>
 
 <script src="vendor/qrcode.js"></script>
@@ -434,6 +452,36 @@ $('#dlgCopy').onclick = async () => {
   try { await navigator.clipboard.writeText(dlgUrl); $('#dlgCopy').textContent = '已複製'; }
   catch (e) { $('#dlgCopy').textContent = '請手動複製'; }
 };
+
+// 介紹影片（YouTube）：點了才載入，不拖慢大廳；直的螢幕放直式 Shorts，橫的螢幕放橫式影片
+// 播放時先關背景音樂，關掉影片再照原本的設定開回來
+const VIDEO = {tall: 'PMAjZDaOICs', wide: 'gmBIUdKv-Co'};
+const vdlg = $('#vdlg');
+let musicBeforeVideo = false;
+function openVideo() {
+  const tall = innerHeight > innerWidth;
+  // 視窗大小：留出上方「關閉」按鈕的位置，照影片比例塞進螢幕
+  const maxW = innerWidth * .92, maxH = innerHeight * .86;
+  const r = tall ? 9 / 16 : 16 / 9;
+  const w = Math.round(Math.min(maxW, maxH * r)), h = Math.round(w / r);
+  $('#vFrame').innerHTML = `<iframe width="${w}" height="${h}" src="https://www.youtube-nocookie.com/embed/${tall ? VIDEO.tall : VIDEO.wide}?autoplay=1&rel=0&playsinline=1" title="台語小遊戲介紹影片" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
+  musicBeforeVideo = HubMusic.playing();
+  if (musicBeforeVideo) setMusic(false);
+  if (vdlg.showModal) vdlg.showModal(); else location.href = `https://youtu.be/${VIDEO.wide}`;
+}
+// 關掉視窗就把 iframe 拿掉，影片才會真的停。
+// 關閉鈕、點背景直接呼叫；按 Esc 走 cancel／close 事件（有的瀏覽器 close 事件不一定會來，所以不只靠它）
+function stopVideo() {
+  if (!$('#vFrame').innerHTML) return;
+  $('#vFrame').innerHTML = '';
+  if (musicBeforeVideo) { musicBeforeVideo = false; setMusic(true); }
+}
+function closeVideo() { if (vdlg.open) vdlg.close(); stopVideo(); }
+vdlg.addEventListener('cancel', stopVideo);
+vdlg.addEventListener('close', stopVideo);
+$('#vidBtn').onclick = openVideo;
+$('#vClose').onclick = closeVideo;
+vdlg.addEventListener('click', e => { if (e.target === vdlg) closeVideo(); });
 
 // 從遊戲按「上一頁」回來時（bfcache），成績重新整理
 window.addEventListener('pageshow', e => { if (e.persisted) location.reload(); });
