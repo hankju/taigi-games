@@ -157,6 +157,28 @@ body.playing .tree{opacity:.3}
 .btns .again{background:var(--purple);color:#fff;box-shadow:0 3px 0 #5b3d86}
 .btns .home{background:rgba(255,255,255,.85);color:var(--teal-d)}
 
+/* 我的成績：大字是今仔日最高（上課登記用），下底照日期分段列每一擺 */
+.histbtn{align-self:center;border:0;background:rgba(255,255,255,.85);color:var(--teal-d);border-radius:999px;padding:8px 20px;font-size:15px;font-weight:700;box-shadow:0 2px 0 rgba(47,127,154,.3)}
+.hud .ttl{flex:1;text-align:center;font-family:var(--display);font-size:22px;font-weight:700;color:var(--teal-d);margin-right:70px}
+.bests{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.bests div{background:var(--paper);border-radius:14px;padding:8px 6px;text-align:center;box-shadow:0 3px 0 rgba(47,127,154,.3)}
+.bests small{display:block;font-size:12px;color:var(--muted)}
+.bests b{display:block;font-family:var(--display);font-size:32px;line-height:1.2;color:var(--purple)}
+.htabs{display:flex;justify-content:center}
+.htabs .seg{display:inline-flex;background:rgba(255,255,255,.7);border-radius:999px;padding:3px}
+.htabs button{border:0;background:transparent;border-radius:999px;padding:6px 14px;font-size:14px;font-weight:500;color:var(--teal-d)}
+.htabs button[aria-pressed="true"]{background:var(--teal);color:#fff;box-shadow:0 2px 0 var(--teal-d)}
+.hlist{flex:1;min-height:0;overflow:auto;display:grid;align-content:start;gap:8px;padding:2px 2px 8px}
+.hcap{margin:0;text-align:center;font-size:13px;color:var(--teal-d)}
+.hday{font-size:13px;font-weight:700;color:var(--teal-d);margin-top:6px}
+.hrow{background:var(--paper);border-radius:12px;padding:8px 12px;display:grid;grid-template-columns:2.6em 1fr auto;gap:8px;align-items:center;font-variant-numeric:tabular-nums;box-shadow:0 2px 0 rgba(47,127,154,.2)}
+.hrow .no{color:var(--muted);font-size:13px}
+.hrow small{display:block;color:var(--muted);font-size:12px}
+.hrow .s{font-family:var(--display);font-size:24px;font-weight:700}
+.hrow.top{background:#f4eefb;outline:2px solid var(--purple)}
+.hrow.top .s::after{content:" 🏆";font-size:16px}
+.hempty{text-align:center;color:var(--teal-d);padding:24px 0}
+
 @media (min-width:700px){
   .tree{width:340px;right:-40px}
   #app{padding-top:24px}
@@ -209,6 +231,7 @@ body.playing .tree{opacity:.3}
     <button class="mode" data-m="fin"><span class="num">二</span><span><b>韻母</b><span class="ex">按字母拼出韻母　例：<span class="lo">tsh<mark>ia</mark>-l<mark>oo</mark></span></span><span class="st" data-st="fin"></span></span></button>
     <button class="mode" data-m="tone"><span class="num">三</span><span><b>聲調</b><span class="ex">看漢字，選最後一字的聲調　例：車<mark>路</mark></span><span class="st" data-st="tone"></span></span></button>
   </div>
+  <button class="histbtn" id="toHist">🏆 我的成績</button>
   <div class="credit">一回合 20 題・每題 5 分<br>錄音：教育部《臺灣台語常用詞辭典》CC BY-ND 3.0 TW、任課老師</div>
 </section>
 
@@ -233,6 +256,14 @@ body.playing .tree{opacity:.3}
   <div class="today" id="oToday"></div>
   <div class="review" id="oReview"></div>
   <div class="btns"><button class="retry" id="retry" hidden></button><button class="again" id="again">閣練一擺</button><button class="home" id="home2">回封面</button></div>
+</section>
+
+<section class="screen" id="hist" hidden>
+  <div class="hud"><button class="back" id="histBack">‹ 回封面</button><span class="ttl">我的成績</span></div>
+  <p class="hcap">大字是今仔日的最高分，上課登記用這个</p>
+  <div class="bests" id="hBest"></div>
+  <div class="htabs"><span class="seg" id="hTabs" role="group" aria-label="篩選模式"></span></div>
+  <div class="hlist" id="hList"></div>
 </section>
 
 </div>
@@ -285,7 +316,7 @@ function renderHome() {
   renderScope();
   for (const m in MODES) {
     const t = today(m);
-    document.querySelector(`[data-st="${m}"]`).innerHTML = t ? `今日最高 <b>${t.best}</b>・平均 ${t.avg}・練 ${t.n} 擺` : '今仔日猶未練';
+    document.querySelector(`[data-st="${m}"]`).innerHTML = t ? `今仔日最高 <b>${t.best}</b>・平均 ${t.avg}・練 ${t.n} 擺` : '今仔日猶未練';
   }
 }
 
@@ -448,6 +479,32 @@ $('#say').onclick = () => play(cur.w.audio);
 $('#quit').onclick = () => { if (audio) audio.pause(); renderHome(); show('home'); };
 $('#again').onclick = () => start(mode);
 $('#home2').onclick = () => { renderHome(); show('home'); };
+
+// ── 我的成績：大字是今仔日最高，🏆 標今仔日各模式最高；紀錄照日期分段 ──
+let hf = 'all';
+const WK = '日一二三四五六';
+const day0 = t => new Date(t).setHours(0, 0, 0, 0);
+function fmtDay(d, d0) { const x = new Date(d); return `${d === d0 ? '今仔日　' : ''}${x.getMonth() + 1}/${x.getDate()}（禮拜${WK[x.getDay()]}）`; }
+function fmtTime(t) { const d = new Date(t), p = n => String(n).padStart(2, '0'); return `${p(d.getHours())}:${p(d.getMinutes())}`; }
+function renderHist() {
+  const h = hist(), d0 = day0(Date.now()), max = a => Math.max(...a.map(r => r.s));
+  $('#hBest').innerHTML = Object.keys(MODES).map(m => {
+    const xs = h.filter(r => r.m === m), td = xs.filter(r => r.t >= d0);
+    return `<div><small>${MODES[m]}</small><b>${td.length ? max(td) : '—'}</b><small>歷史最高 ${xs.length ? max(xs) : '—'}</small></div>`;
+  }).join('');
+  $('#hTabs').innerHTML = [['all', '全部'], ...Object.entries(MODES)].map(([k, n]) => `<button data-f="${k}" aria-pressed="${hf === k}">${n}</button>`).join('');
+  $('#hTabs').querySelectorAll('button').forEach(b => b.onclick = () => { hf = b.dataset.f; renderHist(); });
+  const best = {}, no = {};
+  h.forEach(r => { no[r.m] = (no[r.m] || 0) + 1; r.n = no[r.m]; if (r.t >= d0 && (!best[r.m] || r.s > best[r.m].s)) best[r.m] = r; });
+  const rows = h.filter(r => hf === 'all' || r.m === hf).reverse();
+  let day = null;
+  $('#hList').innerHTML = rows.length ? rows.map(r => {
+    const d = day0(r.t), head = d !== day ? `<div class="hday">${fmtDay(d, d0)}</div>` : ''; day = d;
+    return head + `<div class="hrow${best[r.m] === r ? ' top' : ''}"><span class="no">#${r.n}</span><span>${MODES[r.m]}<small>${fmtTime(r.t)}</small></span><span class="s">${r.s}</span></div>`;
+  }).join('') : '<div class="hempty">猶無紀錄，先去練一擺！</div>';
+}
+$('#toHist').onclick = () => { hf = 'all'; renderHist(); show('hist'); };
+$('#histBack').onclick = () => { renderHome(); show('home'); };
 
 // 鍵盤也會使用（電腦版）：字母輸入、Backspace、Enter、空白鍵換格、1～8 選調
 addEventListener('keydown', e => {

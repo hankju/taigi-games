@@ -83,7 +83,8 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offse
 .mode:active{transform:translateY(2px);box-shadow:0 2px 0 #15110e}
 .mode b{font-family:var(--display);font-size:23px}
 .mode small{grid-column:1;color:var(--muted);font-size:13.5px;line-height:1.45}
-.mode .best{grid-row:1/span 2;grid-column:2;font-size:13px;color:var(--seal);font-weight:700;white-space:nowrap}
+.mode .best{grid-row:1/span 2;grid-column:2;font-size:13px;color:var(--seal);font-weight:700;white-space:nowrap;text-align:right}
+.mode .best small{display:block;font-size:11.5px;color:var(--muted);font-weight:400}
 .mode.sub{background:var(--wall-2);color:var(--paper);box-shadow:none;border:1px solid rgba(235,225,200,.15)}
 .mode.sub small{color:#cbbfa6}
 .credit{text-align:center;font-size:11.5px;line-height:1.5;color:#a89a80}
@@ -319,8 +320,10 @@ const hist = () => store.get('pw_hist', []);
 function renderHome() {
   renderCats();
   for (const m in NAME) {
-    const xs = hist().filter(r => r.m === m);
-    $(`[data-best="${m}"]`).textContent = xs.length ? `最高 ${Math.max(...xs.map(r => r.s))}` : '';
+    // 今仔日最高（上課登記用，過半暝自動重算）佮歷史最高
+    const xs = hist().filter(r => r.m === m), d0 = new Date().setHours(0, 0, 0, 0), td = xs.filter(r => r.t >= d0);
+    const max = a => Math.max(...a.map(r => r.s));
+    $(`[data-best="${m}"]`).innerHTML = td.length ? `今仔日 ${max(td)}<small>最高 ${max(xs)}</small>` : xs.length ? `<small>最高 ${max(xs)}</small>` : '';
   }
 }
 

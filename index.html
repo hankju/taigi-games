@@ -258,12 +258,15 @@ function ruby(han, lo) {
   return `<span class="ruby"><span class="ch"><i lang="nan-Latn">${esc(lo || '')}</i>${esc(han)}</span></span>`;
 }
 
-// 從各遊戲自己存的成績算出最高分與次數
+// 從各遊戲自己存的成績算出今仔日最高（上課登記用，過半暝自動重算）佮歷史最高
 function stats(g) {
   if (!g.hist) return null;
   try {
     const xs = JSON.parse(localStorage.getItem(g.hist)) || [];
-    return xs.length ? {n: xs.length, best: Math.max(...xs.map(r => +r.s || 0))} : null;
+    if (!xs.length) return null;
+    const d0 = new Date().setHours(0, 0, 0, 0), td = xs.filter(r => r.t >= d0);
+    const max = a => Math.max(...a.map(r => +r.s || 0));
+    return {best: max(xs), today: td.length ? max(td) : null};
   } catch (e) { return null; }
 }
 
@@ -287,7 +290,7 @@ $('#list').innerHTML = GAMES.map((g, i) => {
     ${g.warn ? `<p class="warn"><span aria-hidden="true">⚠</span>${esc(g.warn)}</p>` : ''}
     <p>${esc(g.desc)}</p>
     ${g.tags && g.tags.length ? `<ul class="chips">${g.tags.map(t => `<li>${esc(t)}</li>`).join('')}</ul>` : ''}
-    <div class="foot"><span class="stat">${st ? `🏆 最高 <b>${st.best}</b> 分・耍過 ${st.n} 擺` : '猶未耍過，緊來試看覓！'}</span><span class="play" aria-hidden="true">開始 <i>›</i></span></div>
+    <div class="foot"><span class="stat">${!st ? '猶未耍過，緊來試看覓！' : st.today !== null ? `🏆 今仔日最高 <b>${st.today}</b> 分・歷史最高 ${st.best}` : `今仔日猶未耍・歷史最高 ${st.best} 分`}</span><span class="play" aria-hidden="true">開始 <i>›</i></span></div>
   </article>`;
 }).join('');
 

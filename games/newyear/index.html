@@ -53,7 +53,8 @@ em{font-style:normal;color:var(--red-2);background:var(--gold-soft);border-radiu
 .mode .ic{font-size:36px;text-align:center}
 .mode b{font-family:var(--display);font-size:22px;display:block}
 .mode small{color:#7a4a3a;font-size:13px;line-height:1.4;display:block}
-.mode .best{font-size:12px;color:var(--red-2);font-weight:700;white-space:nowrap}
+.mode .best{font-size:12px;color:var(--red-2);font-weight:700;white-space:nowrap;text-align:right}
+.mode .best small{display:block;font-size:11px;color:#7a4a3a;font-weight:400}
 .foot{text-align:center;font-size:12px;color:var(--gold-soft);opacity:.8}
 .toprow{display:flex;justify-content:space-between;align-items:center}
 .hublink{color:var(--gold);font-size:14px;font-weight:700;text-decoration:none;padding:6px 14px;border:1px solid rgba(242,193,78,.6);border-radius:999px;background:rgba(92,15,19,.45)}
@@ -149,6 +150,8 @@ em{font-style:normal;color:var(--red-2);background:var(--gold-soft);border-radiu
 .htabs button{flex:1;background:transparent;color:var(--gold);border:1px solid var(--gold);border-radius:20px;padding:6px 8px;font-size:14px}
 .htabs button[aria-pressed="true"]{background:var(--gold);color:var(--red-deep);font-weight:700}
 .empty{color:var(--gold-soft);text-align:center;padding:24px 0}
+.hcap{margin:0;text-align:center;font-size:13px;color:var(--gold-soft)}
+.hday{color:var(--gold-soft);font-size:13px;margin-top:6px}
 
 /* 結算 */
 .over{align-items:center;justify-content:center;text-align:center}
@@ -187,7 +190,7 @@ em{font-style:normal;color:var(--red-2);background:var(--gold-soft);border-radiu
       <button class="mode" data-go="float"><span class="ic">🎈</span><span><b>好話飄飄</b><small>食物飄上來，75 秒內點中 10 個押韻的。點錯扣 3 秒。</small></span><span class="best" data-best="float"></span></button>
       <button class="mode" data-go="memo"><span class="ic">🧧</span><span><b>翻紅包</b><small>翻開兩個紅包，上下半句押韻就配成一對。3 關，120 秒內翻完。</small></span><span class="best" data-best="memo"></span></button>
       <button class="mode" data-go="quiz"><span class="ic">🧨</span><span><b>搶答放炮</b><small>10 題，每題 10 秒，選出押韻的另一半，越快答分越高。</small></span><span class="best" data-best="quiz"></span></button>
-      <button class="mode" data-go="hist"><span class="ic">🏆</span><span><b>我的成績</b><small>每一局的分數都記在這裡，最高分會標出來。</small></span><span></span></button>
+      <button class="mode" data-go="hist"><span class="ic">🏆</span><span><b>我的成績</b><small>每一局的分數都記在這裡，今天的最高分會標出來。</small></span><span></span></button>
       <button class="mode" data-go="list"><span class="ic">📜</span><span><b>好話題庫</b><small>看全部的吉祥話和押韻字的台羅。</small></span><span></span></button>
     </div>
     <div class="foot">押同一個韻就算對，對調也通！</div>
@@ -217,6 +220,7 @@ em{font-style:normal;color:var(--red-2);background:var(--gold-soft);border-radiu
 
   <section class="screen" id="hist" hidden>
     <div class="hud"><button class="back">‹ 回首頁</button></div>
+    <p class="hcap">大字是今天的最高分，上課登記用這個</p>
     <div class="hbest" id="hBest"></div>
     <div class="htabs" id="hTabs"></div>
     <div class="list" id="hList"></div>
@@ -274,17 +278,23 @@ const store={get(k){try{return +localStorage.getItem('hy2_'+k)||0}catch(e){retur
 function getHist(){try{return JSON.parse(localStorage.getItem('hy2_hist'))||[]}catch(e){return[]}}
 function addHist(m,s){const h=getHist();h.push({m,s,t:Date.now()});try{localStorage.setItem('hy2_hist',JSON.stringify(h.slice(-300)))}catch(e){}}
 let histFilter='all';
-function fmtTime(t){const d=new Date(t),p=n=>String(n).padStart(2,'0');return `${d.getMonth()+1}/${d.getDate()} ${p(d.getHours())}:${p(d.getMinutes())}`}
-function renderHist(){const h=getHist();
-  $('#hBest').innerHTML=['float','memo','quiz'].map(m=>{const xs=h.filter(r=>r.m===m);return `<div><small>${TITLE[m]} 最高</small><b>${xs.length?Math.max(...xs.map(r=>r.s)):'—'}</b><small>玩了 ${xs.length} 次</small></div>`}).join('');
+// 今天最高：上課登記用，過午夜自動重算；紀錄照日期分段，🏆 標今天各模式最高
+const day0=t=>new Date(t).setHours(0,0,0,0);
+function todayBest(m){const d0=day0(Date.now()),xs=getHist().filter(r=>r.m===m&&r.t>=d0);return xs.length?Math.max(...xs.map(r=>r.s)):null}
+const WK='日一二三四五六';
+function fmtDay(d,d0){const x=new Date(d);return `${d===d0?'今天　':''}${x.getMonth()+1}/${x.getDate()}（星期${WK[x.getDay()]}）`}
+function fmtTime(t){const d=new Date(t),p=n=>String(n).padStart(2,'0');return `${p(d.getHours())}:${p(d.getMinutes())}`}
+function renderHist(){const h=getHist(),d0=day0(Date.now());
+  $('#hBest').innerHTML=['float','memo','quiz'].map(m=>{const xs=h.filter(r=>r.m===m),t=todayBest(m);return `<div><small>${TITLE[m]}</small><b>${t!==null?t:'—'}</b><small>歷史最高 ${xs.length?Math.max(...xs.map(r=>r.s)):'—'}</small></div>`}).join('');
   $('#hTabs').innerHTML=[['all','全部'],['float','好話飄飄'],['memo','翻紅包'],['quiz','搶答放炮']].map(([k,n])=>`<button data-f="${k}" aria-pressed="${histFilter===k}">${n}</button>`).join('');
   $('#hTabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{histFilter=b.dataset.f;renderHist()});
   const rows=h.map((r,i)=>({...r,i})).filter(r=>histFilter==='all'||r.m===histFilter);
   if(!rows.length){$('#hList').innerHTML='<div class="empty">還沒有紀錄，先去玩一局吧！</div>';return}
-  const best={};h.forEach(r=>{if(!best[r.m]||r.s>best[r.m].s)best[r.m]=r});
+  const best={};h.forEach(r=>{if(r.t>=d0&&(!best[r.m]||r.s>best[r.m].s))best[r.m]=r});
   const no={};h.forEach(r=>{no[r.m]=(no[r.m]||0)+1;r.n=no[r.m]});
-  $('#hList').innerHTML=rows.reverse().map(r=>`<div class="hrow${best[r.m]===h[r.i]?' top':''}"><span class="no">#${h[r.i].n}</span><span class="m">${TITLE[r.m]}<small>${fmtTime(r.t)}</small></span><span class="s">${r.s}</span></div>`).join('')}
-function showBest(){document.querySelectorAll('[data-best]').forEach(el=>{const b=store.get(el.dataset.best);el.textContent=b?'最高 '+b:''})}
+  let day=null;
+  $('#hList').innerHTML=rows.reverse().map(r=>{const d=day0(r.t),head=d!==day?`<div class="hday">${fmtDay(d,d0)}</div>`:'';day=d;return head+`<div class="hrow${best[r.m]===h[r.i]?' top':''}"><span class="no">#${h[r.i].n}</span><span class="m">${TITLE[r.m]}<small>${fmtTime(r.t)}</small></span><span class="s">${r.s}</span></div>`}).join('')}
+function showBest(){document.querySelectorAll('[data-best]').forEach(el=>{const b=store.get(el.dataset.best),t=todayBest(el.dataset.best);el.innerHTML=t!==null?`今天 ${t}<small>最高 ${b}</small>`:b?`<small>最高 ${b}</small>`:''})}
 
 // 音效
 let ac=null,muted=false;
