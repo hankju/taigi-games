@@ -61,7 +61,8 @@ button:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
 .mode .num{width:52px;height:52px;border-radius:14px;background:var(--night);color:var(--lamp);display:grid;place-items:center;font-family:var(--display);font-size:24px;font-weight:700}
 .mode b{font-family:var(--display);font-size:22px;display:block}
 .mode small{color:var(--muted);font-size:14px;line-height:1.45;display:block}
-.mode .best{font-size:13px;color:#b0441f;font-weight:700;white-space:nowrap}
+.mode .best{font-size:13px;color:#b0441f;font-weight:700;white-space:nowrap;text-align:right}
+.mode .best small{display:block;font-size:11.5px;color:var(--muted);font-weight:400}
 .mode.sub{grid-template-columns:52px 1fr;background:var(--night-2);color:var(--paper);box-shadow:none;border:1px solid rgba(255,248,234,.2)}
 .mode.sub small{color:var(--lamp-soft)}
 .hublink{align-self:flex-start;color:var(--lamp);font-size:14px;font-weight:700;text-decoration:none;padding:6px 14px;border:1px solid rgba(244,183,64,.6);border-radius:999px;background:rgba(14,24,48,.5)}
@@ -166,6 +167,8 @@ button:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
 .hrow .s{font-family:var(--display);font-size:24px}
 .hrow.top{background:var(--lamp-soft);outline:2px solid var(--lamp)}
 .hrow.top .s::after{content:" 🏆";font-size:16px}
+.hcap{margin:0;text-align:center;font-size:13px;color:var(--lamp-soft)}
+.hday{color:var(--lamp-soft);font-size:13px;margin-top:6px}
 .empty{text-align:center;color:var(--lamp-soft);padding:24px 0}
 @media (prefers-reduced-motion:reduce){.stamp,.gain{animation:none}.skylan{display:none}}
 </style>
@@ -213,6 +216,7 @@ button:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
 
 <section class="screen" id="hist" hidden>
   <div class="hud"><button class="back" data-go="home">‹ 回首頁</button></div>
+  <p class="hcap">大字是今仔日的最高分，上課登記用這个</p>
   <div class="bests" id="hBest"></div>
   <div class="tabs" id="hTabs"></div>
   <div class="list" id="hList"></div>
@@ -311,6 +315,8 @@ const store = {
   hist() { try { return JSON.parse(localStorage.getItem('ys_hist')) || []; } catch (e) { return []; } },
   add(m, s) { const h = this.hist(); h.push({m, s, t: Date.now()}); try { localStorage.setItem('ys_hist', JSON.stringify(h.slice(-300))); } catch (e) {} },
   best(m) { const xs = this.hist().filter(r => r.m === m); return xs.length ? Math.max(...xs.map(r => r.s)) : 0; },
+  // 今仔日最高：上課登記用，過半暝自動重算
+  today(m) { const d0 = new Date().setHours(0, 0, 0, 0), xs = this.hist().filter(r => r.m === m && r.t >= d0); return xs.length ? Math.max(...xs.map(r => r.s)) : null; },
 };
 
 // 畫面切換
@@ -319,7 +325,7 @@ function go(id) {
   if (stop) { stop(); stop = null; }
   if (id === 'm1' || id === 'm2' || id === 'm3') { lastMode = id; show('play'); start(id); return; }
   show(id);
-  if (id === 'home') document.querySelectorAll('[data-best]').forEach(el => { const b = store.best(el.dataset.best); el.textContent = b ? '最高 ' + b : ''; });
+  if (id === 'home') document.querySelectorAll('[data-best]').forEach(el => { const m = el.dataset.best, b = store.best(m), t = store.today(m); el.innerHTML = t !== null ? `今仔日 ${t}<small>最高 ${b}</small>` : b ? `<small>最高 ${b}</small>` : ''; });
   if (id === 'hist') renderHist();
   if (id === 'list') renderList();
 }
@@ -432,16 +438,20 @@ function skyLanterns(n) {
 
 // 我的成績
 let hf = 'all';
-function fmt(t) { const d = new Date(t), p = n => String(n).padStart(2, '0'); return `${d.getMonth() + 1}/${d.getDate()} ${p(d.getHours())}:${p(d.getMinutes())}`; }
+// 照日期分段；🏆 標今仔日各模式最高（上課登記用）
+const WK = '日一二三四五六';
+function fmtDay(d, d0) { const x = new Date(d); return `${d === d0 ? '今仔日　' : ''}${x.getMonth() + 1}/${x.getDate()}（禮拜${WK[x.getDay()]}）`; }
+function fmt(t) { const d = new Date(t), p = n => String(n).padStart(2, '0'); return `${p(d.getHours())}:${p(d.getMinutes())}`; }
 function renderHist() {
-  const h = store.hist();
-  $('#hBest').innerHTML = ['m1', 'm2', 'm3'].map(m => { const xs = h.filter(r => r.m === m); return `<div><small>${NAME[m]} 最高</small><b>${xs.length ? Math.max(...xs.map(r => r.s)) : '—'}</b><small>耍 ${xs.length} 擺</small></div>`; }).join('');
+  const h = store.hist(), d0 = new Date().setHours(0, 0, 0, 0);
+  $('#hBest').innerHTML = ['m1', 'm2', 'm3'].map(m => { const t = store.today(m), b = store.best(m); return `<div><small>${NAME[m]}</small><b>${t !== null ? t : '—'}</b><small>歷史最高 ${h.some(r => r.m === m) ? b : '—'}</small></div>`; }).join('');
   $('#hTabs').innerHTML = [['all', '全部'], ['m1', '一'], ['m2', '二'], ['m3', '三']].map(([k, n]) => `<button data-f="${k}" aria-pressed="${hf === k}">${n}</button>`).join('');
   $('#hTabs').querySelectorAll('button').forEach(b => b.onclick = () => { hf = b.dataset.f; renderHist(); });
   const best = {}, no = {};
-  h.forEach(r => { if (!best[r.m] || r.s > best[r.m].s) best[r.m] = r; no[r.m] = (no[r.m] || 0) + 1; r.n = no[r.m]; });
+  h.forEach(r => { if (r.t >= d0 && (!best[r.m] || r.s > best[r.m].s)) best[r.m] = r; no[r.m] = (no[r.m] || 0) + 1; r.n = no[r.m]; });
   const rows = h.filter(r => hf === 'all' || r.m === hf).reverse();
-  $('#hList').innerHTML = rows.length ? rows.map(r => `<div class="hrow${best[r.m] === r ? ' top' : ''}"><span>#${r.n}</span><span>${NAME[r.m]}<small>${fmt(r.t)}</small></span><span class="s">${r.s}</span></div>`).join('') : '<div class="empty">猶無紀錄，先去耍一擺！</div>';
+  let day = null;
+  $('#hList').innerHTML = rows.length ? rows.map(r => { const d = new Date(r.t).setHours(0, 0, 0, 0), head = d !== day ? `<div class="hday">${fmtDay(d, d0)}</div>` : ''; day = d; return head + `<div class="hrow${best[r.m] === r ? ' top' : ''}"><span>#${r.n}</span><span>${NAME[r.m]}<small>${fmt(r.t)}</small></span><span class="s">${r.s}</span></div>`; }).join('') : '<div class="empty">猶無紀錄，先去耍一擺！</div>';
 }
 
 // 詞彙表
