@@ -11,7 +11,7 @@
 - 使用教育部辭典的詞條或錄音時，要在遊戲內與 README 標註來源與 CC BY-ND 3.0 TW，錄音不能修改。
 - `games/newyear/index.html` 是 CRLF 換行，編輯時保持原樣；大廳 `index.html`、`README.md`、`CLAUDE.md` 在 repo 裡也是 CRLF，同樣保持。
 - 大廳「看介紹影片」的 YouTube 影片 ID 在 `index.html` 的 `VIDEO`（`tall`＝直式 Shorts、`wide`＝橫式）；影片原始專案（Remotion）在 repo 外的 `D:\台語小遊戲\promo-video`，換影片時改這兩個 ID 就好。
-- 大廳插畫放 `img/`，一律轉成 WebP（卡片封面 800×400、每張 100 KB 以內），不要放原始 PNG。新遊戲在 `games.js` 填 `art: 'img/card_<id>.webp'`，沒填就照舊只顯示圖示。插畫用 Codex 生成，腳本在 repo 外的 `D:\台語小遊戲\promo-video-assets\gen_cards2.sh`，新圖照裡面的 STYLE 描述（樸素的繪本水粉、人物畫小、不要光亮動漫臉與彩虹特效）才不會有 AI 味；圖裡不能有文字。
+- 大廳插畫放 `img/`，一律轉成 WebP（卡片封面 800×400、每張 100 KB 以內），不要放原始 PNG。新遊戲在 `games.js` 填 `art: 'img/card_<id>.webp'`，沒填就照舊只顯示圖示。插畫用 Codex 生成，腳本在 repo 外的 `D:\台語小遊戲\promo-video-assets\gen_cards2.sh`，新圖照裡面的 STYLE 描述（樸素的繪本水粉、人物畫小、不要光亮動漫臉與彩虹特效）才不會有 AI 味；圖裡不能有文字。遊戲內的插畫放該遊戲的 `games/<id>/img/`（同樣 WebP、每張 100 KB 內），目前台羅練習有封面 `home` 與結算頁 `over_hi／over_mid／over_lo`（八成以上、六成以上、較低各一張，生圖腳本 `gen_tailo_over.sh`），各有兩種尺寸：手機版框圖 `*.webp`（1000×500，固定約 190px 高；封面、結算頁在手機版整頁可以上下捲〔`body.scrolly`〕，所以圖放大也不會擠掉模式卡片或按鈕；作答畫面維持固定不捲）、電腦版（≥700px）鋪滿背景的 `*_w.webp`（1536×1024，每張 160 KB 內，中央一欄蓋淡白，手機版不載）；插畫只放封面、結算這類畫面，作答畫面不放，免得分心。
 - 台羅拼音練習（`games/tailo/`）的現況、規格與補題庫步驟寫在 `games/tailo/README.md`，接手前先讀；改題庫後跑 `python3 games/tailo/tools/check_bank.py --fix`。
 - `games/tailo/` 題庫裡第一課單詞沿用 `games/yeshi/audio/` 的錄音（路徑 `../yeshi/audio/…`），搬動 yeshi 的錄音時要一起改；其他詞的錄音在 `games/tailo/audio/`。
 - 使用者是高中生（高中閩南語文課），選詞與難度以高中程度為準，但正式課程的遊戲排除粗俗不雅的詞。

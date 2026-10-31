@@ -40,6 +40,7 @@ games/tailo/
   bank.js               題庫 window.TL_BANK（一行一個詞，是合法 JSON 陣列）
   tools/check_bank.py   題庫檢查／自動算 modes（只用 Python 標準函式庫）
   audio/                第一課以外詞的錄音（教育部辭典原檔，檔名＝台羅去聲調）
+  img/                  插畫（AI 生成）：home 封面教室圖；over_hi／over_mid／over_lo 結算頁照得分換（≥80%、≥60%、較低）；*.webp 手機版框圖，*_w.webp 電腦版背景
 ```
 
 大廳的遊戲清單在根目錄 `games.js`（`id: 'tailo'`，成績 key `tl_hist`）。

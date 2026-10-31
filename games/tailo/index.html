@@ -57,7 +57,16 @@ body.playing .tree{opacity:.3}
 .ruby{display:inline-flex;gap:0 .04em;justify-content:center}
 .ch{position:relative;display:inline-block;padding-top:20px}
 .ch i{position:absolute;top:0;left:50%;transform:translateX(-50%);font-style:normal;font-family:var(--lo);font-weight:600;font-size:14px;letter-spacing:0;color:var(--teal-d);text-shadow:0 1px 0 rgba(255,255,255,.7);white-space:nowrap}
+/* 插畫框圖（手機版；電腦版改鋪背景 .scene）：固定 200px 懸，封面佮結算頁規頁會使上下捲（body.scrolly），毋免共模式卡片、按鈕擠掉 */
+.pic{flex:0 0 auto;height:200px;display:flex;justify-content:center;align-items:center;padding:6px 0}
+.pic img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 45%;border-radius:18px;border:4px solid var(--paper);
+  box-shadow:0 4px 0 rgba(47,127,154,.3),0 12px 24px rgba(31,95,116,.15);opacity:0;transition:opacity .6s ease}
+.pic img.on{opacity:1}
 .modes{display:grid;gap:10px;margin-top:auto;overflow:auto;padding:4px 2px 2px}
+/* 封面、結算頁：放袂落就規頁捲（背景漸層固定，捲落去袂斷一節）；作答畫面維持固定版面 */
+body.scrolly{overflow:auto;height:auto;min-height:100%;background-attachment:fixed}
+body.scrolly #app{height:auto;min-height:100%}
+body.scrolly .modes{overflow:visible}
 .mode{display:grid;grid-template-columns:54px 1fr;gap:14px;align-items:center;text-align:left;background:var(--paper);border:0;border-radius:18px;padding:12px 14px;
   box-shadow:0 4px 0 rgba(47,127,154,.35),0 10px 20px rgba(31,95,116,.12)}
 .mode:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(47,127,154,.35)}
@@ -201,7 +210,19 @@ body.playing .tree{opacity:.3}
   #home .modes,#home .scope{margin-top:12px}
   #home .hero h1{font-size:54px}
 }
+/* 電腦版：封面、結算頁的插畫鋪做規个背景（手機版用框圖 .pic）；中央一欄蓋淡白，字才讀會清楚 */
+.scene{display:none}
+@media (min-width:700px){
+  .pic{display:none!important}
+  .scene{display:block;position:absolute;inset:0;background:center 40%/cover no-repeat;opacity:0;transition:opacity .8s ease}
+  .scene.on{opacity:1}
+  .scene::after{content:"";position:absolute;inset:0;background:
+    linear-gradient(90deg,rgba(236,246,249,.2) 0%,rgba(236,246,249,.84) 30%,rgba(236,246,249,.84) 70%,rgba(236,246,249,.2) 100%),
+    linear-gradient(180deg,rgba(236,246,249,0) 55%,rgba(244,250,251,.9) 100%)}
+  body.scened .tree{display:none}
+}
 @media (prefers-reduced-motion:reduce){
+  .pic img,.scene{transition:none}
   .stamp{animation:none}
   .bar i{transition:none}
 }
@@ -209,6 +230,7 @@ body.playing .tree{opacity:.3}
 </head>
 <body>
 <div class="bg" aria-hidden="true">
+  <div class="scene" id="scene"></div>
   <svg class="tree" viewBox="0 0 300 260">
     <g fill="none" stroke="#7a5a3c" stroke-linecap="round">
       <path d="M300 40C250 60 200 90 150 140" stroke-width="10"/>
@@ -235,6 +257,7 @@ body.playing .tree{opacity:.3}
     <h1 id="title" aria-label="台羅拼音練習"></h1>
     <p>聽錄音，揣出聲母、韻母佮聲調</p>
   </div>
+  <div class="pic"><img src="img/home.webp" loading="lazy" alt="" width="1000" height="500" decoding="async" onload="this.classList.add('on')"></div>
   <div class="scope" role="group" aria-label="出題範圍">範圍<span class="seg"><button data-scope="l1">第一課</button><button data-scope="all">全部</button></span><span id="scopeN"></span></div>
   <div class="modes">
     <button class="mode" data-m="ini"><span class="num">一</span><span><b>聲母</b><span class="ex">干焦考聲母　例：<span class="lo"><mark>tsh</mark>ia-<mark>l</mark>ōo</span></span><span class="st" data-st="ini"></span></span></button>
@@ -260,6 +283,7 @@ body.playing .tree{opacity:.3}
 </section>
 
 <section class="screen over" id="over" hidden>
+  <div class="pic"><img id="oPic" loading="lazy" alt="" width="1000" height="500" decoding="async" onload="this.classList.add('on')"></div>
   <h2 id="oTitle"></h2>
   <div class="ring" id="oRing"><div class="big" id="oScore"></div></div>
   <div class="verdict" id="oVerdict"></div>
@@ -336,7 +360,22 @@ function play(src) { if (!src) return; try { if (audio) audio.pause(); audio = n
 
 // ── 畫面切換 ──
 // 換畫面就捲轉去頂端（電腦視窗矮的時候頁面會使捲，毋通停佇半中央）
-function show(id) { for (const s of document.querySelectorAll('.screen')) s.hidden = s.id !== id; document.body.classList.toggle('playing', id === 'play'); scrollTo(0, 0); }
+function show(id) { for (const s of document.querySelectorAll('.screen')) s.hidden = s.id !== id; document.body.classList.toggle('playing', id === 'play'); document.body.classList.toggle('scrolly', id === 'home' || id === 'over'); scene(id === 'home' ? 'home' : id === 'over' ? overArt : ''); scrollTo(0, 0); }
+// 電腦版背景插畫：等大圖載好才淡入；手機版毋載大圖（用框圖）；視窗拖大拖細會切換
+const wideMQ = matchMedia('(min-width:700px)');
+let sceneArt = '', overArt = 'over_hi';
+function scene(art) {
+  sceneArt = art || '';
+  const el = $('#scene'), url = wideMQ.matches && sceneArt ? `img/${sceneArt}_w.webp` : '';
+  document.body.classList.toggle('scened', !!url);
+  if (el.dataset.src === url) return;
+  el.dataset.src = url; el.classList.remove('on');
+  if (!url) { el.style.backgroundImage = ''; return; }
+  const im = new Image();
+  im.onload = () => { if (el.dataset.src === url) { el.style.backgroundImage = `url(${url})`; requestAnimationFrame(() => el.classList.add('on')); } };
+  im.src = url;
+}
+wideMQ.addEventListener('change', () => scene(sceneArt));
 
 // ── 一回合 ──
 let mode, qs, qi, score, cur, wrong, retry;
@@ -465,6 +504,10 @@ function finish() {
   const prevs = hist().filter(r => r.m === mode), prev = prevs.length ? prevs[prevs.length - 1].s : null;
   if (!retry) { FX.record(prevs, score, total); addHist(mode, score); }
   const t = today(mode), vd = FX.verdict(score, total, retry ? null : prev);
+  // 結算插畫照得分換：八成以上樹下開花、六成以上窗邊練習、較低就老師陪咧看冊（佮讚語開花仝一个意象）
+  overArt = `over_${score >= total * .8 ? 'hi' : score >= total * .6 ? 'mid' : 'lo'}`;
+  const pic = $('#oPic'), art = `img/${overArt}.webp`;
+  if (!pic.src.endsWith(art)) { pic.classList.remove('on'); pic.src = art; }
   $('#oTitle').textContent = retry ? '錯題練習完成！' : MODES[mode] + '練習完成！';
   $('#oVerdict').innerHTML = `${vd.msg}${vd.diff ? `<small class="${vd.up ? 'up' : ''}">${vd.diff}</small>` : ''}`;
   // 有錯題就出現「閣練錯的這幾題」，一直練到攏著
@@ -560,7 +603,7 @@ $('#title').innerHTML = '<span class="ruby"><span class="ch"><i lang="nan-Latn">
 HubMusic.attachToggle($('#bgm'), 'tailo');
 FX.attachToggle($('#sfx'));
 
-renderHome();
+renderHome(); scene('home'); document.body.classList.add('scrolly');
 </script>
 </body>
 </html>
