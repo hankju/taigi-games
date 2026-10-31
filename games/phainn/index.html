@@ -411,7 +411,7 @@ function judge(b, o, q) {
   if (q.done) return; q.done = true;
   const ok = o === q.answer, w = q.w;
   for (const x of $('#opts').children) { x.disabled = true; if (x.textContent.slice(1) === q.answer) x.classList.add('right'); else if (x !== b) x.classList.add('dim'); }
-  if (ok) { score += PT; FX.ok(); FX.combo.hit({from: b, to: $('#sc'), pts: PT, hot: $('#card')}); } else { b.classList.add('wrong'); wrong.push(q); FX.bad(); FX.combo.miss(); }
+  if (ok) { score += PT; FX.ok(); FX.combo.hit({from: b, to: $('#sc'), pts: PT, hot: $('#card')}); } else { b.classList.add('wrong'); wrong.push(q); FX.bad(); FX.combo.miss({at: $('#card')}); }
   $('#sc').textContent = score;
   $('#card').insertAdjacentHTML('beforeend', `<span class="mark ${ok ? 'ok' : 'no'}" aria-hidden="true">${ok ? '著' : '毋著'}</span>`);
   const wd = $('#word'); if (wd) wd.classList.add('torn');
