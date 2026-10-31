@@ -2,10 +2,11 @@
 // id：資料夾名稱（英文小寫）；icon：卡片圖示；color / accent：卡片底色與字色，建議跟遊戲本身配色一致
 // name／lo：遊戲名稱與台羅（以詞為單位、詞內用連字號，開頭大寫），大廳顯示在名稱上方
 // desc：說明
-// tags：卡片上的小標籤；hist：遊戲存成績的 localStorage key（格式 [{m, s, t}]），大廳會顯示最高分與次數
+// art：卡片封面插畫（img/ 裡 800×400 的 WebP，可省略）；tags：卡片上的小標籤；hist：遊戲存成績的 localStorage key（格式 [{m, s, t}]），大廳會顯示最高分與次數
 window.GAMES = [
   {
     id: 'yeshi',
+    art: 'img/card_yeshi.webp',
     icon: '🏮',
     name: '來去踅夜市',
     lo: 'Lâi-khì se̍h iā-tshī',
@@ -17,6 +18,7 @@ window.GAMES = [
   },
   {
     id: 'newyear',
+    art: 'img/card_newyear.webp',
     icon: '🧧',
     name: '過年好話押韻王',
     lo: 'Kuè-nî hó-uē ah-ūn-ông',
@@ -28,6 +30,7 @@ window.GAMES = [
   },
   {
     id: 'tailo',
+    art: 'img/card_tailo.webp',
     icon: '🌸',
     name: '台羅拼音練習',
     lo: 'Tâi-lô phing-im liān-si̍p',
@@ -39,6 +42,7 @@ window.GAMES = [
   },
   {
     id: 'phainn',
+    art: 'img/card_phainn.webp',
     icon: '🤐',
     name: '歹話毋通講',
     lo: 'Pháinn-uē m̄-thang kóng',
