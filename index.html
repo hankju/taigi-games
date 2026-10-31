@@ -395,11 +395,12 @@ desk.addEventListener('change', () => { drawStars(); drawLanterns(); });
 // ── 背景音樂 ──
 // 瀏覽器不准網頁自己出聲，一定要先點一下；上次有開的話，這次點畫面任何地方就自動開始
 const MKEY = 'hub_music', mBtn = $('#music');
-function setMusic(on) {
+// save＝false：只暫時開關（看介紹影片時用），不改記住的設定
+function setMusic(on, save = true) {
   if (on) HubMusic.start(); else HubMusic.stop();
   mBtn.setAttribute('aria-pressed', on);
   $('#musicTxt').textContent = '背景音樂：' + (on ? '開' : '關');
-  try { localStorage.setItem(MKEY, on ? '1' : '0'); } catch (e) {}
+  if (save) try { localStorage.setItem(MKEY, on ? '1' : '0'); } catch (e) {}
 }
 mBtn.onclick = () => setMusic(!HubMusic.playing());
 let wantMusic = false;
@@ -466,7 +467,7 @@ function openVideo() {
   const w = Math.round(Math.min(maxW, maxH * r)), h = Math.round(w / r);
   $('#vFrame').innerHTML = `<iframe width="${w}" height="${h}" src="https://www.youtube-nocookie.com/embed/${tall ? VIDEO.tall : VIDEO.wide}?autoplay=1&rel=0&playsinline=1" title="台語小遊戲介紹影片" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
   musicBeforeVideo = HubMusic.playing();
-  if (musicBeforeVideo) setMusic(false);
+  if (musicBeforeVideo) setMusic(false, false);
   if (vdlg.showModal) vdlg.showModal(); else location.href = `https://youtu.be/${VIDEO.wide}`;
 }
 // 關掉視窗就把 iframe 拿掉，影片才會真的停。
@@ -474,7 +475,7 @@ function openVideo() {
 function stopVideo() {
   if (!$('#vFrame').innerHTML) return;
   $('#vFrame').innerHTML = '';
-  if (musicBeforeVideo) { musicBeforeVideo = false; setMusic(true); }
+  if (musicBeforeVideo) { musicBeforeVideo = false; setMusic(true, false); }
 }
 function closeVideo() { if (vdlg.open) vdlg.close(); stopVideo(); }
 vdlg.addEventListener('cancel', stopVideo);
