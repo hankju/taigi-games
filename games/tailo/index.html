@@ -189,14 +189,19 @@ body.playing .tree{opacity:.3}
   #home .credit{margin-bottom:auto}
   .modes{margin-top:32px}
   .scope{margin-top:28px}
-  /* 大螢幕：題目卡不要撐滿整個高度，整組置中 */
-  #play{justify-content:center}
-  #play .card{flex:0 1 auto;min-height:380px}
+  /* 大螢幕：題目卡不要撐滿整個高度，整組置中；卡片原本高 380，視窗矮的時候會縮（最矮 190），
+     safe center：放袂落的時候對頂端排，上方列才袂予切掉 */
+  #play{justify-content:safe center}
+  #play .card{flex:0 1 380px}
 }
-/* 大螢幕但視窗矮（例：筆電 1280×720）：間距縮小，三個模式卡片才放會落 */
+/* 大螢幕但視窗矮（例：筆電 1280×720）：間距縮小，三個模式卡片才放會落；遊戲中的字母鍵、聲調鍵也縮矮 */
 @media (min-width:700px) and (max-height:760px){
   #home .modes,#home .scope{margin-top:12px}
   #home .hero h1{font-size:54px}
+  #play .key{height:52px}
+  #play .ctl button{height:50px}
+  #play .tone{height:70px;font-size:34px}
+  #play .card .han{font-size:clamp(40px,8.5vh,64px)}
 }
 @media (prefers-reduced-motion:reduce){
   .stamp{animation:none}
