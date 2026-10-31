@@ -189,19 +189,17 @@ body.playing .tree{opacity:.3}
   #home .credit{margin-bottom:auto}
   .modes{margin-top:32px}
   .scope{margin-top:28px}
-  /* 大螢幕：題目卡不要撐滿整個高度，整組置中；卡片原本高 380，視窗矮的時候會縮（最矮 190），
-     safe center：放袂落的時候對頂端排，上方列才袂予切掉 */
+  /* 大螢幕：題目卡不要撐滿整個高度，整組置中；視窗傷矮放袂落的時候，毋縮小，改用滾輪上下捲
+     （safe center：放袂落就對頂端排，上方列才袂予切掉） */
+  body{overflow:auto;background-attachment:fixed}   /* 捲落去背景漸層嘛固定，袂斷一節 */
+  #app{height:auto;min-height:100%}
   #play{justify-content:safe center}
-  #play .card{flex:0 1 380px}
+  #play .card{flex:0 0 auto;min-height:380px}
 }
-/* 大螢幕但視窗矮（例：筆電 1280×720）：間距縮小，三個模式卡片才放會落；遊戲中的字母鍵、聲調鍵也縮矮 */
+/* 大螢幕但視窗矮（例：筆電 1280×720）：間距縮小，三個模式卡片才放會落 */
 @media (min-width:700px) and (max-height:760px){
   #home .modes,#home .scope{margin-top:12px}
   #home .hero h1{font-size:54px}
-  #play .key{height:52px}
-  #play .ctl button{height:50px}
-  #play .tone{height:70px;font-size:34px}
-  #play .card .han{font-size:clamp(40px,8.5vh,64px)}
 }
 @media (prefers-reduced-motion:reduce){
   .stamp{animation:none}
@@ -337,7 +335,8 @@ let audio = null;
 function play(src) { if (!src) return; try { if (audio) audio.pause(); audio = new Audio(src); audio.play().catch(() => {}); } catch (e) {} }
 
 // ── 畫面切換 ──
-function show(id) { for (const s of document.querySelectorAll('.screen')) s.hidden = s.id !== id; document.body.classList.toggle('playing', id === 'play'); }
+// 換畫面就捲轉去頂端（電腦視窗矮的時候頁面會使捲，毋通停佇半中央）
+function show(id) { for (const s of document.querySelectorAll('.screen')) s.hidden = s.id !== id; document.body.classList.toggle('playing', id === 'play'); scrollTo(0, 0); }
 
 // ── 一回合 ──
 let mode, qs, qi, score, cur, wrong, retry;
@@ -350,6 +349,7 @@ function start(m, list) {
 }
 function next() {
   if (qi >= qs.length) return finish();
+  scrollTo(0, 0);   // 下一題對頂端看起（答題後頁面可能捲到「下一題」遐）
   const w = qs[qi], sy = sylls(w.lo);
   cur = {w, sy, ans: mode === 'tone' ? [] : sy.map(() => ''), act: 0, done: false};
   $('#qn').textContent = `第 ${qi + 1} / ${qs.length} 題`;
