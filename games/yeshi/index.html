@@ -212,11 +212,11 @@ button:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
   <div class="verdict" id="oVerdict"></div>
   <p id="oBest"></p>
   <div class="review" id="oReview"></div>
-  <div class="btns"><button class="btn retry" id="retry" hidden></button><button class="btn" id="again">閣耍一擺</button><button class="btn ghost" data-go="home">回首頁</button></div>
+  <div class="btns"><button class="btn retry" id="retry" hidden></button><button class="btn" id="again">閣耍一擺</button><button class="btn ghost" data-go="home">轉去首頁</button></div>
 </section>
 
 <section class="screen" id="hist" hidden>
-  <div class="hud"><button class="back" data-go="home">‹ 回首頁</button></div>
+  <div class="hud"><button class="back" data-go="home">‹ 轉去首頁</button></div>
   <p class="hcap">大字是今仔日的上懸分，上課登記用這个</p>
   <div class="bests" id="hBest"></div>
   <div class="tabs" id="hTabs"></div>
@@ -224,7 +224,7 @@ button:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
 </section>
 
 <section class="screen" id="list" hidden>
-  <div class="hud"><button class="back" data-go="home">‹ 回首頁</button></div>
+  <div class="hud"><button class="back" data-go="home">‹ 轉去首頁</button></div>
   <div class="list" id="wList"></div>
 </section>
 
@@ -414,7 +414,7 @@ function start(mode, given) {
     $('#oVerdict').innerHTML = `${vd.msg}${vd.diff ? `<small class="${vd.up ? 'up' : ''}">${vd.diff}</small>` : ''}`;
     // 頭一擺就答著以外的題目（包括錯了才答著的），攏會當閣練
     const miss = log.filter(r => !r.ok || r.tries > 0).map(r => r.q);
-    const rb = $('#retry'); rb.hidden = !miss.length; rb.textContent = `再練錯的這 ${miss.length} 題`;
+    const rb = $('#retry'); rb.hidden = !miss.length; rb.textContent = `閣練錯的這 ${miss.length} 題`;
     rb.onclick = () => { if (stop) { stop(); stop = null; } show('play'); start(mode, miss); };
     // 分數從 0 跳到得分，圓環跟著填滿；放天燈
     const still = matchMedia('(prefers-reduced-motion:reduce)').matches;
