@@ -183,14 +183,20 @@ body.playing .tree{opacity:.3}
 @media (min-width:700px){
   .tree{width:340px;right:-40px}
   #app{padding-top:24px}
-  /* 大螢幕：標題和模式卡片整組置中，不要中間空一大塊 */
-  #home{justify-content:center}
-  #home .toprow{position:absolute;top:24px;left:16px;right:16px}
+  /* 大螢幕：標題和模式卡片整組置中，不要中間空一大塊；上方按鈕列留在原位，
+     整組用上下 auto 留白置中在按鈕列底下，視窗矮的時候留白縮到 0，標題就不會鑽到按鈕下面 */
+  #home .hero{margin-top:auto}
+  #home .credit{margin-bottom:auto}
   .modes{margin-top:32px}
   .scope{margin-top:28px}
   /* 大螢幕：題目卡不要撐滿整個高度，整組置中 */
   #play{justify-content:center}
   #play .card{flex:0 1 auto;min-height:380px}
+}
+/* 大螢幕但視窗矮（例：筆電 1280×720）：間距縮小，三個模式卡片才放會落 */
+@media (min-width:700px) and (max-height:760px){
+  #home .modes,#home .scope{margin-top:12px}
+  #home .hero h1{font-size:54px}
 }
 @media (prefers-reduced-motion:reduce){
   .stamp{animation:none}
