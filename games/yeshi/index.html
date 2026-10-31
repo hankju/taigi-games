@@ -384,7 +384,7 @@ function start(mode, given) {
       const p = PTS[tries] || 0; score += p; $('#sc').textContent = score; FX.ok();
       b.classList.add('right'); FX.combo.hit({from: b, to: $('#sc'), pts: p, hot: $('#card')}); reveal(q, true); return;
     }
-    tries++; b.classList.add('wrong'); b.disabled = true; FX.bad(); FX.combo.miss();
+    tries++; b.classList.add('wrong'); b.disabled = true; FX.bad(); if (tries === 1) FX.combo.miss({at: $('#card')});   // 同一題錯幾擺算一擺
     if (mode === 'm1') { const s = $('#say'); if (s && q.w.audio) { s.disabled = false; s.textContent = '🔊 聽發音'; } }
     if (mode === 'm2' && $('#pad')) { $('#pad').outerHTML = `<div class="big">${esc(q.w.han)}</div>`; if (q.w.ex) $('#hint').innerHTML = `<div class="hint">例句：${esc(q.w.ex.han.replace(q.w.han, '＿＿'))}</div>`; }
     if (mode === 'm3' && q.hua) $('#hint').innerHTML = `<div class="hint">華語：${esc(q.hua)}</div>`;

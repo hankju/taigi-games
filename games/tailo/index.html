@@ -437,7 +437,7 @@ function judge(tone) {
   if (mode === 'tone') { ok = tone === last.tone; yours = `你揀第 ${tone} 調`; cur.ans = [String(tone)]; }
   else { ok = cur.sy.every((s, i) => cur.ans[i] === answerOf(i)); yours = '你的答案：' + cur.ans.join(' - '); }
   cur.done = true;
-  if (ok) { score += PT; FX.ok(); FX.combo.hit({from: $('.card'), to: $('#sc'), pts: PT, hot: $('.card')}); } else { FX.bad(); FX.combo.miss(); wrong.push({w: cur.w, han: cur.w.han, lo: cur.w.lo, yours: mode === 'tone' ? `第 ${tone} 調` : cur.ans.join('-')}); }
+  if (ok) { score += PT; FX.ok(); FX.combo.hit({from: $('.card'), to: $('#sc'), pts: PT, hot: $('.card')}); } else { FX.bad(); FX.combo.miss({at: $('.card')}); wrong.push({w: cur.w, han: cur.w.han, lo: cur.w.lo, yours: mode === 'tone' ? `第 ${tone} 調` : cur.ans.join('-')}); }
   $('#sc').textContent = score;
   // 批改印章（加分由 FX.combo 的「+5」飛去分數）
   const card = $('.card');

@@ -144,18 +144,27 @@
 .fx-toast{position:fixed;left:50%;top:0;z-index:63;pointer-events:none;transform:translateX(-50%);padding:6px 18px;border-radius:999px;white-space:nowrap;
   font:700 22px/1.2 "LXGW WenKai TC","Kaiti TC",serif;color:#fff;background:linear-gradient(90deg,#e8582c,#f2a33a);box-shadow:0 6px 20px rgba(200,70,20,.45)}
 .fx-toast.cool{background:linear-gradient(90deg,#7d58b0,#2f7f9a);box-shadow:0 6px 20px rgba(60,60,120,.35)}
-.fx-hot{animation:fx-hot 1.1s ease-in-out infinite alternate}
-.fx-hot[data-heat="2"]{animation-duration:.8s}.fx-hot[data-heat="3"]{animation-duration:.55s}
-@keyframes fx-hot{from{filter:drop-shadow(0 0 calc(var(--h,1) * 4px) rgba(255,130,40,.6))}to{filter:drop-shadow(0 0 calc(var(--h,1) * 10px) rgba(255,150,40,.95))}}
-.fx-fire{display:inline-block;margin-left:4px;font-weight:700;color:#e8582c;transform-origin:50% 80%;animation:fx-flick .5s ease-in-out infinite alternate;transition:font-size .3s}
-@keyframes fx-flick{from{transform:scale(1) rotate(-4deg)}to{transform:scale(1.12) rotate(4deg)}}
-.fx-heat{position:fixed;inset:0;z-index:55;pointer-events:none;overflow:hidden;opacity:0;transition:opacity 1s ease}
-.fx-heat::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 115% 85% at 50% 45%,transparent 52%,rgba(255,130,30,.4) 76%,rgba(230,60,20,.78) 100%);animation:fx-pulse 1.4s ease-in-out infinite alternate}
-.fx-heat[data-heat="1"]{opacity:.55}.fx-heat[data-heat="2"]{opacity:.8}.fx-heat[data-heat="3"]{opacity:1}
-@keyframes fx-pulse{from{opacity:.75}to{opacity:1}}
-.fx-flame{position:absolute;inset:0;width:100%;height:100%;opacity:.8}
-.fx-smoke{position:fixed;z-index:60;pointer-events:none;font-size:22px;opacity:.8}
-@media (prefers-reduced-motion:reduce){.fx-hot,.fx-heat::before{animation:none}.fx-hot{filter:drop-shadow(0 0 8px rgba(255,140,40,.8))}.fx-fire{animation:none}}`;
+.fx-toast.gold{background:linear-gradient(90deg,#d9822b,#f2c14e);text-shadow:0 1px 2px rgba(120,60,0,.45);box-shadow:0 0 0 2px #fff3c4,0 6px 22px rgba(230,160,40,.6)}
+.fx-toast.dull{background:linear-gradient(90deg,#66625b,#8a8172);box-shadow:0 6px 20px rgba(40,40,40,.35)}
+.fx-glow{animation:fx-glow 1.3s ease-in-out infinite alternate}
+@keyframes fx-glow{from{filter:drop-shadow(0 0 calc(var(--b,1) * 3px) rgba(255,205,80,.55))}to{filter:drop-shadow(0 0 calc(var(--b,1) * 7px) rgba(255,215,90,.95))}}
+.fx-badge{display:inline-block;margin-left:4px;font-weight:700;color:#d9822b;transform-origin:50% 90%;animation:fx-sway 1.2s ease-in-out infinite alternate;transition:font-size .3s}
+@keyframes fx-sway{from{transform:rotate(-6deg)}to{transform:rotate(6deg) scale(1.08)}}
+.fx-garden{position:fixed;inset:0;z-index:55;pointer-events:none;width:100%;height:100%}
+.fx-shine{position:fixed;inset:0;z-index:54;pointer-events:none;opacity:0;transition:opacity 1s ease;background:radial-gradient(ellipse 115% 85% at 50% 45%,transparent 55%,rgba(255,222,120,.32) 80%,rgba(255,196,70,.6) 100%);animation:fx-pulse 1.6s ease-in-out infinite alternate}
+@keyframes fx-pulse{from{filter:brightness(.85)}to{filter:brightness(1.15)}}
+.fx-ruin{position:fixed;inset:0;z-index:54;pointer-events:none;overflow:hidden}
+.fx-ruin::before{content:"";position:absolute;inset:0;opacity:var(--dust,0);transition:opacity 1.2s ease;background:radial-gradient(ellipse 115% 85% at 50% 45%,transparent 45%,rgba(110,95,70,.4) 74%,rgba(60,50,38,.8) 100%)}
+.fx-ruin>*{position:absolute;left:0;top:0;transition:opacity .8s ease}
+.fx-ruin>.gone{opacity:0}
+.fx-ruin svg{display:block;overflow:visible}
+.fx-ruin .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:fx-draw var(--d,1.4s) ease-out forwards}
+@keyframes fx-draw{to{stroke-dashoffset:0}}
+.fx-spider svg{animation:fx-bob 2.4s ease-in-out infinite alternate}
+@keyframes fx-bob{from{transform:translateY(-5px)}to{transform:translateY(9px)}}
+.fx-legs{animation:fx-legs .16s linear infinite alternate}
+@keyframes fx-legs{from{transform:rotate(-8deg)}to{transform:rotate(8deg)}}
+@media (prefers-reduced-motion:reduce){.fx-glow,.fx-shine,.fx-badge,.fx-spider svg,.fx-legs{animation:none}.fx-glow{filter:drop-shadow(0 0 6px rgba(255,210,80,.85))}.fx-ruin .draw{animation:none;stroke-dashoffset:0}}`;
   document.head.appendChild(css);
 
   const rect = el => el.getBoundingClientRect();
@@ -195,10 +204,10 @@
   }
   // 提示字：囥佇題目卡內底上方的空位（卡片頂端往下約兩成、題目字的頂懸，毋遮題目）；無卡片就囥畫面上方
   let toastEl = null;
-  function toast(text, cool, at) {
+  function toast(text, kind, at) {
     if (toastEl) toastEl.remove();
     const el = toastEl = document.createElement('div');
-    el.className = 'fx-toast' + (cool ? ' cool' : ''); el.textContent = text; el.setAttribute('aria-hidden', 'true'); document.body.appendChild(el);
+    el.className = 'fx-toast' + (kind ? ' ' + kind : ''); el.textContent = text; el.setAttribute('aria-hidden', 'true'); document.body.appendChild(el);
     let top = innerHeight * .16, left = innerWidth / 2;
     if (at) { const r = rect(at); left = r.left + r.width / 2; top = r.top + Math.min(100, Math.max(56, r.height * .21)); }
     el.style.left = left + 'px'; el.style.top = Math.max(6, top - el.offsetHeight / 2) + 'px';
@@ -208,108 +217,344 @@
     else el.animate([{opacity: 0, transform: 'translateX(-50%) scale(.3)'}, {opacity: 1, transform: 'translateX(-50%) scale(1)', offset: .25}, {opacity: 1, offset: .8}, {opacity: 0, transform: 'translateX(-50%) translateY(-16px)'}], {duration: 1400}).onfinish = end;
   }
 
-  // 火熱程度 heat：連對 5 題 1 級、10 題 2 級、15 題 3 級；答錯毋是隨熄，降一級（火變細）
-  // 畫面四周燒紅、下底佮兩爿有火舌佮火星衝起來、題目卡發光、分數邊仔有 🔥，級數越懸越強
-  const LINES = {3: '3 連對！', 5: '著火矣！🔥', 10: '火燒厝矣！🔥🔥', 15: '燒甲赤爍爍！', 20: '20 連對！神乎其技！'};
-  let n = 0, heat = 0, hotEl = null, scoreEl = null, fire = null, heatEl = null;
-  // 火焰：全螢幕 canvas，對畫面下底佮兩爿下半部噴火舌起來，閣有火星飛較懸；用三種顏色的光點疊起來（lighter 混色）
-  const flame = {cv: null, ctx: null, ps: [], raf: 0, last: 0, acc: 0, burst: 0, sprites: null, size: null};
-  function sprites() {
-    return ['255,240,170', '255,165,45', '230,70,20'].map(c => {
-      const s = document.createElement('canvas'); s.width = s.height = 64;
-      const x = s.getContext('2d'), g = x.createRadialGradient(32, 32, 0, 32, 32, 32);
-      g.addColorStop(0, `rgba(${c},1)`); g.addColorStop(.4, `rgba(${c},.5)`); g.addColorStop(1, `rgba(${c},0)`);
-      x.fillStyle = g; x.fillRect(0, 0, 64, 64); return s;
-    });
+  // 讚語佮加油語是台語老師建議的講法（取代原本英語「ON FIRE」的火熱）
+  // 連續答對：連對 2／3／5／7／10 題講「媠！」到「媠甲會觸舌！」，10 題以後每 5 題閣講一擺；每講一句四周就加開一批花，
+  //   花越開越濟、越大蕊，3 批起花邊有金光閃爍、題目卡發金光，4 批起畫面四周金光，5 批起落花瓣；答錯謝一批（毋是隨無去）
+  // 連續答錯：「加油！」到「愛揣老師矣！」，每講一句就加一款破敗：蜘蛛網 → 蜘蛛佮蟲 → 破窗 → 閣破一塊 → 滿四界，灰塵越來越厚；答對清掉一款
+  const PRAISE = {2: '媠！', 3: '真媠！', 5: '有夠媠！', 7: '真正有夠媠！', 10: '媠甲會觸舌！'};
+  const CHEER = ['加油！', '閣較拚咧！', '想予詳細！', '哪會按呢？', '愛揣老師矣！'];
+  let n = 0, m = 0, bloom = 0, hotEl = null, scoreEl = null, badge = null, shineEl = null;
+
+  // 花園：全螢幕 canvas，花開佇下底佮兩爿（電腦版開佇中央內容外的空位），題目佮答案毋遮
+  const FLOWERS = [['#f9b4c6', '#e2557a'], ['#fff8ec', '#e0566b'], ['#ffd85a', '#e5821c'], ['#ff93a8', '#c8334f'], ['#f3c4e4', '#b0457f']];
+  const gd = {cv: null, ctx: null, raf: 0, last: 0, fl: [], ps: [], acc: 0, dacc: 0, spr: null, pet: null, glow: null, size: null, R: null, rs: [], seen: 0};
+  // 題目卡內底有字、有按鈕的所在：卡片內的花愛閃開（開花前量一擺，了後每 0.25 秒閣量，換題字變長，壓著的花就退去）
+  const near = (x, y, rad, rs) => rs.some(r => { const dx = Math.max(r.left - x, 0, x - r.right), dy = Math.max(r.top - y, 0, y - r.bottom); return dx * dx + dy * dy < rad * rad; });
+  function busy(el) {
+    const out = [];
+    for (const e of el.querySelectorAll('*')) {
+      if (!/^(button|img|svg|input|audio|video|canvas)$/i.test(e.tagName) && ![...e.childNodes].some(t => t.nodeType === 3 && t.textContent.trim())) continue;
+      const r = e.getBoundingClientRect(); if (r.width && r.height) out.push(r);
+    }
+    return out;
   }
-  function flameStart(host) {
-    if (still() || flame.cv) return;
-    const cv = flame.cv = document.createElement('canvas'); cv.className = 'fx-flame'; host.appendChild(cv);
-    flame.ctx = cv.getContext('2d'); flame.sprites = flame.sprites || sprites(); flame.last = performance.now(); flame.acc = 0;
-    flame.size = () => { const d = Math.min(1.5, devicePixelRatio || 1); cv.width = innerWidth * d; cv.height = innerHeight * d; flame.ctx.setTransform(d, 0, 0, d, 0, 0); };
-    flame.size(); addEventListener('resize', flame.size);
-    flame.raf = requestAnimationFrame(flameTick);
+  function flowerSprite([petal, heart], gold) {
+    const s = document.createElement('canvas'); s.width = s.height = 96;
+    const x = s.getContext('2d'); x.translate(48, 48); x.scale(.82, .82);
+    x.fillStyle = '#6f9f55';                                   // 兩片葉仔
+    for (const a of [2.3, 4.1]) { x.save(); x.rotate(a); x.beginPath(); x.ellipse(0, -34, 9, 19, 0, 0, 7); x.fill(); x.restore(); }
+    if (gold) { x.shadowColor = 'rgba(255,205,60,.95)'; x.shadowBlur = 16; }
+    x.fillStyle = petal; x.strokeStyle = 'rgba(150,60,60,.3)'; x.lineWidth = 1.5;
+    for (let i = 0; i < 5; i++) {                               // 五瓣，花瓣尾仔有一个凹，親像梅花
+      x.beginPath(); x.moveTo(0, 0); x.bezierCurveTo(-28, -14, -22, -42, -6, -40);
+      x.quadraticCurveTo(0, -34, 6, -40); x.bezierCurveTo(22, -42, 28, -14, 0, 0);
+      x.fill(); x.stroke(); x.rotate(Math.PI * 2 / 5);
+    }
+    x.shadowBlur = 0; x.fillStyle = heart; x.beginPath(); x.arc(0, 0, 9, 0, 7); x.fill();
+    x.fillStyle = '#ffe28a';
+    for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4; x.beginPath(); x.arc(Math.cos(a) * 13, Math.sin(a) * 13, 2.4, 0, 7); x.fill(); }
+    return s;
   }
-  function flameStop() {
-    cancelAnimationFrame(flame.raf);
-    if (flame.cv) { removeEventListener('resize', flame.size); flame.cv.remove(); }
-    flame.cv = null; flame.ps = []; flame.burst = 0;
+  function petalSprite([petal]) {
+    const s = document.createElement('canvas'); s.width = 24; s.height = 32;
+    const x = s.getContext('2d'); x.translate(12, 30); x.fillStyle = petal; x.strokeStyle = 'rgba(150,60,60,.3)';
+    x.beginPath(); x.moveTo(0, 0); x.bezierCurveTo(-14, -8, -11, -27, -3, -27); x.quadraticCurveTo(0, -23, 3, -27); x.bezierCurveTo(11, -27, 14, -8, 0, 0); x.fill(); x.stroke();
+    return s;
   }
-  function emit(k, W, H, big) {
-    for (let i = 0; i < k; i++) {
-      const spark = Math.random() < .12, side = Math.random();
-      let x, y, vx;
-      if (side < .45) { x = Math.random() * W; y = H + 8; vx = (Math.random() - .5) * 30; }    // 四成半對下底，其餘對兩爿（火舌貼邊，毋遮答案）
-      else { const L = side < .725; x = L ? -6 : W + 6; y = H * (.35 + Math.random() * .65); vx = (L ? 1 : -1) * (15 + Math.random() * 30); }
-      const up = (50 + Math.random() * 60) * (.8 + heat * .25) * (big ? 1.8 : 1);
-      flame.ps.push(spark
-        ? {x, y, vx: vx * 1.5, vy: -up * 1.8, r: 2 + Math.random() * 2, t: 0, life: 1.4 + Math.random(), seed: Math.random() * 6.3, spark}
-        : {x, y, vx, vy: -up, r: 10 + Math.random() * 12 + heat * 4, t: 0, life: .4 + Math.random() * .45, seed: Math.random() * 6.3});
+  function glowSprite() {
+    const s = document.createElement('canvas'); s.width = s.height = 64;
+    const x = s.getContext('2d'), g = x.createRadialGradient(32, 32, 0, 32, 32, 32);
+    g.addColorStop(0, 'rgba(255,240,170,1)'); g.addColorStop(.4, 'rgba(255,200,70,.45)'); g.addColorStop(1, 'rgba(255,180,40,0)');
+    x.fillStyle = g; x.fillRect(0, 0, 64, 64); return s;
+  }
+  const wide = () => innerWidth >= 900;
+  const band = () => Math.max(26, (innerWidth - 680) / 2);       // 兩爿會使開花的闊度
+  function spot() {
+    const r = Math.random();
+    if (r < .26) return {e: 'b', u: Math.random(), k: Math.random()};
+    if (wide() && r < .4) return {e: Math.random() < .5 ? 'tl' : 'tr', u: Math.random(), k: Math.random()};   // 電腦版頂懸兩角嘛開
+    return {e: r < .7 ? 'l' : 'r', u: .22 + Math.random() * .78, k: Math.random()};
+  }
+  function where(f, W, H) {
+    const B = band();
+    switch (f.e) {
+      case 'b': return [f.u * W, H + 6 - f.k * 16];
+      case 'l': return [-8 + f.k * B, f.u * H];
+      case 'r': return [W + 8 - f.k * B, f.u * H];
+      case 'in': return gd.R ? [gd.R.left + f.u * gd.R.width, gd.R.top + f.k * gd.R.height] : [-99, -99];   // 題目卡內底，綴卡片走
+      case 'tl': return [-8 + f.u * B * 1.2, -6 + f.k * 34];
+      default: return [W + 8 - f.u * B * 1.2, -6 + f.k * 34];
     }
   }
-  function flameTick(now) {
-    const dt = Math.min(.05, (now - flame.last) / 1000), W = innerWidth, H = innerHeight, c = flame.ctx;
-    flame.last = now;
-    flame.acc += [0, 70, 130, 210][heat] * dt;
-    const k = Math.floor(flame.acc); flame.acc -= k;
-    if (k && flame.ps.length < 450) emit(k, W, H, false);
-    if (flame.burst) { emit(flame.burst, W, H, true); flame.burst = 0; }
-    c.clearRect(0, 0, W, H); c.globalCompositeOperation = 'lighter';
-    flame.ps = flame.ps.filter(p => (p.t += dt) < p.life);
-    for (const p of flame.ps) {
+  function gardenStart() {
+    if (still() || gd.cv) return;
+    const cv = gd.cv = document.createElement('canvas'); cv.className = 'fx-garden'; cv.setAttribute('aria-hidden', 'true'); document.body.appendChild(cv);
+    gd.ctx = cv.getContext('2d'); gd.last = performance.now();
+    if (!gd.spr) { gd.spr = FLOWERS.flatMap(c => [flowerSprite(c), flowerSprite(c, true)]); gd.pet = FLOWERS.map(petalSprite); gd.glow = glowSprite(); }
+    gd.size = () => { const d = Math.min(1.5, devicePixelRatio || 1); cv.width = innerWidth * d; cv.height = innerHeight * d; gd.ctx.setTransform(d, 0, 0, d, 0, 0); };
+    gd.size(); addEventListener('resize', gd.size);
+    gd.raf = requestAnimationFrame(gardenTick);
+  }
+  function gardenStop() {
+    cancelAnimationFrame(gd.raf);
+    if (gd.cv) { removeEventListener('resize', gd.size); gd.cv.remove(); }
+    gd.cv = null; gd.fl = []; gd.ps = [];
+  }
+  // 加開一批花：第幾批越後壁，花越濟、越大蕊，金色的花越濟；一蕊一蕊輪流開
+  function addGroup() {
+    if (!gd.cv) return;
+    const g = Math.min(bloom - 1, 7), now = performance.now(), big = wide(), cnt = Math.round((5 + g * 2) * (big ? 1.8 : 1.4));
+    if (gd.fl.length > 180) return;
+    const pick = () => { const gold = g >= 2 && Math.random() < .12 + g * .07, c = gold && Math.random() < .5 ? 2 : Math.floor(Math.random() * FLOWERS.length); return {c, spr: gd.spr[c * 2 + (gold ? 1 : 0)]}; };
+    for (let i = 0; i < cnt; i++)
+      gd.fl.push({...spot(), ...pick(), g: bloom - 1, r: (big ? 15 : 13) + Math.random() * (5 + g * 2.5),
+        rot: Math.random() * 6.3, seed: Math.random() * 6.3, born: now + i * 55 + Math.random() * 100, die: 0});
+    // 手機版兩爿無啥空位，就開入去題目卡內底四周的空白：一叢 2～4 蕊，離字、按鈕、讚語有一段距離，叢佮叢分較開
+    if (big || !hotEl) return;
+    const R = rect(hotEl), rs = busy(hotEl);
+    if (R.width < 120 || R.height < 120) return;
+    const tb = R.top + Math.min(100, Math.max(56, R.height * .21));                // 讚語出現的所在（佮 toast() 仝款）
+    const keep = rs.concat([{left: R.left + R.width / 2 - 115, right: R.left + R.width / 2 + 115, top: tb - 26, bottom: tb + 26}]);
+    const others = gd.fl.filter(f => f.e === 'in' && !f.die).map(f => [R.left + f.u * R.width, R.top + f.k * R.height]);
+    for (let k = 0, made = 0, j = cnt; k < 90 && made < 3 + g; k++) {
+      let cx, cy;
+      if (Math.random() < .6) { const L = Math.random() < .5, d = 18 + Math.random() * R.width * .2; cx = L ? R.left + d : R.right - d; cy = R.top + 22 + Math.random() * (R.height - 44); }
+      else { const T = Math.random() < .5, d = 20 + Math.random() * R.height * .14; cy = T ? R.top + d : R.bottom - d; cx = R.left + 22 + Math.random() * (R.width - 44); }
+      if (near(cx, cy, 42, keep) || others.some(([x, y]) => Math.hypot(x - cx, y - cy) < 46)) continue;
+      made++;
+      for (let i = 0, m = 2 + Math.floor(Math.random() * 3); i < m; i++) {
+        const a = Math.random() * 6.3, d = i ? 14 + Math.random() * 10 : 0, x = cx + Math.cos(a) * d, y = cy + Math.sin(a) * d, r = 12 + Math.random() * (5 + g * 1.8);
+        if (near(x, y, r + 8, keep) || x < R.left + 6 || x > R.right - 6) continue;
+        others.push([x, y]);
+        gd.fl.push({e: 'in', u: (x - R.left) / R.width, k: (y - R.top) / R.height, ...pick(), g: bloom - 1, r, v: 1,
+          rot: Math.random() * 6.3, seed: Math.random() * 6.3, born: now + (j++) * 55 + Math.random() * 100, die: 0});
+      }
+    }
+  }
+  // 讚語的時陣，花瓣對讚語遐爆開，金光四散
+  function burst(x, y, k) {
+    if (!gd.cv) return;
+    for (let i = 0; i < k; i++) {
+      const L = i % 2 ? 1 : -1, v = 150 + Math.random() * 230, a = (Math.random() - .65) * 1.3;    // 主要向兩爿飛，較少落去題目頂懸
+      gd.ps.push({k: 'p', x, y, vx: L * Math.cos(a) * v, vy: Math.sin(a) * v, g: 120, rot: Math.random() * 6, vr: (Math.random() - .5) * 9, t: 0, life: 1 + Math.random() * .6, spr: gd.pet[Math.floor(Math.random() * FLOWERS.length)], seed: Math.random() * 6, s: 1 + Math.random() * .7});
+      if (i % 3 === 0) gd.ps.push({k: 's', x: x + L * Math.cos(a) * v * .25, y: y + Math.sin(a) * v * .2, t: 0, life: .6 + Math.random() * .5, r: 5 + Math.random() * 6});
+    }
+  }
+  // 規面落花雨（5 批花以上講讚語的時陣）
+  function shower(k) {
+    if (!gd.cv) return;
+    for (let i = 0; i < k; i++) gd.ps.push({k: 'p', x: Math.random() * innerWidth, y: -20 - Math.random() * 160, vx: (Math.random() - .5) * 60, vy: 90 + Math.random() * 90, g: 30, rot: Math.random() * 6, vr: (Math.random() - .5) * 5, t: 0, life: 3.2 + Math.random(), spr: gd.pet[Math.floor(Math.random() * FLOWERS.length)], seed: Math.random() * 6, s: 1 + Math.random() * .6});
+  }
+  // 謝一批：上尾開的彼批花縮落去，花瓣飄落來
+  function wither() {
+    const now = performance.now(), g = bloom - 1, W = innerWidth, H = innerHeight;
+    for (const f of gd.fl) if (f.g === g && !f.die) {
+      f.die = now;
+      if (gd.cv && Math.random() < .7) { const [x, y] = where(f, W, H); gd.ps.push({k: 'p', w: 1, x, y: y - 6, vx: (Math.random() - .5) * 30, vy: 20 + Math.random() * 20, rot: Math.random() * 6, vr: (Math.random() - .5) * 4, t: 0, life: 1.6, spr: gd.pet[f.c], seed: Math.random() * 6}); }
+    }
+    bloom--;
+  }
+  const backOut = t => 1 + 2.70158 * Math.pow(t - 1, 3) + 1.70158 * Math.pow(t - 1, 2);
+  function star(c, x, y, r) {
+    c.beginPath(); c.moveTo(x, y - r); c.quadraticCurveTo(x, y, x + r, y); c.quadraticCurveTo(x, y, x, y + r);
+    c.quadraticCurveTo(x, y, x - r, y); c.quadraticCurveTo(x, y, x, y - r); c.fill();
+  }
+  function gardenTick(now) {
+    const dt = Math.min(.05, (now - gd.last) / 1000), W = innerWidth, H = innerHeight, c = gd.ctx, live = gd.fl.filter(f => !f.die && now > f.born);
+    gd.last = now;
+    gd.R = hotEl ? rect(hotEl) : null;
+    if (now - gd.seen > 250) { gd.seen = now; gd.rs = hotEl ? busy(hotEl) : []; }
+    // 金光閃爍：佇花邊仔；落花瓣：對頂懸飄落來；灰塵：破敗的時陣四界浮
+    gd.acc += [0, 0, 0, 5, 9, 14][Math.min(5, bloom)] * (wide() ? 1.6 : 1) * dt;
+    for (; gd.acc >= 1; gd.acc--) if (live.length && gd.ps.length < 300) {
+      const f = live[Math.floor(Math.random() * live.length)], [x, y] = where(f, W, H), a = Math.random() * 6.3, d = f.r * (.6 + Math.random() * .9);
+      gd.ps.push({k: 's', x: x + Math.cos(a) * d, y: y + Math.sin(a) * d, t: 0, life: .7 + Math.random() * .5, r: 4 + Math.random() * 5});
+    }
+    if (bloom >= 5 && Math.random() < dt * (wide() ? 4 : 2.2))
+      gd.ps.push({k: 'p', x: Math.random() * W, y: -20, vx: (Math.random() - .3) * 25, vy: 28 + Math.random() * 22, rot: Math.random() * 6, vr: (Math.random() - .5) * 3, t: 0, life: H / 35, spr: gd.pet[Math.floor(Math.random() * FLOWERS.length)], seed: Math.random() * 6});
+    gd.dacc += [0, 3, 5, 8, 11, 14, 17, 20][Math.min(7, ruin)] * (wide() ? 1.6 : 1) * dt;
+    for (; gd.dacc >= 1; gd.dacc--) if (gd.ps.length < 300) {
+      const edge = Math.random() < .5, x = edge ? (Math.random() < .5 ? Math.random() * band() : W - Math.random() * band()) : Math.random() * W;
+      gd.ps.push({k: 'd', x, y: Math.random() * H, vx: (Math.random() - .5) * 8, vy: 4 + Math.random() * 8, t: 0, life: 4 + Math.random() * 3, r: .8 + Math.random() * 1.8});
+    }
+    c.clearRect(0, 0, W, H);
+    gd.fl = gd.fl.filter(f => !f.die || now - f.die < 600);
+    for (const f of gd.fl) {
+      const t = (now - f.born) / 650;
+      if (t <= 0) continue;
+      let s = t < 1 ? backOut(t) : 1, a = 1, dy = 0;
+      if (f.die) { const q = (now - f.die) / 600; s *= 1 - q * .6; a = 1 - q; dy = q * 18; }
+      const [x, y] = where(f, W, H);
+      if (f.e === 'in') { f.v += ((near(x, y, f.r * .75, gd.rs) ? 0 : 1) - f.v) * Math.min(1, dt * 10); s *= f.v; a *= f.v; if (f.v < .02) continue; }
+      const r = f.r * s;
+      c.save(); c.globalAlpha = a; c.translate(x, y + dy); c.rotate(f.rot + Math.sin(now / 900 + f.seed) * .12 - (t < 1 ? (1 - t) * 1.2 : 0));
+      c.drawImage(f.spr, -r, -r, r * 2, r * 2); c.restore();
+    }
+    gd.ps = gd.ps.filter(p => (p.t += dt) < p.life);
+    for (const p of gd.ps) {
       const q = p.t / p.life;
-      p.x += (p.vx + Math.sin(p.seed + p.t * 9) * (p.spark ? 40 : 22)) * dt; p.y += p.vy * dt; p.vx *= .97;
-      const r = p.spark ? p.r : p.r * (1 - q * .65), spr = flame.sprites[p.spark || q < .25 ? 0 : q < .6 ? 1 : 2];
-      c.globalAlpha = Math.max(0, q < .15 ? q / .15 : 1 - (q - .15) / .85) * (p.spark ? 1 : .85);
-      c.drawImage(spr, p.x - r, p.y - r, r * 2, r * 2);
+      if (p.k === 's') {
+        const k = Math.sin(q * Math.PI), r = p.r * k;
+        c.globalCompositeOperation = 'lighter'; c.globalAlpha = k * .6; c.drawImage(gd.glow, p.x - r * 2.2, p.y - r * 2.2, r * 4.4, r * 4.4);
+        c.globalAlpha = k; c.fillStyle = '#fff3c0'; star(c, p.x, p.y, r); c.globalCompositeOperation = 'source-over';
+      } else if (p.k === 'p') {
+        if (p.g) { p.vy += p.g * dt; p.vx *= 1 - dt * 1.6; }
+        p.x += (p.vx + Math.sin(p.seed + p.t * 2.5) * 30) * dt; p.y += p.vy * dt; p.rot += p.vr * dt;
+        const z = p.s || 1;
+        c.globalAlpha = Math.min(1, (1 - q) * 4, p.t * 8) * (near(p.x, p.y, 4, gd.rs) ? .25 : .9);   // 飄過題目字就變淡 c.save(); c.translate(p.x, p.y); c.rotate(p.rot); c.drawImage(p.spr, -7 * z, -9 * z, 14 * z, 18 * z); c.restore();
+      } else {
+        p.x += (p.vx + Math.sin(p.t * 1.3 + p.x) * 4) * dt; p.y += p.vy * dt;
+        c.globalAlpha = Math.sin(q * Math.PI) * .6; c.fillStyle = 'rgb(200,186,160)'; c.beginPath(); c.arc(p.x, p.y, p.r, 0, 7); c.fill();
+      }
     }
     c.globalAlpha = 1;
-    if (heat || flame.ps.length) flame.raf = requestAnimationFrame(flameTick); else flameStop();
+    if (bloom || ruin || gd.fl.length || gd.ps.length) gd.raf = requestAnimationFrame(gardenTick); else gardenStop();
   }
+
+  // 破敗：一款一款疊起來的蜘蛛網、蜘蛛、蟲、破窗（SVG），佮畫面四周的灰色
+  let ruin = 0, ruinEl = null;
+  const stages = [];
+  const CORNER = {tl: '', tr: 'left:auto;right:0;transform:scaleX(-1)', bl: 'top:auto;bottom:0;transform:scaleY(-1)', br: 'left:auto;top:auto;right:0;bottom:0;transform:scale(-1)'};
+  const piece = (html, css) => { const el = document.createElement('div'); el.innerHTML = html; el.style.cssText = css || ''; ruinEl.appendChild(el); return el; };
+  const f1 = v => Math.round(v * 10) / 10;
+  // 蜘蛛網：對角落牽出去的放射線，閣一輪一輪垂垂的絲
+  function web(at) {
+    const S = wide() ? 190 : 96, sp = 7, rings = 6, pt = (i, rr) => { const a = i / (sp - 1) * Math.PI / 2; return [f1(Math.cos(a) * rr), f1(Math.sin(a) * rr)]; };
+    let d = '';
+    for (let i = 0; i < sp; i++) d += `M0 0L${pt(i, S).join(' ')}`;
+    for (let j = 1; j <= rings; j++) {
+      const rr = S * j / (rings + .6);
+      for (let i = 0; i < sp - 1; i++) d += `M${pt(i, rr * (.96 + Math.random() * .08)).join(' ')}Q${pt(i + .5, rr * .84).join(' ')} ${pt(i + 1, rr * (.96 + Math.random() * .08)).join(' ')}`;
+    }
+    return piece(`<svg width="${S}" height="${S}"><path d="${d}" fill="none" stroke="rgba(0,0,0,.35)" stroke-width="2.4" pathLength="1" class="draw"/><path d="${d}" fill="none" stroke="rgba(242,240,234,.85)" stroke-width="1.1" pathLength="1" class="draw"/></svg>`, CORNER[at]);
+  }
+  // 蜘蛛：對頂懸垂一條絲落來，佇遐幌
+  function spider(right) {
+    const S = wide() ? 190 : 96, L = Math.round(50 + Math.random() * 40);
+    const el = piece(`<svg width="26" height="${L + 26}" viewBox="-13 0 26 ${L + 26}"><path d="M0 0V${L}" stroke="rgba(242,240,234,.85)" stroke-width="1"/><g transform="translate(0 ${L + 12})" stroke="#1f1814" stroke-width="1.4" fill="none" stroke-linecap="round"><path d="M-3-2q-6-6-9-2M-3 0q-6-3-10 1M-3 2q-5 2-8 7M-2 4q-3 4-5 8M3-2q6-6 9-2M3 0q6-3 10 1M3 2q5 2 8 7M2 4q3 4 5 8"/><ellipse cy="3" rx="4.5" ry="5.5" fill="#2a201a" stroke="#ddd" stroke-width=".5"/><circle cy="-4" r="3" fill="#2a201a" stroke="none"/></g></svg>`, `left:${Math.round(right ? innerWidth - S * .55 - 26 : S * .55)}px`);
+    el.className = 'fx-spider';
+    if (!still()) el.animate([{transform: `translateY(${-L - 30}px)`}, {transform: 'none'}], {duration: 1400, easing: 'cubic-bezier(.3,1.3,.5,1)'});
+    return el;
+  }
+  // 蟲：沿下底抑是兩爿爬來爬去，行到位會越頭
+  const BUG = '<svg width="22" height="22" viewBox="-11 -11 22 22"><g class="fx-legs" stroke="#3a2a1c" stroke-width="1.3" stroke-linecap="round"><path d="M-3-3l-6-3M3-3l6-3M-4 0h-7M4 0h7M-3 3l-6 4M3 3l6 4"/></g><path d="M-2-8q-3-4-5-3M2-8q3-4 5-3" stroke="#3a2a1c" stroke-width=".9" fill="none"/><ellipse cy="1" rx="5" ry="7" fill="#5a3b22" stroke="rgba(255,255,255,.35)" stroke-width=".6"/><circle cy="-6.5" r="2.8" fill="#3a2a1c"/><path d="M0-5v13" stroke="#2c1e12" stroke-width=".8"/></svg>';
+  function bug(edge) {
+    const el = piece(BUG), W = innerWidth, H = innerHeight, pts = [];
+    for (let i = 0; i < 5; i++) {
+      const u = Math.random();
+      pts.push(edge === 'b' ? [20 + u * (W - 40), H - 10 - Math.random() * 10] : [edge === 'l' ? 9 + Math.random() * 10 : W - 9 - Math.random() * 10, H * (.3 + u * .65)]);
+    }
+    pts.push(pts[0]);
+    const kf = []; let t = 0, prev = null;
+    for (let i = 0; i < pts.length - 1; i++) {
+      const [x1, y1] = pts[i], [x2, y2] = pts[i + 1];
+      let a = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI + 90;
+      if (prev !== null) { while (a - prev > 180) a -= 360; while (a - prev < -180) a += 360; }
+      const pos = `translate(${f1(x1 - 11)}px,${f1(y1 - 11)}px)`;
+      if (prev !== null) kf.push({t, transform: `${pos} rotate(${f1(prev)}deg)`});
+      t += prev === null ? 0 : .35; kf.push({t, transform: `${pos} rotate(${f1(a)}deg)`});
+      t += Math.hypot(x2 - x1, y2 - y1) / 34 + (Math.random() < .3 ? .8 : 0); prev = a;     // 有時仔停一下
+      kf.push({t, transform: `translate(${f1(x2 - 11)}px,${f1(y2 - 11)}px) rotate(${f1(a)}deg)`});
+    }
+    if (still()) { el.style.transform = kf[0].transform; return el; }
+    el.animate(kf.map(k => ({transform: k.transform, offset: k.t / t})), {duration: t * 1000, iterations: Infinity});
+    return el;
+  }
+  // 破窗：對角落附近一點裂開，放射的裂痕加兩輪橫的
+  function crack(at) {
+    const S = wide() ? 270 : 135, cx = S * .26, cy = S * .26, N = 9, ends = [];
+    let d = '';
+    for (let i = 0; i < N; i++) {
+      const a = i / N * Math.PI * 2 + Math.random() * .4, len = S * (.5 + Math.random() * .6), pts = [];
+      d += `M${f1(cx)} ${f1(cy)}`;
+      for (let s = 1; s <= 4; s++) { const rr = len * s / 4, aa = a + (Math.random() - .5) * .35, p = [f1(cx + Math.cos(aa) * rr), f1(cy + Math.sin(aa) * rr)]; d += `L${p.join(' ')}`; pts.push(p); }
+      ends.push(pts);
+    }
+    for (const ring of [0, 1]) for (let i = 0; i < N; i++) if (Math.random() > .25) d += `M${ends[i][ring].join(' ')}L${ends[(i + 1) % N][ring].join(' ')}`;
+    let shards = '';                                          // 玻璃碎片：幾塊三角形淡淡反光
+    for (let i = 0; i < N; i++) if (Math.random() < .5) shards += `<path d="M${f1(cx)} ${f1(cy)}L${ends[i][1].join(' ')}L${ends[(i + 1) % N][1].join(' ')}Z" fill="${i % 2 ? 'rgba(255,255,255,.22)' : 'rgba(40,50,60,.12)'}"/>`;
+    if (!muted) [[3520, 0], [2637, .04], [3136, .09], [2349, .15]].forEach(([f, at]) => tone(f, .12, 'triangle', .07, at));   // 玻璃碎去的細聲
+    return piece(`<svg width="${S}" height="${S}" style="--d:.45s">${shards}<path d="${d}" fill="none" stroke="rgba(30,35,45,.6)" stroke-width="3.2" stroke-linejoin="bevel" pathLength="1" class="draw"/><path d="${d}" fill="none" stroke="#fff" stroke-width="1.3" stroke-linejoin="bevel" pathLength="1" class="draw"/><circle cx="${f1(cx)}" cy="${f1(cy)}" r="7" fill="rgba(255,255,255,.85)" stroke="rgba(30,35,45,.5)"/></svg>`, CORNER[at]);
+  }
+  const STAGES = [
+    () => [web('tl')],                               // 加油！：角落牽蜘蛛網
+    () => [spider(), bug('b'), bug('l')],            // 閣較拚咧！：蜘蛛垂落來、蟲出來爬
+    () => [crack('br'), web('tr')],                  // 想予詳細！：窗仔破去
+    () => [crack('bl'), bug('r'), bug('b')],         // 哪會按呢？：閣破一塊、蟲閣較濟
+    () => [spider(true), bug('l'), bug('r'), bug('b')] // 愛揣老師矣！：蜘蛛、蟲滿四界，灰塵上厚
+  ];
+  function addStage() {
+    if (!ruinEl) { ruinEl = document.createElement('div'); ruinEl.className = 'fx-ruin'; ruinEl.setAttribute('aria-hidden', 'true'); document.body.appendChild(ruinEl); }
+    stages.push(ruin < STAGES.length ? STAGES[ruin]() : ruin < 9 ? [bug(['b', 'l', 'r'][ruin % 3])] : []);
+    ruin++;
+  }
+  function dropStage() {
+    const els = stages.pop() || [];
+    for (const el of els) { el.classList.add('gone'); setTimeout(() => el.remove(), 800); }
+    ruin = Math.max(0, ruin - 1);
+  }
+
   function render() {
-    if (heat > 0 && !heatEl) { heatEl = document.createElement('div'); heatEl.className = 'fx-heat'; heatEl.setAttribute('aria-hidden', 'true'); document.body.appendChild(heatEl); }
-    if (heatEl) {
-      if (heat) flameStart(heatEl);
-      requestAnimationFrame(() => { if (heatEl) heatEl.dataset.heat = heat; });
-      if (!heat) { const h = heatEl; heatEl = null; setTimeout(() => { if (!heatEl) flameStop(); h.remove(); }, 1000); }
+    if (bloom || ruin) gardenStart();
+    if (bloom >= 4 && !shineEl) { shineEl = document.createElement('div'); shineEl.className = 'fx-shine'; shineEl.setAttribute('aria-hidden', 'true'); document.body.appendChild(shineEl); }
+    if (shineEl) {
+      const s = shineEl;
+      if (bloom >= 4) requestAnimationFrame(() => { s.style.opacity = bloom >= 5 ? .9 : .6; });
+      else { shineEl = null; s.style.opacity = 0; setTimeout(() => s.remove(), 1000); }
     }
     if (hotEl) {
-      if (heat) { hotEl.classList.add('fx-hot'); hotEl.dataset.heat = heat; hotEl.style.setProperty('--h', heat); }
-      else { hotEl.classList.remove('fx-hot'); delete hotEl.dataset.heat; hotEl.style.removeProperty('--h'); }
+      if (bloom >= 3) { hotEl.classList.add('fx-glow'); hotEl.style.setProperty('--b', Math.min(4, bloom - 2)); }
+      else { hotEl.classList.remove('fx-glow'); hotEl.style.removeProperty('--b'); }
     }
-    if (heat && scoreEl && !fire) { fire = document.createElement('span'); fire.className = 'fx-fire'; fire.setAttribute('aria-hidden', 'true'); scoreEl.insertAdjacentElement('afterend', fire); }
-    if (fire) {
-      if (!heat) { fire.remove(); fire = null; }
-      else { fire.textContent = '🔥' + (n > 1 ? n : ''); fire.style.fontSize = (.8 + heat * .2) + 'em'; }
+    if (bloom && scoreEl && !badge) { badge = document.createElement('span'); badge.className = 'fx-badge'; badge.setAttribute('aria-hidden', 'true'); scoreEl.insertAdjacentElement('afterend', badge); }
+    if (badge) {
+      if (!bloom) { badge.remove(); badge = null; }
+      else { badge.textContent = '🌸' + (n > 1 ? n : ''); badge.style.fontSize = (.8 + Math.min(5, bloom) * .1) + 'em'; }
     }
-  }
-  function smoke() {
-    if (!fire || still()) return;
-    const r = rect(fire), s = document.createElement('span');
-    s.className = 'fx-smoke'; s.textContent = '💨'; s.style.left = r.left + 'px'; s.style.top = r.top + 'px'; document.body.appendChild(s);
-    s.animate([{opacity: .8, transform: 'translateY(0) scale(.8)'}, {opacity: 0, transform: 'translateY(-30px) scale(1.4)'}], {duration: 800, easing: 'ease-out'}).onfinish = () => s.remove();
+    if (ruinEl) {
+      ruinEl.style.setProperty('--dust', Math.min(1, ruin * .2));
+      if (!ruin) { const r = ruinEl; ruinEl = null; setTimeout(() => r.remove(), 1200); }
+    }
   }
   const combo = {
-    // 新回合（開始、離開、結算）攏愛叫：火全部熄掉
-    reset() { n = 0; heat = 0; render(); hotEl = scoreEl = null; if (toastEl) { toastEl.remove(); toastEl = null; } },
-    // 答對：from＝答對的按鈕抑是題目卡（「+分」對遮飛出去）；to＝分數的數字；pts＝這題得幾分（0 就毋飛）；hot＝發光的題目卡（提示字也貼佇伊頂緣）
+    // 新回合（開始、離開、結算）攏愛叫：花佮破敗攏清掉
+    reset() {
+      while (bloom) wither();
+      while (ruin) dropStage();
+      gd.ps = gd.ps.filter(p => p.w);                         // 灰塵、金光、頂懸落的花瓣隨清掉，只留謝花的花瓣
+      n = m = 0; render(); if (hotEl) hotEl.classList.remove('fx-glow'); hotEl = scoreEl = null;
+      if (toastEl) { toastEl.remove(); toastEl = null; }
+    },
+    // 答對：from＝答對的按鈕抑是題目卡（「+分」對遮飛出去）；to＝分數的數字；pts＝這題得幾分（0 就毋飛）；hot＝發金光的題目卡（讚語也貼佇伊頂緣）
     hit({from, to, pts, hot} = {}) {
-      n++;
+      n++; m = 0;
       if (hot) hotEl = hot;
       if (to) scoreEl = to;
       if (pts) fly(from, to, '+' + pts);
-      const lv = n >= 15 ? 3 : n >= 10 ? 2 : n >= 5 ? 1 : 0;
-      if (lv > heat) { heat = lv; flame.burst = 90 + heat * 30; }     // 升級的時陣火一下衝懸
+      if (ruin) dropStage();                                   // 答對就清掉一款破敗
+      const line = PRAISE[n] || (n > 10 && n % 5 === 0 ? PRAISE[10] : '');
+      if (line) { bloom++; gardenStart(); addGroup(); }
       render();
-      if (heat && !muted) tone(2637, .28, 'sine', .1, .2);      // 著火的時陣，答對音效尾加一聲閃閃的高音
-      if (LINES[n]) toast(LINES[n], n < 5, hot || from);
-      if (n === 10 || n === 20) loadConfetti().then(c => { if (still()) return; const r = from ? rect(from) : {left: 0, top: 0, width: innerWidth, height: innerHeight}; c({particleCount: 60, spread: 70, startVelocity: 35, origin: {x: (r.left + r.width / 2) / innerWidth, y: (r.top + r.height / 2) / innerHeight}}); }).catch(() => {});
+      if (line) {
+        toast(line, 'gold', hot || from);
+        if (toastEl) { const r = rect(toastEl); burst(r.left + r.width / 2, r.top + r.height / 2, 14 + Math.min(bloom, 6) * 8); }
+        if (bloom >= 5) shower(wide() ? 90 : 50);
+        if (!muted) { tone(2637, .28, 'sine', .1, .2); if (bloom >= 4) tone(3136, .3, 'sine', .08, .3); }   // 讚語的時陣，答對音效尾加閃閃的高音
+      }
+      if (n === 10 || n === 20) loadConfetti().then(c => { if (still()) return; const r = from ? rect(from) : {left: 0, top: 0, width: innerWidth, height: innerHeight}; c({particleCount: 60, spread: 70, startVelocity: 35, colors: ['#ffd85a', '#f9b4c6', '#fff8ec', '#ff93a8', '#f2c14e'], origin: {x: (r.left + r.width / 2) / innerWidth, y: (r.top + r.height / 2) / innerHeight}}); }).catch(() => {});
       return n;
     },
-    // 答錯：連對中斷，火降一級（毋扣分、毋罵人）
-    miss() { n = 0; if (heat) { smoke(); heat--; } render(); },
+    // 答錯：講一句加油語、加一款破敗，花謝一批（毋扣分）；at＝加油語貼佇佗一塊（無就用上尾答對的題目卡）
+    miss({at} = {}) {
+      n = 0; m++;
+      if (bloom) wither();
+      addStage(); render();
+      toast(CHEER[Math.min(m, CHEER.length) - 1], 'dull', at || hotEl);
+    },
     get n() { return n; },
-    get heat() { return heat; }
+    get m() { return m; },
+    get bloom() { return bloom; },
+    get ruin() { return ruin; }
   };
 
   window.FX = { ok, bad, attachToggle, verdict, cheer, record, finale, combo, muted: () => muted };
