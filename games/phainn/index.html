@@ -269,11 +269,11 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offse
   <div class="big" id="oScore">0<small> / 100</small></div>
   <div class="verdict" id="oVerdict"></div>
   <div class="review" id="oReview"></div>
-  <div class="btns"><button class="btn retry" id="retry" hidden></button><button class="btn" id="again">閣耍一擺</button><button class="btn ghost" id="home2">回首頁</button></div>
+  <div class="btns"><button class="btn retry" id="retry" hidden></button><button class="btn" id="again">閣耍一擺</button><button class="btn ghost" id="home2">轉去首頁</button></div>
 </section>
 
 <section class="screen" id="dict" hidden>
-  <div class="hud"><button class="back" id="dback">‹ 回首頁</button><span class="qn" id="dn"></span></div>
+  <div class="hud"><button class="back" id="dback">‹ 轉去首頁</button><span class="qn" id="dn"></span></div>
   <input class="search" id="q" type="search" placeholder="揣詞：漢字、台羅抑是意思" aria-label="搜尋詞">
   <div class="dict" id="dlist"></div>
 </section>
@@ -437,7 +437,7 @@ function finish() {
   const v = FX.verdict(s100, 100, retryMode || !prev ? null : prev.s);
   $('#oVerdict').innerHTML = `${esc(v.msg)}${v.diff ? `<span>${esc(v.diff)}</span>` : ''}`;
   $('#oReview').innerHTML = wrong.length ? '<h3>答毋著的</h3>' + wrong.map(q => `<div><span><b>${esc(q.w.han)}</b>　<span class="lo">${esc(q.w.lo)}</span></span><span class="d">${esc(short(q.w.def))}</span></div>`).join('') : '<h3>攏答著矣</h3>';
-  const rb = $('#retry'); rb.hidden = !wrong.length; rb.textContent = `再練錯的這 ${wrong.length} 題`;
+  const rb = $('#retry'); rb.hidden = !wrong.length; rb.textContent = `閣練錯的這 ${wrong.length} 題`;
   $('#bar').style.width = '100%';
   show('over');
   if (!retryMode && s100 >= 80) setTimeout(() => goldPaper(s100 === 100 ? 34 : 20), 250);

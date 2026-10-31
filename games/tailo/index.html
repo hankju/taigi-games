@@ -265,11 +265,11 @@ body.playing .tree{opacity:.3}
   <div class="verdict" id="oVerdict"></div>
   <div class="today" id="oToday"></div>
   <div class="review" id="oReview"></div>
-  <div class="btns"><button class="retry" id="retry" hidden></button><button class="again" id="again">閣練一擺</button><button class="home" id="home2">回封面</button></div>
+  <div class="btns"><button class="retry" id="retry" hidden></button><button class="again" id="again">閣練一擺</button><button class="home" id="home2">轉去封面</button></div>
 </section>
 
 <section class="screen" id="hist" hidden>
-  <div class="hud"><button class="back" id="histBack">‹ 回封面</button><span class="ttl">我的成績</span></div>
+  <div class="hud"><button class="back" id="histBack">‹ 轉去封面</button><span class="ttl">我的成績</span></div>
   <p class="hcap">大字是今仔日的上懸分，上課登記用這个</p>
   <div class="bests" id="hBest"></div>
   <div class="htabs"><span class="seg" id="hTabs" role="group" aria-label="篩選模式"></span></div>
@@ -461,16 +461,16 @@ function finish() {
   if (audio) audio.pause(); FX.combo.reset();
   $('#bar').style.width = '100%';
   const total = qs.length * PT;
-  // 評語、跟上一擺比（錯題再練不記成績、不比較）
+  // 評語、跟頂一擺比（錯題再練不記成績、不比較）
   const prevs = hist().filter(r => r.m === mode), prev = prevs.length ? prevs[prevs.length - 1].s : null;
   if (!retry) { FX.record(prevs, score, total); addHist(mode, score); }
   const t = today(mode), vd = FX.verdict(score, total, retry ? null : prev);
   $('#oTitle').textContent = retry ? '錯題練習完成！' : MODES[mode] + '練習完成！';
   $('#oVerdict').innerHTML = `${vd.msg}${vd.diff ? `<small class="${vd.up ? 'up' : ''}">${vd.diff}</small>` : ''}`;
-  // 有錯題就出現「再練錯的這幾題」，一直練到攏著
+  // 有錯題就出現「閣練錯的這幾題」，一直練到攏著
   const rb = $('#retry');
   rb.hidden = !wrong.length;
-  rb.textContent = `再練錯的這 ${wrong.length} 題`;
+  rb.textContent = `閣練錯的這 ${wrong.length} 題`;
   rb.onclick = () => start(mode, wrong.map(r => r.w));
   // 分數從 0 跳到得分，圓環跟著填滿
   const still = matchMedia('(prefers-reduced-motion:reduce)').matches;

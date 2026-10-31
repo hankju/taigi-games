@@ -68,14 +68,14 @@
     label();
   }
 
-  // 結算評語：依得分比例給一句鼓勵；prev 是同模式上一擺的分數（沒有就不比較）
+  // 結算評語：依得分比例給一句鼓勵；prev 是同模式頂一擺的分數（沒有就不比較）
   function verdict(score, total, prev) {
     const r = total ? score / total : 0;
     const msg = r >= 1 ? '攏著！真勥！' : r >= .8 ? '真讚，閣較細膩就滿分矣！' : r >= .6 ? '袂䆀，閣拍拚！' : '莫失志，閣試一擺！';
     let diff = '';
     if (prev != null) {
       const d = score - prev;
-      diff = d > 0 ? `比上一擺加 ${d} 分 ⬆` : d < 0 ? `比上一擺少 ${-d} 分` : '佮上一擺仝分';
+      diff = d > 0 ? `比頂一擺加 ${d} 分 ⬆` : d < 0 ? `比頂一擺少 ${-d} 分` : '佮頂一擺仝分';
     }
     return {msg, diff, up: prev != null && score > prev};
   }
