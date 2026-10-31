@@ -1,0 +1,22 @@
+Copyright (c) 2026 hankju. All rights reserved.
+
+本專案（台語小遊戲合集）的程式碼、介面設計、遊戲設計、題目編排與插畫，
+著作權屬於 hankju 所有，保留一切權利。
+
+- 歡迎透過網站 https://hankju.github.io/taigi-games/ 免費遊玩、在課堂上使用。
+- 未經書面同意，不得複製、修改、散布、轉載、販售本專案的全部或一部分，
+  也不得用於商業用途或製成其他產品、教材。
+- 程式碼放在 GitHub 上可以被看見，不代表授權他人使用。
+
+以下內容不屬於上述範圍，依各自的原始授權：
+
+- 教育部《臺灣台語常用詞辭典》的詞條、台羅、釋義、例句與錄音
+  （games/yeshi/audio/、games/tailo/audio/、games/phainn/audio/ 內的辭典錄音）：
+  CC BY-ND 3.0 TW，來源 https://sutian.moe.edu.tw/
+- games/tailo/audio/ 內 t_ 開頭的錄音：錄音者（任課老師）所有。
+- vendor/qrcode.js：qrcode-generator，MIT 授權，Copyright (c) 2009 Kazuhiko Arase。
+- .claude/skills/frontend-design：anthropics/skills，Apache 2.0。
+- 網頁字型由 Google Fonts 載入（LXGW WenKai TC、Noto Sans、Noto Sans TC），
+  依 SIL Open Font License。
+
+授權洽詢：請透過 GitHub（https://github.com/hankju）聯絡。
