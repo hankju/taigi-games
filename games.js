@@ -31,7 +31,7 @@ window.GAMES = [
     icon: '🌸',
     name: '台羅拼音練習',
     lo: 'Tâi-lô phing-im liān-si̍p',
-    desc: '聽錄音揣聲母、按字母拼韻母、看漢字選聲調，一回合 20 題。',
+    desc: '聽錄音揣聲母、揤字母拼韻母、看漢字選聲調，一回合 20 題。',
     tags: ['台羅拼音', '聲調', '辭典錄音'],
     color: '#2f7f9a',
     accent: '#ffe7a3',

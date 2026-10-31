@@ -326,7 +326,7 @@ function renderHome() {
     // 今仔日最高（上課登記用，過半暝自動重算）佮歷史最高
     const xs = hist().filter(r => r.m === m), d0 = new Date().setHours(0, 0, 0, 0), td = xs.filter(r => r.t >= d0);
     const max = a => Math.max(...a.map(r => r.s));
-    $(`[data-best="${m}"]`).innerHTML = td.length ? `今仔日 ${max(td)}<small>最高 ${max(xs)}</small>` : xs.length ? `<small>最高 ${max(xs)}</small>` : '';
+    $(`[data-best="${m}"]`).innerHTML = td.length ? `今仔日 ${max(td)}<small>上懸 ${max(xs)}</small>` : xs.length ? `<small>上懸 ${max(xs)}</small>` : '';
   }
 }
 

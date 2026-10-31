@@ -230,8 +230,8 @@ body.playing .tree{opacity:.3}
   </div>
   <div class="scope" role="group" aria-label="出題範圍">範圍<span class="seg"><button data-scope="l1">第一課</button><button data-scope="all">全部</button></span><span id="scopeN"></span></div>
   <div class="modes">
-    <button class="mode" data-m="ini"><span class="num">一</span><span><b>聲母</b><span class="ex">只考聲母　例：<span class="lo"><mark>tsh</mark>ia-<mark>l</mark>ōo</span></span><span class="st" data-st="ini"></span></span></button>
-    <button class="mode" data-m="fin"><span class="num">二</span><span><b>韻母</b><span class="ex">按字母拼出韻母　例：<span class="lo">tsh<mark>ia</mark>-l<mark>oo</mark></span></span><span class="st" data-st="fin"></span></span></button>
+    <button class="mode" data-m="ini"><span class="num">一</span><span><b>聲母</b><span class="ex">干焦考聲母　例：<span class="lo"><mark>tsh</mark>ia-<mark>l</mark>ōo</span></span><span class="st" data-st="ini"></span></span></button>
+    <button class="mode" data-m="fin"><span class="num">二</span><span><b>韻母</b><span class="ex">揤字母拼出韻母　例：<span class="lo">tsh<mark>ia</mark>-l<mark>oo</mark></span></span><span class="st" data-st="fin"></span></span></button>
     <button class="mode" data-m="tone"><span class="num">三</span><span><b>聲調</b><span class="ex">看漢字，選最後一字的聲調　例：車<mark>路</mark></span><span class="st" data-st="tone"></span></span></button>
   </div>
   <button class="histbtn" id="toHist">🏆 我的成績</button>
@@ -263,7 +263,7 @@ body.playing .tree{opacity:.3}
 
 <section class="screen" id="hist" hidden>
   <div class="hud"><button class="back" id="histBack">‹ 回封面</button><span class="ttl">我的成績</span></div>
-  <p class="hcap">大字是今仔日的最高分，上課登記用這个</p>
+  <p class="hcap">大字是今仔日的上懸分，上課登記用這个</p>
   <div class="bests" id="hBest"></div>
   <div class="htabs"><span class="seg" id="hTabs" role="group" aria-label="篩選模式"></span></div>
   <div class="hlist" id="hList"></div>
@@ -319,7 +319,7 @@ function renderHome() {
   renderScope();
   for (const m in MODES) {
     const t = today(m);
-    document.querySelector(`[data-st="${m}"]`).innerHTML = t ? `今仔日最高 <b>${t.best}</b>・平均 ${t.avg}・練 ${t.n} 擺` : '今仔日猶未練';
+    document.querySelector(`[data-st="${m}"]`).innerHTML = t ? `今仔日上懸 <b>${t.best}</b>・平均 ${t.avg}・練 ${t.n} 擺` : '今仔日猶未練';
   }
 }
 
@@ -349,7 +349,7 @@ function next() {
   $('#kind').textContent = {ini: '這个詞的聲母是？', fin: '拼出這个詞的韻母', tone: '標色的字是第幾調？'}[mode];
   const chars = [...w.han];
   $('#han').innerHTML = mode === 'tone' ? esc(chars.slice(0, -1).join('')) + `<mark>${esc(chars[chars.length - 1])}</mark>` : esc(w.han);
-  $('#hint').textContent = {ini: '揀聲母，會自動跳下一格；無聲母揀「無」', fin: '字母會使重複按，拼好按「下一格」', tone: '聽錄音，揀 1～8 調（無第 6 調）'}[mode];
+  $('#hint').textContent = {ini: '揀聲母，會自動跳下一格；無聲母揀「無」', fin: '字母會使重複揤，拼好揤「下一格」', tone: '聽錄音，揀 1～8 調（無第 6 調）'}[mode];
   $('#fb').hidden = true; $('#pad').hidden = false;
   $('.card').classList.remove('ok', 'no'); const st = $('.card .stamp'); if (st) st.remove();
   drawTpl(); drawPad();
@@ -469,7 +469,7 @@ function finish() {
   const setScore = v => { $('#oScore').innerHTML = `${v}<small>滿分 ${total}</small>`; $('#oRing').style.setProperty('--p', v / total * 100); };
   if (still) setScore(score);
   else { const t0 = performance.now(); const tick = now => { const k = Math.min(1, (now - t0) / 800); setScore(Math.round(score * (1 - Math.pow(1 - k, 3)))); if (k < 1) requestAnimationFrame(tick); }; requestAnimationFrame(tick); petalShower(score === total ? 40 : 20); }
-  $('#oToday').textContent = t ? `今日最高 ${t.best} 分・平均 ${t.avg} 分（練 ${t.n} 擺）` : '';
+  $('#oToday').textContent = t ? `今仔日上懸 ${t.best} 分・平均 ${t.avg} 分（練 ${t.n} 擺）` : '';
   $('#oReview').innerHTML = wrong.length
     ? '<h3>這幾題閣練一下</h3>' + wrong.map(r => `<div><span>${esc(r.han)}　<span class="lo">${esc(r.lo)}</span></span><span class="no">你：${esc(r.yours)}</span></div>`).join('')
     : '';
@@ -493,7 +493,7 @@ function renderHist() {
   const h = hist(), d0 = day0(Date.now()), max = a => Math.max(...a.map(r => r.s));
   $('#hBest').innerHTML = Object.keys(MODES).map(m => {
     const xs = h.filter(r => r.m === m), td = xs.filter(r => r.t >= d0);
-    return `<div><small>${MODES[m]}</small><b>${td.length ? max(td) : '—'}</b><small>歷史最高 ${xs.length ? max(xs) : '—'}</small></div>`;
+    return `<div><small>${MODES[m]}</small><b>${td.length ? max(td) : '—'}</b><small>歷史上懸 ${xs.length ? max(xs) : '—'}</small></div>`;
   }).join('');
   $('#hTabs').innerHTML = [['all', '全部'], ...Object.entries(MODES)].map(([k, n]) => `<button data-f="${k}" aria-pressed="${hf === k}">${n}</button>`).join('');
   $('#hTabs').querySelectorAll('button').forEach(b => b.onclick = () => { hf = b.dataset.f; renderHist(); });

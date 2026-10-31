@@ -315,7 +315,7 @@ $('#list').innerHTML = GAMES.map((g, i) => {
     ${g.warn ? `<p class="warn"><span aria-hidden="true">⚠</span>${esc(g.warn)}</p>` : ''}
     <p>${esc(g.desc)}</p>
     ${g.tags && g.tags.length ? `<ul class="chips">${g.tags.map(t => `<li>${esc(t)}</li>`).join('')}</ul>` : ''}
-    <div class="foot"><span class="stat">${!st ? '猶未耍過，緊來試看覓！' : st.today !== null ? `🏆 今仔日最高 <b>${st.today}</b> 分・歷史最高 ${st.best}` : `今仔日猶未耍・歷史最高 ${st.best} 分`}</span><span class="play" aria-hidden="true">開始 <i>›</i></span></div>
+    <div class="foot"><span class="stat">${!st ? '猶未耍過，緊來試看覓！' : st.today !== null ? `🏆 今仔日上懸 <b>${st.today}</b> 分・歷史上懸 ${st.best}` : `今仔日猶未耍・歷史上懸 ${st.best} 分`}</span><span class="play" aria-hidden="true">開始 <i>›</i></span></div>
   </article>`;
 }).join('');
 
@@ -424,7 +424,7 @@ function renderQr() {
   dlgUrl = dlgGame && classQr ? baseUrl + '?class=1' : baseUrl;
   $('#dlgMode').hidden = $('#dlgNote').hidden = !dlgGame;
   for (const b of $('#dlgMode').querySelectorAll('button')) b.setAttribute('aria-pressed', (b.dataset.cls === '1') === classQr);
-  $('#dlgNote').textContent = classQr ? '學生掃這个進去，看袂著「全部遊戲」按鈕，只會當耍這个遊戲' : '學生會當轉去大廳耍別的遊戲';
+  $('#dlgNote').textContent = classQr ? '學生掃這个進去，看袂著「全部遊戲」按鈕，干焦會當耍這个遊戲' : '學生會當轉去大廳耍別的遊戲';
   $('#dlgCode').innerHTML = qrSvg(dlgUrl, $('#dlgTitle').textContent + ' 的 QR Code');
   $('#dlgUrl').textContent = dlgUrl;
   $('#dlgCopy').textContent = '複製網址';

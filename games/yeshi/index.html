@@ -219,7 +219,7 @@ button:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
 
 <section class="screen" id="hist" hidden>
   <div class="hud"><button class="back" data-go="home">‹ 回首頁</button></div>
-  <p class="hcap">大字是今仔日的最高分，上課登記用這个</p>
+  <p class="hcap">大字是今仔日的上懸分，上課登記用這个</p>
   <div class="bests" id="hBest"></div>
   <div class="tabs" id="hTabs"></div>
   <div class="list" id="hList"></div>
@@ -328,7 +328,7 @@ function go(id) {
   if (stop) { stop(); stop = null; }
   if (id === 'm1' || id === 'm2' || id === 'm3') { lastMode = id; show('play'); start(id); return; }
   show(id);
-  if (id === 'home') document.querySelectorAll('[data-best]').forEach(el => { const m = el.dataset.best, b = store.best(m), t = store.today(m); el.innerHTML = t !== null ? `今仔日 ${t}<small>最高 ${b}</small>` : b ? `<small>最高 ${b}</small>` : ''; });
+  if (id === 'home') document.querySelectorAll('[data-best]').forEach(el => { const m = el.dataset.best, b = store.best(m), t = store.today(m); el.innerHTML = t !== null ? `今仔日 ${t}<small>上懸 ${b}</small>` : b ? `<small>上懸 ${b}</small>` : ''; });
   if (id === 'hist') renderHist();
   if (id === 'list') renderList();
 }
@@ -423,7 +423,7 @@ function start(mode, given) {
     const setScore = v => { $('#oScore').innerHTML = `${v}<small>滿分 ${total}</small>`; $('#oRing').style.setProperty('--p', v / total * 100); };
     if (still) setScore(score);
     else { const t0 = performance.now(); const tick = now => { const k = Math.min(1, (now - t0) / 800); setScore(Math.round(score * (1 - Math.pow(1 - k, 3)))); if (k < 1) requestAnimationFrame(tick); }; requestAnimationFrame(tick); skyLanterns(score >= total * .8 ? 10 : 5); }
-    $('#oBest').textContent = retry ? '' : score > best && score > 0 ? '🎉 新紀錄！' : `${NAME[mode]} 最高分：${Math.max(best, score)}`;
+    $('#oBest').textContent = retry ? '' : score > best && score > 0 ? '🎉 新紀錄！' : `${NAME[mode]} 上懸分：${Math.max(best, score)}`;
     $('#oReview').innerHTML = log.map(r => `<div class="${r.ok ? '' : 'x'}">${r.ok ? (r.tries ? '△' : '✔') : '✘'} ${esc(r.q.w.han)}　${esc(r.q.w.lo)}　${esc(short(r.q.w.def))}</div>`).join('');
     show('over');
   }
@@ -447,7 +447,7 @@ function fmtDay(d, d0) { const x = new Date(d); return `${d === d0 ? '今仔日�
 function fmt(t) { const d = new Date(t), p = n => String(n).padStart(2, '0'); return `${p(d.getHours())}:${p(d.getMinutes())}`; }
 function renderHist() {
   const h = store.hist(), d0 = new Date().setHours(0, 0, 0, 0);
-  $('#hBest').innerHTML = ['m1', 'm2', 'm3'].map(m => { const t = store.today(m), b = store.best(m); return `<div><small>${NAME[m]}</small><b>${t !== null ? t : '—'}</b><small>歷史最高 ${h.some(r => r.m === m) ? b : '—'}</small></div>`; }).join('');
+  $('#hBest').innerHTML = ['m1', 'm2', 'm3'].map(m => { const t = store.today(m), b = store.best(m); return `<div><small>${NAME[m]}</small><b>${t !== null ? t : '—'}</b><small>歷史上懸 ${h.some(r => r.m === m) ? b : '—'}</small></div>`; }).join('');
   $('#hTabs').innerHTML = [['all', '全部'], ['m1', '一'], ['m2', '二'], ['m3', '三']].map(([k, n]) => `<button data-f="${k}" aria-pressed="${hf === k}">${n}</button>`).join('');
   $('#hTabs').querySelectorAll('button').forEach(b => b.onclick = () => { hf = b.dataset.f; renderHist(); });
   const best = {}, no = {};
