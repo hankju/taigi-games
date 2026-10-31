@@ -26,6 +26,7 @@ index.html        遊戲大廳（照 games.js 自動列出卡片）
 games.js          遊戲清單
 music.js          大廳與各遊戲的配樂（Web Audio 合成，播錄音時自動壓低）
 fx.js             遊戲共用回饋：答對／答錯音效與震動（FX.ok／FX.bad）、音效開關、結算評語（FX.verdict）
+img/              大廳插畫：hero.webp（手機主視覺）、hero_w.webp（電腦主視覺）、card_<id>.webp（遊戲卡片封面，800×400）
 vendor/qrcode.js  QR Code 產生器（qrcode-generator 1.4.4，MIT 授權，Kazuhiko Arase）
 games/<id>/       每個遊戲一個資料夾，裡面的 index.html 可以單獨打開
 ```
@@ -47,6 +48,8 @@ games/<id>/       每個遊戲一個資料夾，裡面的 index.html 可以單�
 台羅拼音練習（`games/tailo/`）題庫裡「教育部辭典」詞條的台羅與 `games/tailo/audio/` 內的錄音，同樣取自該辭典（CC BY-ND 3.0 TW），錄音為原檔、只改檔名；`t_` 開頭的錄音是任課老師自己錄的。
 
 歹話毋通講（`games/phainn/`）的詞條、台羅、釋義、例句與 `games/phainn/audio/` 內的錄音，全部取自該辭典（CC BY-ND 3.0 TW），釋義與例句照原文、錄音為原檔。另有 14 個「組合詞」（如姦恁娘、破媌、駛恁娘、看啥潲、揬𡳞）不是辭典詞條，是用辭典已有的字詞組合成的常用罵人話，解釋為自行撰寫的初稿，選詞與說明參考維基百科〈臺灣閩南語髒話〉條目（https://zh.wikipedia.org/zh-tw/臺灣閩南語髒話，CC BY-SA 4.0，僅作參考、未轉載條目文字）；「白痴」辭典只收台羅與錄音、未附釋義，解釋亦為自行撰寫；錄音是各組成字詞的辭典原檔，分開播放、不接成一句（連讀會變調）。
+
+大廳插畫（`img/`）是用 AI（OpenAI 的圖像生成）畫的，跟介紹影片同一套畫風。
 
 ## 台羅拼音練習：加新詞
 
