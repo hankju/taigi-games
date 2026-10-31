@@ -315,7 +315,7 @@ const center=el=>{const r=el.getBoundingClientRect();return[r.left+r.width/2,r.t
 
 // 畫面切換
 let cur='home',stopFn=null,lastMode=null;
-function go(id){if(stopFn){stopFn();stopFn=null}
+function go(id){if(stopFn){stopFn();stopFn=null}FX.combo.reset();
   clearTimeout(toastT);$('#toast').classList.add('hide');
   document.querySelectorAll('.screen').forEach(s=>s.hidden=s.id!==id);cur=id;
   if(id==='home')showBest();
@@ -329,9 +329,9 @@ document.querySelectorAll('.back').forEach(b=>b.onclick=()=>go('home'));
 $('#oAgain').onclick=()=>go(lastMode);
 $('#oHome').onclick=()=>go('home');
 const TITLE={float:'好話飄飄',quiz:'搶答放炮',memo:'翻紅包'};
-function gameOver(mode,score,title){if(stopFn){stopFn();stopFn=null}
+function gameOver(mode,score,title){if(stopFn){stopFn();stopFn=null}FX.combo.reset();
   const hs=getHist().filter(r=>r.m===mode),prev=hs.length?hs[hs.length-1].s:null;
-  const best=store.get(mode),isNew=score>best;if(isNew)store.set(mode,score);addHist(mode,score);
+  const best=store.get(mode),isNew=score>best;if(isNew)store.set(mode,score);FX.record(hs,score,100);addHist(mode,score);
   const vd=FX.verdict(score,100,prev);$('#oVerdict').innerHTML=`${vd.msg}${vd.diff?`<small class="${vd.up?'up':''}">${vd.diff}</small>`:''}`;
   document.querySelectorAll('.screen').forEach(s=>s.hidden=s.id!=='over');
   $('#oTitle').textContent=title;
@@ -361,8 +361,8 @@ function startFloat(){
   function remove(t){t.el.remove();tokens=tokens.filter(x=>x!==t)}
   function hit(t){if(!alive||t.dead)return;const[x,y]=center(t.el);
     if(t.it.g===P.g){t.dead=true;combo++;const pts=7+Math.max(0,Math.min(3,Math.round(3-(clock-promptAt-4)*.5)));score+=pts;hits++;sc.textContent=score;
-      sfx.ok();burst(x,y,pts);toast(`${hl(t.it.u)}，${hl(P.l)}　<small>${rhymeText(t.it,P)}</small>`+(combo>1?`　🔥${combo} 連擊`:''));remove(t);if(hits>=GOAL){alive=false;setTimeout(()=>gameOver('float',score,'10 個全點中！'),500);return}newPrompt()}
-    else{combo=0;time=Math.max(0,time-3);sfx.bad();t.el.classList.remove('wrong');void t.el.offsetWidth;t.el.classList.add('wrong');toast('押無著！扣 3 秒')}}
+      sfx.ok();burst(x,y,pts);FX.combo.hit({to:sc,hot:$('#fPrompt')});toast(`${hl(t.it.u)}，${hl(P.l)}　<small>${rhymeText(t.it,P)}</small>`+(combo>1?`　🔥${combo} 連擊`:''));remove(t);if(hits>=GOAL){alive=false;setTimeout(()=>gameOver('float',score,'10 個全點中！'),500);return}newPrompt()}
+    else{combo=0;FX.combo.miss();time=Math.max(0,time-3);sfx.bad();t.el.classList.remove('wrong');void t.el.offsetWidth;t.el.classList.add('wrong');toast('押無著！扣 3 秒')}}
   function loop(now){if(!alive)return;const dt=Math.min(.05,(now-last)/1000);last=now;clock+=dt;time-=dt;
     if(time<=0){alive=false;gameOver('float',score,'時間到！');return}
     tm.textContent=Math.ceil(time);setBar(scr,time/T);
@@ -393,8 +393,8 @@ function startQuiz(){
     btns.forEach(x=>{if(x._o.g===target.g)x.classList.add('right');else if(x!==b)x.classList.add('no')});
     const good=!timeout&&b&&b._o.g===target.g,pr=$('#quiz .prompt');pr.classList.add(good?'ok':'no');
     pr.insertAdjacentHTML('beforeend',`<span class="stamp ${good?'ok':'no'}" aria-hidden="true">${good?'著':'毋著'}</span>`);
-    if(!timeout&&b._o.g===target.g){combo++;const left=Math.max(0,LIM-(performance.now()-t0)/1000);const pts=7+Math.round(left/LIM*3);score+=pts;sc.textContent=score;cb.textContent=combo;sfx.ok();const[x,y]=center(b);burst(x,y,pts)}
-    else{combo=0;cb.textContent=0;if(b)b.classList.add('bad');sfx.bad();toast(timeout?'時間到！':'押無著！')}
+    if(!timeout&&b._o.g===target.g){combo++;const left=Math.max(0,LIM-(performance.now()-t0)/1000);const pts=7+Math.round(left/LIM*3);score+=pts;sc.textContent=score;cb.textContent=combo;sfx.ok();const[x,y]=center(b);burst(x,y,pts);FX.combo.hit({to:sc,hot:pr})}
+    else{combo=0;FX.combo.miss();cb.textContent=0;if(b)b.classList.add('bad');sfx.bad();toast(timeout?'時間到！':'押無著！')}
     // 押韻說明直接貼在正確選項上，停 1.6 秒（答錯 2 秒）讓學生看清楚
     const rt=btns.find(x=>x._o===target);if(rt)rt.insertAdjacentHTML('beforeend',`<span class="rh">${rhymeText(target,target)}</span>`);
     setTimeout(next,timeout||!(b&&b._o.g===target.g)?2000:1600)}
@@ -415,10 +415,10 @@ function startMemo(){
     if(open.length<2)return;const[a,c]=open;open=[];
     const ok=a._c.s!==c._c.s&&a._c.d.g===c._c.d.g;
     if(ok){combo++;const pts=7;score+=pts;sc.textContent=score;matched++;
-      setTimeout(()=>{a.classList.add('done');c.classList.add('done');sfx.ok();const[x,y]=center(c);burst(x,y,pts);
+      setTimeout(()=>{a.classList.add('done');c.classList.add('done');sfx.ok();const[x,y]=center(c);burst(x,y,pts);FX.combo.hit({to:sc,hot:grid});
         const up=a._c.s==='u'?a._c.d:c._c.d,lo=a._c.s==='l'?a._c.d:c._c.d;toast(rhymeText(up,lo))},250);
       if(matched===4){busy=true;setTimeout(()=>{busy=false;if(round>=ROUNDS){const bonus=Math.round(Math.min(1,Math.max(0,time)/(T*.5))*16);score+=bonus;gameOver('memo',score,`全部翻完！時間獎勵 +${bonus}`)}else{toast('過關！下一關');deal()}},900)}}
-    else{combo=0;busy=true;setTimeout(()=>{sfx.bad();a.classList.remove('open');c.classList.remove('open');busy=false},750)}}
+    else{combo=0;FX.combo.miss();busy=true;setTimeout(()=>{sfx.bad();a.classList.remove('open');c.classList.remove('open');busy=false},750)}}
   function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;time-=dt;
     if(time<=0){alive=false;gameOver('memo',score,'時間到！');return}
     tm.textContent=Math.ceil(time);setBar(scr,time/T);raf=requestAnimationFrame(loop)}

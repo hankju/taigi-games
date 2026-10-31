@@ -3,7 +3,7 @@
 - 純靜態網站，部署在 GitHub Pages，沒有建置步驟、沒有 npm。
 - 每個遊戲是 `games/<id>/index.html` 單一檔案（CSS、JS 寫在檔案裡），素材放同一個資料夾，路徑一律用相對路徑。
 - 新增遊戲時一定要：在根目錄 `games.js` 加一筆；遊戲首頁放 `<a class="hublink" href="../../">‹ 全部遊戲</a>`，並在 `<head>` 複製其他遊戲的「課堂專用」片段（網址有 `?class=1` 時給 `<html>` 加 `class-mode`，藏起 `.hublink`），大廳的課堂專用 QR Code 才有效；`localStorage` key 用遊戲專屬前綴（已用：`ys_`＝yeshi、`hy2_`＝newyear、`tl_`＝tailo）；成績紀錄存成 `<前綴>hist`＝`[{m, s, t}]`（分數滿分 100），並填進 `games.js` 的 `hist`，大廳才會顯示最高分。老師用「今天最高分」登記上課成績，所以大廳與各遊戲的成績頁都以今天（本機時間 0 點起）的最高分為主、歷史最高為輔；新遊戲的成績頁照這個做（照日期分段、🏆 標今天最高）。
-- 新遊戲的回饋請用共用的 `fx.js`：答對 `FX.ok()`、答錯 `FX.bad()`、封面放「🔊 音效」開關 `FX.attachToggle(按鈕)`、結算評語 `FX.verdict(得分, 滿分, 上一擺分數)`；配樂用 `music.js` 的 `HubMusic.attachToggle(按鈕, '曲名')`。結算若有錯題，提供「再練錯的這幾題」（不記成績）。
+- 新遊戲的回饋請用共用的 `fx.js`：答對 `FX.ok()`、答錯 `FX.bad()`、封面放「🔊 音效」開關 `FX.attachToggle(按鈕)`、結算評語 `FX.verdict(得分, 滿分, 上一擺分數)`、破紀錄彩帶 `FX.record(同模式這回合以前的紀錄, 得分, 滿分)`（存成績前呼叫，錯題再練不要呼叫；照得分比例放結算特效：60% 起中央噴彩帶、80% 起兩邊噴、滿分加煙火星星；破今天最高或歷史最高再加一級並跳「新紀錄！」）、連續答對 `FX.combo`（開始、離開、結算叫 `reset()`；答對 `hit({from: 答對的按鈕或題目卡, to: 分數元素, pts: 得分, hot: 著火時發光的元素})`、答錯 `miss()`；連對 5／10／15 題火熱 1／2／3 級（畫面四周燒紅、火星、題目卡發光、分數旁 🔥），答錯只降一級；combo 只有畫面效果，不加分）；配樂用 `music.js` 的 `HubMusic.attachToggle(按鈕, '曲名')`。結算若有錯題，提供「再練錯的這幾題」（不記成績）。
 - 大廳 `index.html` 要同時照顧手機（單欄）與電腦（≥960px 左側 QR Code＋右側卡片）；QR Code 用本地的 `vendor/qrcode.js`，不依賴外部 CDN。
 - 第三方函式庫一律放 `vendor/`，用相對路徑載入：動畫用 GSAP 3.15.0（`gsap.min.js`，外掛 `DrawSVGPlugin.min.js`、`MotionPathPlugin.min.js`，用前 `gsap.registerPlugin(...)`）；慶祝特效用 canvas-confetti 1.9.4（`confetti.js`，全域函式 `confetti()`）。動畫要照顧 `prefers-reduced-motion`。
 - 目標是手機直式畫面：viewport-fit=cover、處理 safe-area、左右至少 16px 留白、不能橫向捲動。

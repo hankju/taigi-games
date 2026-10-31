@@ -25,9 +25,11 @@
 index.html        遊戲大廳（照 games.js 自動列出卡片）
 games.js          遊戲清單
 music.js          大廳與各遊戲的配樂（Web Audio 合成，播錄音時自動壓低）
-fx.js             遊戲共用回饋：答對／答錯音效與震動（FX.ok／FX.bad）、音效開關、結算評語（FX.verdict）
+fx.js             遊戲共用回饋：答對／答錯音效與震動（FX.ok／FX.bad）、音效開關、結算評語（FX.verdict）、破紀錄彩帶（FX.record）、連續答對特效（FX.combo）
 img/              大廳插畫：hero.webp（手機主視覺）、hero_w.webp（電腦主視覺）、card_<id>.webp（遊戲卡片封面，800×400）
 vendor/qrcode.js  QR Code 產生器（qrcode-generator 1.4.4，MIT 授權，Kazuhiko Arase）
+vendor/gsap*.js、vendor/*Plugin.min.js  動畫函式庫 GSAP 3.15.0（GreenSock 標準授權，可免費使用）
+vendor/confetti.js  彩帶特效 canvas-confetti 1.9.4（ISC 授權）
 games/<id>/       每個遊戲一個資料夾，裡面的 index.html 可以單獨打開
 ```
 
