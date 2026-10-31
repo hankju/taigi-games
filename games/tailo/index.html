@@ -97,8 +97,6 @@ body.playing .tree{opacity:.3}
 .stamp{position:absolute;left:14px;top:12px;width:64px;height:64px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:24px;line-height:1;border:3px solid currentColor;transform:rotate(-14deg);background:rgba(255,253,248,.85);animation:stamp .28s cubic-bezier(.2,1.6,.4,1) both}
 .stamp.ok{color:var(--ok)}.stamp.no{color:var(--bad);font-size:19px}
 @keyframes stamp{from{transform:rotate(-14deg) scale(1.8);opacity:0}to{transform:rotate(-14deg) scale(1);opacity:1}}
-.gain{position:absolute;right:6px;top:-4px;font-weight:700;color:var(--ok);font-size:18px;pointer-events:none;animation:gain .9s ease-out both}
-@keyframes gain{from{transform:translateY(0);opacity:1}to{transform:translateY(-26px);opacity:0}}
 .card .kind{position:absolute;top:18px;left:76px;right:76px;font-size:17px;color:var(--muted)}
 .card .han{font-family:var(--display);font-size:clamp(48px,15vw,76px);line-height:1.15;margin:0 0 8px;letter-spacing:.08em}
 .card .han mark{padding:0 .06em;margin:0 .02em;border-radius:10px}
@@ -185,17 +183,23 @@ body.playing .tree{opacity:.3}
 @media (min-width:700px){
   .tree{width:340px;right:-40px}
   #app{padding-top:24px}
-  /* 大螢幕：標題和模式卡片整組置中，不要中間空一大塊 */
-  #home{justify-content:center}
-  #home .toprow{position:absolute;top:24px;left:16px;right:16px}
+  /* 大螢幕：標題和模式卡片整組置中，不要中間空一大塊；上方按鈕列留在原位，
+     整組用上下 auto 留白置中在按鈕列底下，視窗矮的時候留白縮到 0，標題就不會鑽到按鈕下面 */
+  #home .hero{margin-top:auto}
+  #home .credit{margin-bottom:auto}
   .modes{margin-top:32px}
   .scope{margin-top:28px}
   /* 大螢幕：題目卡不要撐滿整個高度，整組置中 */
   #play{justify-content:center}
   #play .card{flex:0 1 auto;min-height:380px}
 }
+/* 大螢幕但視窗矮（例：筆電 1280×720）：間距縮小，三個模式卡片才放會落 */
+@media (min-width:700px) and (max-height:760px){
+  #home .modes,#home .scope{margin-top:12px}
+  #home .hero h1{font-size:54px}
+}
 @media (prefers-reduced-motion:reduce){
-  .stamp,.gain{animation:none}
+  .stamp{animation:none}
   .bar i{transition:none}
 }
 </style>
@@ -334,7 +338,7 @@ function show(id) { for (const s of document.querySelectorAll('.screen')) s.hidd
 let mode, qs, qi, score, cur, wrong, retry;
 // list：錯題再練時只出這幾個詞，而且不記成績
 function start(m, list) {
-  mode = m; qi = 0; score = 0; wrong = []; retry = !!list;
+  mode = m; qi = 0; score = 0; wrong = []; retry = !!list; FX.combo.reset();
   const pool = list || TL_BANK.filter(w => w.modes.includes(m) && inScope(w));
   qs = pool.map(w => [Math.random(), w]).sort((a, b) => a[0] - b[0]).slice(0, N).map(x => x[1]);
   show('play'); next();
@@ -428,13 +432,12 @@ function judge(tone) {
   if (mode === 'tone') { ok = tone === last.tone; yours = `你揀第 ${tone} 調`; cur.ans = [String(tone)]; }
   else { ok = cur.sy.every((s, i) => cur.ans[i] === answerOf(i)); yours = '你的答案：' + cur.ans.join(' - '); }
   cur.done = true;
-  if (ok) { score += PT; FX.ok(); } else { FX.bad(); wrong.push({w: cur.w, han: cur.w.han, lo: cur.w.lo, yours: mode === 'tone' ? `第 ${tone} 調` : cur.ans.join('-')}); }
+  if (ok) { score += PT; FX.ok(); FX.combo.hit({from: $('.card'), to: $('#sc'), pts: PT, hot: $('.card')}); } else { FX.bad(); FX.combo.miss(); wrong.push({w: cur.w, han: cur.w.han, lo: cur.w.lo, yours: mode === 'tone' ? `第 ${tone} 調` : cur.ans.join('-')}); }
   $('#sc').textContent = score;
-  // 批改印章、加分
+  // 批改印章（加分由 FX.combo 的「+5」飛去分數）
   const card = $('.card');
   card.classList.add(ok ? 'ok' : 'no');
   card.insertAdjacentHTML('beforeend', `<span class="stamp ${ok ? 'ok' : 'no'}" aria-hidden="true">${ok ? '著' : '毋著'}</span>`);
-  if (ok) { const g = document.createElement('span'); g.className = 'gain'; g.textContent = '+' + PT; $('.hud .sc').appendChild(g); setTimeout(() => g.remove(), 950); }
   drawTpl();
   $('#pad').hidden = true;
   const fb = $('#fb');
@@ -450,12 +453,12 @@ function judge(tone) {
 }
 
 function finish() {
-  if (audio) audio.pause();
+  if (audio) audio.pause(); FX.combo.reset();
   $('#bar').style.width = '100%';
   const total = qs.length * PT;
   // 評語、跟上一擺比（錯題再練不記成績、不比較）
   const prevs = hist().filter(r => r.m === mode), prev = prevs.length ? prevs[prevs.length - 1].s : null;
-  if (!retry) addHist(mode, score);
+  if (!retry) { FX.record(prevs, score, total); addHist(mode, score); }
   const t = today(mode), vd = FX.verdict(score, total, retry ? null : prev);
   $('#oTitle').textContent = retry ? '錯題練習完成！' : MODES[mode] + '練習完成！';
   $('#oVerdict').innerHTML = `${vd.msg}${vd.diff ? `<small class="${vd.up ? 'up' : ''}">${vd.diff}</small>` : ''}`;
@@ -479,7 +482,7 @@ function finish() {
 
 document.querySelectorAll('[data-m]').forEach(b => b.onclick = () => start(b.dataset.m));
 $('#say').onclick = () => play(cur.w.audio);
-$('#quit').onclick = () => { if (audio) audio.pause(); renderHome(); show('home'); };
+$('#quit').onclick = () => { if (audio) audio.pause(); FX.combo.reset(); renderHome(); show('home'); };
 $('#again').onclick = () => start(mode);
 $('#home2').onclick = () => { renderHome(); show('home'); };
 

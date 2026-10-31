@@ -101,8 +101,6 @@ button:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
 .stamp{position:absolute;left:12px;top:10px;width:60px;height:60px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:23px;line-height:1;border:3px solid currentColor;transform:rotate(-14deg);background:rgba(255,248,234,.9);animation:stamp .28s cubic-bezier(.2,1.6,.4,1) both}
 .stamp.ok{color:var(--ok)}.stamp.no{color:var(--bad);font-size:18px}
 @keyframes stamp{from{transform:rotate(-14deg) scale(1.8);opacity:0}to{transform:rotate(-14deg) scale(1);opacity:1}}
-.gain{position:absolute;right:4px;top:-8px;font-weight:700;color:var(--lamp);font-size:18px;pointer-events:none;animation:gain .9s ease-out both}
-@keyframes gain{from{transform:translateY(0);opacity:1}to{transform:translateY(-26px);opacity:0}}
 .card .ask{font-size:14px;color:var(--muted)}
 .big{font-family:var(--display);font-size:clamp(46px,14vw,64px);line-height:1.2;font-weight:700}
 .lo{font-size:clamp(28px,8.4vw,36px);font-weight:700;letter-spacing:.02em}
@@ -173,7 +171,7 @@ button:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
 .hcap{margin:0;text-align:center;font-size:13px;color:var(--lamp-soft)}
 .hday{color:var(--lamp-soft);font-size:13px;margin-top:6px}
 .empty{text-align:center;color:var(--lamp-soft);padding:24px 0}
-@media (prefers-reduced-motion:reduce){.stamp,.gain{animation:none}.skylan{display:none}}
+@media (prefers-reduced-motion:reduce){.stamp{animation:none}.skylan{display:none}}
 </style>
 </head>
 <body>
@@ -351,8 +349,8 @@ function start(mode, given) {
     $('#bar i').style.transform = `scaleX(${left / LIM})`;
     $('#bar').classList.toggle('low', left < 30);
   }, 200);
-  stop = () => { done = true; clearInterval(timer); if (audio) audio.pause(); };
-  $('#sc').textContent = 0;
+  stop = () => { done = true; clearInterval(timer); if (audio) audio.pause(); FX.combo.reset(); };
+  $('#sc').textContent = 0; FX.combo.reset();
   { const s = Math.ceil(LIM); $('#tm').textContent = Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
 
   function next() {
@@ -384,9 +382,9 @@ function start(mode, given) {
     if (done || b.disabled) return;
     if (o === q.answer) {
       const p = PTS[tries] || 0; score += p; $('#sc').textContent = score; FX.ok();
-      b.classList.add('right'); gain(p); reveal(q, true); return;
+      b.classList.add('right'); FX.combo.hit({from: b, to: $('#sc'), pts: p, hot: $('#card')}); reveal(q, true); return;
     }
-    tries++; b.classList.add('wrong'); b.disabled = true; FX.bad();
+    tries++; b.classList.add('wrong'); b.disabled = true; FX.bad(); FX.combo.miss();
     if (mode === 'm1') { const s = $('#say'); if (s && q.w.audio) { s.disabled = false; s.textContent = '🔊 聽發音'; } }
     if (mode === 'm2' && $('#pad')) { $('#pad').outerHTML = `<div class="big">${esc(q.w.han)}</div>`; if (q.w.ex) $('#hint').innerHTML = `<div class="hint">例句：${esc(q.w.ex.han.replace(q.w.han, '＿＿'))}</div>`; }
     if (mode === 'm3' && q.hua) $('#hint').innerHTML = `<div class="hint">華語：${esc(q.hua)}</div>`;
@@ -410,7 +408,7 @@ function start(mode, given) {
   function finish(title) {
     if (done) return; stop(); stop = null;
     const total = qs.length * 10, h = store.hist().filter(r => r.m === mode), prev = h.length ? h[h.length - 1].s : null;
-    const best = store.best(mode); if (!retry) store.add(mode, score);
+    const best = store.best(mode); if (!retry) { FX.record(h, score, total); store.add(mode, score); }
     $('#oTitle').textContent = retry ? '錯題練習完成！' : title;
     const vd = FX.verdict(score, total, retry ? null : prev);
     $('#oVerdict').innerHTML = `${vd.msg}${vd.diff ? `<small class="${vd.up ? 'up' : ''}">${vd.diff}</small>` : ''}`;
@@ -429,7 +427,6 @@ function start(mode, given) {
   }
   next();
 }
-function gain(p) { const g = document.createElement('span'); g.className = 'gain'; g.textContent = '+' + p; $('#sc').parentNode.appendChild(g); setTimeout(() => g.remove(), 950); }
 function skyLanterns(n) {
   for (let k = 0; k < n; k++) {
     const el = document.createElement('i'), d = 4 + Math.random() * 3;

@@ -127,8 +127,6 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offse
 .mark.ok{color:var(--seal);font-size:28px}
 .mark.no{color:#2b231d;font-size:18px;letter-spacing:-.04em}
 @keyframes mark{from{transform:rotate(-12deg) scale(1.9);opacity:0}to{transform:rotate(-12deg) scale(1);opacity:.92}}
-.gain{position:absolute;right:16px;top:-6px;font-family:var(--lo);font-weight:600;color:var(--gold);font-size:20px;pointer-events:none;animation:gain .9s ease-out both}
-@keyframes gain{from{transform:translateY(0);opacity:1}to{transform:translateY(-28px);opacity:0}}
 .word{position:relative;display:inline-block;font-family:var(--display);font-size:clamp(44px,13vw,64px);font-weight:700;line-height:1.25;letter-spacing:.06em;min-width:3em;padding:0 .2em}
 /* 蓋在漢字上的封條；.torn 撕開 */
 .word .cover{position:absolute;left:-14%;right:-14%;top:-4%;bottom:-4%;display:flex;align-items:center;justify-content:center;gap:.3em;background:var(--paper-2);color:var(--seal);
@@ -204,7 +202,7 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offse
 @keyframes kimtsua{0%{transform:translate(0,0) rotate(0) rotateX(0);opacity:0}8%{opacity:1}100%{transform:translate(var(--dx),112vh) rotate(var(--r)) rotateX(540deg);opacity:.9}}
 .over .big{animation:slap .45s cubic-bezier(.2,1.5,.45,1) both}
 
-@media (prefers-reduced-motion:reduce){.word .cover{transition:none}.mark,.gain,.hero h1 .seal,.over .big{animation:none}.kimtsua{display:none}}
+@media (prefers-reduced-motion:reduce){.word .cover{transition:none}.mark,.hero h1 .seal,.over .big{animation:none}.kimtsua{display:none}}
 </style>
 </head>
 <body>
@@ -374,7 +372,7 @@ function draw(p, m) {
 
 let qs, qi, score, mode, wrong, retryMode;
 function start(m, given) {
-  mode = m; qi = 0; score = 0; wrong = []; retryMode = !!given;
+  mode = m; qi = 0; score = 0; wrong = []; retryMode = !!given; FX.combo.reset();
   if (given) qs = given.map(q => makeQ(q.w, m));
   else {
     const p = pool(m);
@@ -413,11 +411,9 @@ function judge(b, o, q) {
   if (q.done) return; q.done = true;
   const ok = o === q.answer, w = q.w;
   for (const x of $('#opts').children) { x.disabled = true; if (x.textContent.slice(1) === q.answer) x.classList.add('right'); else if (x !== b) x.classList.add('dim'); }
-  if (ok) { score += PT; FX.ok(); } else { b.classList.add('wrong'); wrong.push(q); FX.bad(); }
+  if (ok) { score += PT; FX.ok(); FX.combo.hit({from: b, to: $('#sc'), pts: PT, hot: $('#card')}); } else { b.classList.add('wrong'); wrong.push(q); FX.bad(); FX.combo.miss(); }
   $('#sc').textContent = score;
   $('#card').insertAdjacentHTML('beforeend', `<span class="mark ${ok ? 'ok' : 'no'}" aria-hidden="true">${ok ? '著' : '毋著'}</span>`);
-  if (ok) $('.hud .sc').insertAdjacentHTML('beforeend', `<span class="gain" aria-hidden="true">+${PT}</span>`);
-  setTimeout(() => { const g = document.querySelector('.gain'); if (g) g.remove(); }, 950);
   const wd = $('#word'); if (wd) wd.classList.add('torn');
   const exSay = w.ex && w.ex.audio ? '<button class="fbsay" id="exsay">🔊 聽整句</button>' : '';
   const ex = w.ex ? `<div class="exrow"><p class="ex">${esc(w.ex.han)}<small>${esc(w.ex.lo)}<br>${esc(w.ex.hua)}</small></p>${exSay}</div>` : '';
@@ -432,10 +428,10 @@ function judge(b, o, q) {
   $('#nx').scrollIntoView({block: 'nearest', behavior: 'smooth'});
 }
 function finish() {
-  if (audio) audio.pause();
+  if (audio) audio.pause(); FX.combo.reset();
   const total = qs.length * PT, s100 = Math.round(score / total * 100);
   const prev = hist().filter(r => r.m === mode).slice(-1)[0];
-  if (!retryMode) { const h = hist(); h.push({m: mode, s: s100, t: Date.now()}); store.set('pw_hist', h.slice(-500)); }
+  if (!retryMode) { const h = hist(); FX.record(h.filter(r => r.m === mode), s100, 100); h.push({m: mode, s: s100, t: Date.now()}); store.set('pw_hist', h.slice(-500)); }
   $('#oTitle').textContent = retryMode ? '錯題練習完成' : NAME[mode];
   $('#oScore').innerHTML = `${s100}<small> / 100</small>`;
   const v = FX.verdict(s100, 100, retryMode || !prev ? null : prev.s);
