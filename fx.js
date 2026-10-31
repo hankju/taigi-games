@@ -219,8 +219,10 @@
 
   // 讚語佮加油語是台語老師建議的講法（取代原本英語「ON FIRE」的火熱）
   // 連續答對：連對 2／3／5／7／10 題講「媠！」到「媠甲會觸舌！」，10 題以後每 5 題閣講一擺；每講一句四周就加開一批花，
-  //   花越開越濟、越大蕊，3 批起花邊有金光閃爍、題目卡發金光，4 批起畫面四周金光，5 批起落花瓣；答錯謝一批（毋是隨無去）
-  // 連續答錯：「加油！」到「愛揣老師矣！」，每講一句就加一款破敗：蜘蛛網 → 蜘蛛佮蟲 → 破窗 → 閣破一塊 → 滿四界，灰塵越來越厚；答對清掉一款
+  //   花越開越濟、越大蕊，3 批起花邊有金光閃爍、題目卡發金光，4 批起畫面四周金光，5 批起落花瓣
+  // 連續答錯：「加油！」到「愛揣老師矣！」，每講一句就加一款破敗：蜘蛛網 → 蜘蛛佮蟲 → 破窗 → 閣破一塊 → 滿四界，灰塵越來越厚；上濟 5 款
+  // 花佮破敗袂同時出現：先消對方、才長家己的。畫面有破敗的時陣答對，一題清兩款（連對 3 題就清光），清光了後才開始算連對、開花；
+  //   有花的時陣答錯，一題謝兩批，謝了了後才開始算連錯、出現破敗
   const PRAISE = {2: '媠！', 3: '真媠！', 5: '有夠媠！', 7: '真正有夠媠！', 10: '媠甲會觸舌！'};
   const CHEER = ['加油！', '閣較拚咧！', '想予詳細！', '哪會按呢？', '愛揣老師矣！'];
   let n = 0, m = 0, bloom = 0, hotEl = null, scoreEl = null, badge = null, shineEl = null;
@@ -485,7 +487,8 @@
   ];
   function addStage() {
     if (!ruinEl) { ruinEl = document.createElement('div'); ruinEl.className = 'fx-ruin'; ruinEl.setAttribute('aria-hidden', 'true'); document.body.appendChild(ruinEl); }
-    stages.push(ruin < STAGES.length ? STAGES[ruin]() : ruin < 9 ? [bug(['b', 'l', 'r'][ruin % 3])] : []);
+    if (ruin >= STAGES.length) return;                       // 連錯 5 題就是上破的款，袂閣加
+    stages.push(STAGES[ruin]());
     ruin++;
   }
   function dropStage() {
@@ -527,11 +530,12 @@
     },
     // 答對：from＝答對的按鈕抑是題目卡（「+分」對遮飛出去）；to＝分數的數字；pts＝這題得幾分（0 就毋飛）；hot＝發金光的題目卡（讚語也貼佇伊頂緣）
     hit({from, to, pts, hot} = {}) {
-      n++; m = 0;
+      m = 0;
       if (hot) hotEl = hot;
       if (to) scoreEl = to;
       if (pts) fly(from, to, '+' + pts);
-      if (ruin) dropStage();                                   // 答對就清掉一款破敗
+      if (ruin) { dropStage(); dropStage(); render(); return n; }   // 先清破敗（一題兩款），清了才開始開花
+      n++;
       const line = PRAISE[n] || (n > 10 && n % 5 === 0 ? PRAISE[10] : '');
       if (line) { bloom++; gardenStart(); addGroup(); }
       render();
@@ -544,11 +548,11 @@
       if (n === 10 || n === 20) loadConfetti().then(c => { if (still()) return; const r = from ? rect(from) : {left: 0, top: 0, width: innerWidth, height: innerHeight}; c({particleCount: 60, spread: 70, startVelocity: 35, colors: ['#ffd85a', '#f9b4c6', '#fff8ec', '#ff93a8', '#f2c14e'], origin: {x: (r.left + r.width / 2) / innerWidth, y: (r.top + r.height / 2) / innerHeight}}); }).catch(() => {});
       return n;
     },
-    // 答錯：講一句加油語、加一款破敗，花謝一批（毋扣分）；at＝加油語貼佇佗一塊（無就用上尾答對的題目卡）
+    // 答錯：講一句加油語；有花先謝花，無花才加一款破敗（毋扣分）；at＝加油語貼佇佗一塊（無就用上尾答對的題目卡）
     miss({at} = {}) {
-      n = 0; m++;
-      if (bloom) wither();
-      addStage(); render();
+      n = 0;
+      if (bloom) { wither(); if (bloom) wither(); render(); toast(CHEER[0], 'dull', at || hotEl); return; }   // 先謝花（一題兩批），謝了才開始破敗
+      m++; addStage(); render();
       toast(CHEER[Math.min(m, CHEER.length) - 1], 'dull', at || hotEl);
     },
     get n() { return n; },
